@@ -43,6 +43,13 @@ public class Database {
         projectsDAO = new ProjectsDAO(this);
         usersDAO = new UsersDAO(this);
         valuesDAO = new ValuesDAO(this);
+
+        try {
+            initialize();
+        } catch (DatabaseException db) {
+
+        }
+
         connection = null;
     }
 
