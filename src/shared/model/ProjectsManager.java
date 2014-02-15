@@ -1,5 +1,10 @@
 package shared.model;
 
+import server.database.Database;
+import server.database.DatabaseException;
+
+import java.util.List;
+
 /**
  * Created with IntelliJ IDEA.
  * User: Steven
@@ -8,4 +13,74 @@ package shared.model;
  * To change this template use File | Settings | File Templates.
  */
 public class ProjectsManager {
+
+    public static void initialize() throws ModelException {
+        try {
+            Database.initialize();
+        }
+        catch (DatabaseException e) {
+            throw new ModelException(e.getMessage(), e);
+        }
+    }
+
+    public static List<Project> getAllProjects() throws ModelException {
+
+        Database db = new Database();
+
+        try {
+            db.startTransaction();
+            List<Project> projects = db.getProjectsDAO().getAll();
+            db.endTransaction(true);
+            return projects;
+        }
+        catch (DatabaseException e) {
+            db.endTransaction(false);
+            throw new ModelException(e.getMessage(), e);
+        }
+    }
+
+    public static void addProject(Project project) throws ModelException {
+
+        Database db = new Database();
+
+        try {
+            db.startTransaction();
+            db.getProjectsDAO().add(project);
+            db.endTransaction(true);
+        }
+        catch (DatabaseException e) {
+            db.endTransaction(false);
+            throw new ModelException(e.getMessage(), e);
+        }
+    }
+
+    public static void updateProject(Project project) throws ModelException {
+
+        Database db = new Database();
+
+        try {
+            db.startTransaction();
+            db.getProjectsDAO().update(project);
+            db.endTransaction(true);
+        }
+        catch (DatabaseException e) {
+            db.endTransaction(false);
+            throw new ModelException(e.getMessage(), e);
+        }
+    }
+
+    public static void deleteProject(Project project) throws ModelException {
+
+        Database db = new Database();
+
+        try {
+            db.startTransaction();
+            db.getProjectsDAO().delete(project);
+            db.endTransaction(true);
+        }
+        catch (DatabaseException e) {
+            db.endTransaction(false);
+            throw new ModelException(e.getMessage(), e);
+        }
+    }
 }

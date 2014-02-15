@@ -12,19 +12,27 @@ import shared.model.Project;
 * @since <pre>Feb 12, 2014</pre> 
 * @version 1.0 
 */ 
-public class ProjectsDAOTest { 
+public class ProjectsDAOTest {
+
+    private Database db;
+    private ProjectsDAO projectsDAO;
 
 @Before
-public void before() throws Exception { 
+public void before() throws Exception {
+    db = new Database();
+    Database.initialize();
+    projectsDAO = new ProjectsDAO(db);
 } 
 
 @After
-public void after() throws Exception { 
+public void after() throws Exception {
+    db = null;
+    projectsDAO = null;
 } 
 
 /** 
 * 
-* Method: addProject(Project project) 
+* Method: add(Project project)
 * 
 */ 
 @Test
@@ -33,7 +41,7 @@ public void testAddProject() throws Exception {
     Database db = new Database();
     ProjectsDAO projectDAO = new ProjectsDAO(db);
 
-    projectDAO.addProject(project);
+    projectDAO.add(project);
 } 
 
 

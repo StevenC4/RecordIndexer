@@ -14,7 +14,7 @@ public class Database {
     private static Logger logger;
 
     static {
-        logger = Logger.getLogger("contactmanager");
+        logger = Logger.getLogger("recordindexer");
     }
 
     public static void initialize() throws DatabaseException {
@@ -43,12 +43,6 @@ public class Database {
         projectsDAO = new ProjectsDAO(this);
         usersDAO = new UsersDAO(this);
         valuesDAO = new ValuesDAO(this);
-
-        try {
-            initialize();
-        } catch (DatabaseException db) {
-
-        }
 
         connection = null;
     }
@@ -81,7 +75,7 @@ public class Database {
         logger.entering("server.database.Database", "startTransaction");
 
         final String jdbc = "jdbc:sqlite";
-        final String dbName = "indexing_tables.sqlite";
+        final String dbName = "C:/Dropbox/CS240/P1_Record_Indexer/database/indexing_tables.sqlite";
         final String dbUrl = jdbc + ":" + dbName;
         try {
             connection = DriverManager.getConnection(dbUrl);
@@ -105,6 +99,8 @@ public class Database {
             connection.close();
         } catch (Exception e) {
 
+        } finally {
+            connection = null;
         }
 
         logger.exiting("server.database.Database", "endTransaction");

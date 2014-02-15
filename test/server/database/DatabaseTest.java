@@ -1,6 +1,6 @@
 package server.database;
 
-import org.junit.Assert;
+import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.Before; 
 import org.junit.After; 
@@ -18,11 +18,14 @@ public class DatabaseTest {
 
 @Before
 public void before() throws Exception { 
-} 
+    db = new Database();
+    Database.initialize();
+}
 
 @After
-public void after() throws Exception { 
-} 
+public void after() throws Exception {
+    db = null;
+}
 
 /** 
 * 
@@ -41,9 +44,8 @@ public void testInitialize() throws Exception {
 */ 
 @Test
 public void testGetBatchesDAO() throws Exception { 
-    db = new Database();
     BatchesDAO batchesDAO = new BatchesDAO(db);
-    Assert.assertEquals(batchesDAO.getClass(), db.getBatchesDAO().getClass());
+    assertEquals(batchesDAO.getClass(), db.getBatchesDAO().getClass());
 } 
 
 /** 
@@ -53,9 +55,8 @@ public void testGetBatchesDAO() throws Exception {
 */ 
 @Test
 public void testGetFieldsDAO() throws Exception {
-    db = new Database();
     FieldsDAO fieldsDAO = new FieldsDAO(db);
-    Assert.assertEquals(fieldsDAO.getClass(), db.getFieldsDAO().getClass());
+    assertEquals(fieldsDAO.getClass(), db.getFieldsDAO().getClass());
 }
 
 /** 
@@ -65,9 +66,8 @@ public void testGetFieldsDAO() throws Exception {
 */ 
 @Test
 public void testGetProjectsDAO() throws Exception {
-    db = new Database();
     ProjectsDAO projectsDAO = new ProjectsDAO(db);
-    Assert.assertEquals(projectsDAO.getClass(), db.getProjectsDAO().getClass());
+    assertEquals(projectsDAO.getClass(), db.getProjectsDAO().getClass());
 }
 
 /** 
@@ -77,9 +77,8 @@ public void testGetProjectsDAO() throws Exception {
 */ 
 @Test
 public void testGetUsersDAO() throws Exception {
-    db = new Database();
     UsersDAO usersDAO = new UsersDAO(db);
-    Assert.assertEquals(usersDAO.getClass(), db.getUsersDAO().getClass());
+    assertEquals(usersDAO.getClass(), db.getUsersDAO().getClass());
 } 
 
 /** 
@@ -89,9 +88,8 @@ public void testGetUsersDAO() throws Exception {
 */ 
 @Test
 public void testGetValuesDAO() throws Exception {
-    db = new Database();
     ValuesDAO valuesDAO = new ValuesDAO(db);
-    Assert.assertEquals(valuesDAO.getClass(), db.getValuesDAO().getClass());
+    assertEquals(valuesDAO.getClass(), db.getValuesDAO().getClass());
 } 
 
 /** 
@@ -101,9 +99,12 @@ public void testGetValuesDAO() throws Exception {
 */ 
 @Test
 public void testGetConnection() throws Exception { 
-    db = new Database();
-    Assert.assertNull(db.getConnection());
-} 
+    assertNull(db.getConnection());
+    db.startTransaction();
+    assertNotNull(db.getConnection());
+    db.endTransaction(false);
+    assertNull(db.getConnection());
+}
 
 /** 
 * 
@@ -112,9 +113,9 @@ public void testGetConnection() throws Exception {
 */ 
 @Test
 public void testStartTransaction() throws Exception { 
-    db = new Database();
     db.startTransaction();
-    Assert.assertNotNull(db.getConnection());
+    assertNotNull(db.getConnection());
+    assertFalse(db.getConnection().isClosed());
     db.endTransaction(false);
 } 
 
@@ -125,8 +126,13 @@ public void testStartTransaction() throws Exception {
 */ 
 @Test
 public void testEndTransaction() throws Exception { 
-//TODO: Test goes here... 
-} 
+    db.startTransaction();
+    db.endTransaction(true);
+    assertNull(db.getConnection());
+    db.startTransaction();
+    db.endTransaction(false);
+    assertNull(db.getConnection());
+}
 
 
 } 

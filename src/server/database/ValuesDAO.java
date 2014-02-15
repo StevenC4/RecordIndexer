@@ -1,5 +1,12 @@
 package server.database;
 
+import shared.model.Value;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
@@ -14,7 +21,7 @@ public class ValuesDAO {
     private static Logger logger;
 
     static {
-        logger = Logger.getLogger("valuemanager");
+        logger = Logger.getLogger("recordindexer");
     }
 
     private Database db;
@@ -22,4 +29,107 @@ public class ValuesDAO {
     ValuesDAO(Database db) {
         this.db = db;
     }
+
+    public List<Value> getAll() throws DatabaseException {
+
+        logger.entering("server.database.ValuesDAO", "getAll");
+
+        String query = "SELECT * FROM entered_values";
+        List<Value> values;
+
+        try {
+            PreparedStatement statement = db.getConnection().prepareStatement(query);
+            ResultSet rs = statement.executeQuery();
+
+            values = new ArrayList<Value>();
+            while (rs.next()) {
+                Value value = new Value();
+                value.setValueId(rs.getInt("value_id"));
+                value.setProjectId(rs.getInt("project_id"));
+                value.setFieldId(rs.getInt("field_id"));
+                value.setBatchId(rs.getInt("batch_id"));
+                value.setValue(rs.getString("value"));
+                values.add(value);
+            }
+        } catch (Exception e) {
+            throw new DatabaseException(e.getMessage(), e);
+        }
+
+        logger.exiting("server.database.ValuesDAO", "getAll");
+
+        return values;
+    }
+
+    public void add(Value value) throws DatabaseException {
+
+        logger.entering("server.database.ValuesDAO", "add");
+
+        String query = "INSERT INTO entered_values" +
+                "(project_id, field_id, batch_id, value) VALUES" +
+                "(?,?,?,?)";
+
+        try {
+            PreparedStatement statement = db.getConnection().prepareStatement(query);
+
+            statement.setInt(1, value.getProjectId());
+            statement.setInt(2, value.getFieldId());
+            statement.setInt(3, value.getBatchId());
+            statement.setString(4, value.getValue());
+
+            statement.executeUpdate();
+        } catch (Exception e) {
+            throw new DatabaseException(e.getMessage(), e);
+        }
+
+        logger.exiting("server.database.ValuesDAO", "add");
+    }
+
+    public void update(Value value) throws DatabaseException {
+
+        logger.entering("server.database.ValuesDAO", "update");
+
+        String query = "UPDATE entered_values SET " +
+                "project_id = ?, " +
+                "field_id = ?, " +
+                "batch_id = ?, " +
+                "value = ? " +
+                "WHERE value_id = ?" +
+                "(?,?,?,?,?)";
+
+        try {
+            PreparedStatement statement = db.getConnection().prepareStatement(query);
+
+            statement.setInt(1, value.getProjectId());
+            statement.setInt(2, value.getFieldId());
+            statement.setInt(3, value.getBatchId());
+            statement.setString(4, value.getValue());
+            statement.setString(5, value.getValue());
+
+            statement.executeUpdate();
+        } catch (Exception e) {
+            throw new DatabaseException(e.getMessage(), e);
+        }
+
+        logger.exiting("server.database.ValuesDAO", "update");
+    }
+
+    public void delete(Value value) throws DatabaseException {
+
+        logger.entering("server.database.ValuesDAO", "delete");
+
+        String query = "DELETE entered_values WHERE value_id = ?";
+
+        try {
+            PreparedStatement statement = db.getConnection().prepareStatement(query);
+
+            statement.setInt(1, value.getValueId());
+
+            statement.executeUpdate();
+        } catch (Exception e) {
+            throw new DatabaseException(e.getMessage(), e);
+        }
+
+        logger.exiting("server.database.ValuesDAO", "delete");
+    }
+    
 }
