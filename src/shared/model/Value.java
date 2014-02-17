@@ -9,14 +9,33 @@ package shared.model;
  */
 public class Value {
 
+    /**
+     * The unique ID of the value
+     */
     private int valueId;
+
+    /**
+     * The ID of the project to which the value corresponds
+     */
     private int projectId;
+
+    /**
+     * The ID of the field the to which the value corresponds
+     */
     private int fieldId;
+
+    /**
+     * The ID of the batch to which the value corresponds
+     */
     private int batchId;
+
+    /**
+     * The actual value
+     */
     private String value;
 
     /**
-     * Instantiates a new Value.
+     * Instantiates a new Value with default values.
      */
     public Value() {
         setValueId(-1);

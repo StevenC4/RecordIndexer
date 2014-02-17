@@ -13,7 +13,12 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 public class BatchesManager {
-    
+
+    /**
+     * Initialize the Database object.
+     *
+     * @throws ModelException the model exception
+     */
     public static void initialize() throws ModelException {
         try {
             Database.initialize();
@@ -23,6 +28,12 @@ public class BatchesManager {
         }
     }
 
+    /**
+     * Gets all batches.
+     *
+     * @return the all batches
+     * @throws ModelException the model exception
+     */
     public static List<Batch> getAllBatches() throws ModelException {
 
         Database db = new Database();
@@ -39,6 +50,12 @@ public class BatchesManager {
         }
     }
 
+    /**
+     * Add batch.
+     *
+     * @param batch the batch
+     * @throws ModelException the model exception
+     */
     public static void addBatch(Batch batch) throws ModelException {
 
         Database db = new Database();
@@ -54,6 +71,12 @@ public class BatchesManager {
         }
     }
 
+    /**
+     * Update batch.
+     *
+     * @param batch the batch
+     * @throws ModelException the model exception
+     */
     public static void updateBatch(Batch batch) throws ModelException {
 
         Database db = new Database();
@@ -69,6 +92,12 @@ public class BatchesManager {
         }
     }
 
+    /**
+     * Delete batch.
+     *
+     * @param batch the batch
+     * @throws ModelException the model exception
+     */
     public static void deleteBatch(Batch batch) throws ModelException {
 
         Database db = new Database();

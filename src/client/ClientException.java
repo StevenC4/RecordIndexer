@@ -1,21 +1,43 @@
 package client;
 
+/**
+ * The type Client exception.
+ */
 @SuppressWarnings("serial")
 public class ClientException extends Exception {
 
-	public ClientException() {
+    /**
+     * Instantiates a new Client exception.
+     */
+    public ClientException() {
 		return;
 	}
 
-	public ClientException(String message) {
+    /**
+     * Instantiates a new Client exception.
+     *
+     * @param message the message
+     */
+    public ClientException(String message) {
 		super(message);
 	}
 
-	public ClientException(Throwable throwable) {
+    /**
+     * Instantiates a new Client exception.
+     *
+     * @param throwable the throwable
+     */
+    public ClientException(Throwable throwable) {
 		super(throwable);
 	}
 
-	public ClientException(String message, Throwable throwable) {
+    /**
+     * Instantiates a new Client exception.
+     *
+     * @param message the message
+     * @param throwable the throwable
+     */
+    public ClientException(String message, Throwable throwable) {
 		super(message, throwable);
 	}
 

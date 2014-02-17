@@ -18,18 +18,34 @@ import java.util.logging.Logger;
  */
 public class ValuesDAO {
 
+    /**
+     * The logger
+     */
     private static Logger logger;
 
     static {
         logger = Logger.getLogger("recordindexer");
     }
 
+    /**
+     * The database object
+     */
     private Database db;
 
+    /**
+     * Instantiates a new ValuesDAO.
+     * @param db
+     */
     ValuesDAO(Database db) {
         this.db = db;
     }
 
+    /**
+     * Gets all the values from the database.
+     *
+     * @return all the values from the database
+     * @throws DatabaseException the database exception
+     */
     public List<Value> getAll() throws DatabaseException {
 
         logger.entering("server.database.ValuesDAO", "getAll");
@@ -60,6 +76,12 @@ public class ValuesDAO {
         return values;
     }
 
+    /**
+     * Add the value to the database.
+     *
+     * @param value the value
+     * @throws DatabaseException the database exception
+     */
     public void add(Value value) throws DatabaseException {
 
         logger.entering("server.database.ValuesDAO", "add");
@@ -84,6 +106,12 @@ public class ValuesDAO {
         logger.exiting("server.database.ValuesDAO", "add");
     }
 
+    /**
+     * Update the value in the database.
+     *
+     * @param value the value
+     * @throws DatabaseException the database exception
+     */
     public void update(Value value) throws DatabaseException {
 
         logger.entering("server.database.ValuesDAO", "update");
@@ -113,6 +141,12 @@ public class ValuesDAO {
         logger.exiting("server.database.ValuesDAO", "update");
     }
 
+    /**
+     * Delete the value from the database.
+     *
+     * @param value the value
+     * @throws DatabaseException the database exception
+     */
     public void delete(Value value) throws DatabaseException {
 
         logger.entering("server.database.ValuesDAO", "delete");

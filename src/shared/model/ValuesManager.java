@@ -14,6 +14,11 @@ import java.util.List;
  */
 public class ValuesManager {
 
+    /**
+     * Initialize the Database object.
+     *
+     * @throws ModelException the model exception
+     */
     public static void initialize() throws ModelException {
         try {
             Database.initialize();
@@ -23,6 +28,12 @@ public class ValuesManager {
         }
     }
 
+    /**
+     * Gets all values.
+     *
+     * @return the all values
+     * @throws ModelException the model exception
+     */
     public static List<Value> getAllValues() throws ModelException {
 
         Database db = new Database();
@@ -39,6 +50,12 @@ public class ValuesManager {
         }
     }
 
+    /**
+     * Add value.
+     *
+     * @param value the value
+     * @throws ModelException the model exception
+     */
     public static void addValue(Value value) throws ModelException {
 
         Database db = new Database();
@@ -54,6 +71,12 @@ public class ValuesManager {
         }
     }
 
+    /**
+     * Update value.
+     *
+     * @param value the value
+     * @throws ModelException the model exception
+     */
     public static void updateValue(Value value) throws ModelException {
 
         Database db = new Database();
@@ -69,6 +92,12 @@ public class ValuesManager {
         }
     }
 
+    /**
+     * Delete value.
+     *
+     * @param value the value
+     * @throws ModelException the model exception
+     */
     public static void deleteValue(Value value) throws ModelException {
 
         Database db = new Database();

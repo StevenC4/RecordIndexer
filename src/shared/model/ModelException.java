@@ -9,18 +9,37 @@ package shared.model;
  */
 public class ModelException extends Exception {
 
+    /**
+     * Instantiates a new Model exception.
+     */
     public ModelException() {
         return;
     }
 
+    /**
+     * Instantiates a new Model exception.
+     *
+     * @param message the message
+     */
     public ModelException(String message) {
         super(message);
     }
 
+    /**
+     * Instantiates a new Model exception.
+     *
+     * @param cause the cause
+     */
     public ModelException(Throwable cause) {
         super(cause);
     }
 
+    /**
+     * Instantiates a new Model exception.
+     *
+     * @param message the message
+     * @param cause the cause
+     */
     public ModelException(String message, Throwable cause) {
         super(message, cause);
     }

@@ -11,12 +11,21 @@ import java.util.logging.*;
  * To change this template use File | Settings | File Templates.
  */
 public class Database {
+
+    /**
+     * The logger
+     */
     private static Logger logger;
 
     static {
         logger = Logger.getLogger("recordindexer");
     }
 
+    /**
+     * Initialize the database by loading the database driver.
+     *
+     * @throws DatabaseException the database exception
+     */
     public static void initialize() throws DatabaseException {
         logger.entering("server.database.Database", "initialize");
 
@@ -37,6 +46,9 @@ public class Database {
     private ValuesDAO valuesDAO;
     private Connection connection;
 
+    /**
+     * Instantiates a new Database.
+     */
     public Database() {
         batchesDAO = new BatchesDAO(this);
         fieldsDAO = new FieldsDAO(this);
@@ -47,30 +59,65 @@ public class Database {
         connection = null;
     }
 
+    /**
+     * Gets the batchesDAO.
+     *
+     * @return the batchesDAO
+     */
     public BatchesDAO getBatchesDAO() {
         return batchesDAO;
     }
 
+    /**
+     * Gets the fieldsDAO.
+     *
+     * @return the fieldsDAO
+     */
     public FieldsDAO getFieldsDAO() {
         return fieldsDAO;
     }
 
+    /**
+     * Gets the projectsDAO.
+     *
+     * @return the projectsDAO
+     */
     public ProjectsDAO getProjectsDAO() {
         return projectsDAO;
     }
 
+    /**
+     * Gets the usersDAO.
+     *
+     * @return the usersDAO
+     */
     public UsersDAO getUsersDAO() {
         return usersDAO;
     }
 
+    /**
+     * Gets valuesDAO.
+     *
+     * @return the valuesDAO
+     */
     public ValuesDAO getValuesDAO() {
         return valuesDAO;
     }
 
+    /**
+     * Gets the connection.
+     *
+     * @return the connection
+     */
     public Connection getConnection() {
         return connection;
     }
 
+    /**
+     * Start a database transaction.
+     *
+     * @throws DatabaseException the database exception
+     */
     public void startTransaction() throws DatabaseException {
         logger.entering("server.database.Database", "startTransaction");
 
@@ -87,6 +134,11 @@ public class Database {
         logger.exiting("server.database.Database", "startTransaction");
     }
 
+    /**
+     * End the database transaction.
+     *
+     * @param commit If true, commit.  If false, rollback.
+     */
     public void endTransaction(boolean commit) {
         logger.entering("server.database.Database", "endTransaction");
 
@@ -105,4 +157,5 @@ public class Database {
 
         logger.exiting("server.database.Database", "endTransaction");
     }
+
 }

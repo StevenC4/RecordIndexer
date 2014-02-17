@@ -9,13 +9,28 @@ package shared.model;
  */
 public class Batch {
 
+    /**
+     * The batch ID
+     */
     private int batchId;
+
+    /**
+     * The project ID
+     */
     private int projectId;
+
+    /**
+     * The path to the image
+     */
     private String path;
+
+    /**
+     * The completion status of batch
+     */
     private String status;
 
     /**
-     * Instantiates a new Batch.
+     * Instantiates a new Batch with default values.
      */
     public Batch() {
         setBatchId(-1);
@@ -58,18 +73,18 @@ public class Batch {
     }
 
     /**
-     * Gets the unique project id.
+     * Gets the project id.
      *
-     * @return the unique project id
+     * @return the project id
      */
     public int getProjectId() {
         return projectId;
     }
 
     /**
-     * Sets the unique project id.
+     * Sets the project id.
      *
-     * @param projectId the unique project id
+     * @param projectId the project id
      */
     public void setProjectId(int projectId) {
         this.projectId = projectId;
@@ -94,20 +109,21 @@ public class Batch {
     }
 
     /**
-     * Gets the status of the batch.
+     * Gets the completion status of the batch.
      *
-     * @return the status of the batch
+     * @return the completion status of the batch
      */
     public String getStatus() {
         return status;
     }
 
     /**
-     * Sets the status of the batch.
+     * Sets the completion status of the batch.
      *
-     * @param status the status of the batch
+     * @param status the completion status of the batch
      */
     public void setStatus(String status) {
         this.status = status;
     }
+
 }

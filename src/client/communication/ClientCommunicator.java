@@ -12,95 +12,119 @@ import shared.communication.*;
  */
 public class ClientCommunicator {
 
+    /**
+     * Instantiates a new ClientCommunicator.
+     */
     public ClientCommunicator() {
     }
 
-    public GetAllBatches_Result getAllBatches() throws ClientException {
-        return (GetAllBatches_Result)doGet("/GetAllBatches");
+    /**
+     * Validate the user user.
+     *
+     * @param params the parameters for validation
+     * @return an Operation_Result object containing the result string
+     * @throws ClientException the client exception
+     */
+    public Operation_Result ValidateUser(ValidateUser_Params params) throws ClientException {
+        return null;
     }
 
-    public void addBatch(AddBatch_Params params) throws ClientException {
-        doPost("/AddBatch", params);
+    /**
+     * Get projects.
+     *
+     * @param params the parameters for validation
+     * @return an Operation_Result object containing the result string
+     * @throws ClientException the client exception
+     */
+    public Operation_Result GetProjects(ValidateUser_Params params) throws ClientException {
+        return null;
     }
 
-    public void updateBatch(UpdateBatch_Params params) throws ClientException {
-        doPost("/UpdateBatch", params);
+    /**
+     * Get a sample image.
+     *
+     * @param params the parameters for validation and selecting an image
+     * @return an Operation_Result object containing the result string
+     * @throws ClientException the client exception
+     */
+    public Operation_Result GetSampleImage(GetSampleImage_Params params) throws ClientException {
+        return null;
     }
 
-    public void deleteBatch(DeleteBatch_Params params) throws ClientException {
-        doPost("/DeleteBatch", params);
+    /**
+     * Download a batch.
+     *
+     * @param params the parameters for validation and selecting a batch to download
+     * @return an Operation_Result object containing the result string
+     * @throws ClientException the client exception
+     */
+    public Operation_Result DownloadBatch(DownloadBatch_Params params) throws ClientException {
+        return null;
     }
 
-    public GetAllFields_Result getAllFields() throws ClientException {
-        return (GetAllFields_Result)doGet("/GetAllFields");
+    /**
+     * Submit a batch.
+     *
+     * @param params the parameters for validation and submitting a batch
+     * @return an Operation_Result object containing the result string
+     * @throws ClientException the client exception
+     */
+    public Operation_Result SubmitBatch(SubmitBatch_Params params) throws ClientException {
+        return null;
     }
 
-    public void addField(AddField_Params params) throws ClientException {
-        doPost("/AddField", params);
+    /**
+     * Get fields.
+     *
+     * @param params the parameters for validation and getting fields
+     * @return an Operation_Result object containing the result string
+     * @throws ClientException the client exception
+     */
+    public Operation_Result GetFields(GetFields_Params params) throws ClientException {
+        return null;
     }
 
-    public void updateField(UpdateField_Params params) throws ClientException {
-        doPost("/UpdateField", params);
+    /**
+     * Search records that have been indexed.
+     *
+     * @param params the parameters for validation and the search
+     * @return an Operation_Result object containing the result string
+     * @throws ClientException the client exception
+     */
+    public Operation_Result Search(Search_Params params) throws ClientException {
+        return null;
     }
 
-    public void deleteField(DeleteField_Params params) throws ClientException {
-        doPost("/DeleteField", params);
+    /**
+     * Download file.
+     *
+     * @param params the parameters for validation and downloading the file
+     * @return an Operation_Result object containing the result string
+     */
+    public Operation_Result DownloadFile(DownloadFile_Params params) {
+        return null;
     }
 
-    public GetAllProjects_Result getAllProjects() throws ClientException {
-        return (GetAllProjects_Result)doGet("/GetAllProjects");
-    }
-
-    public void addProject(AddProject_Params params) throws ClientException {
-        doPost("/AddProject", params);
-    }
-
-    public void updateProject(UpdateProject_Params params) throws ClientException {
-        doPost("/UpdateProject", params);
-    }
-
-    public void deleteProject(DeleteProject_Params params) throws ClientException {
-        doPost("/DeleteProject", params);
-    }
-
-    public GetAllUsers_Result getAllUsers() throws ClientException {
-        return (GetAllUsers_Result)doGet("/GetAllUsers");
-    }
-
-    public void addUser(AddUser_Params params) throws ClientException {
-        doPost("/AddUser", params);
-    }
-
-    public void updateUser(UpdateUser_Params params) throws ClientException {
-        doPost("/UpdateUser", params);
-    }
-
-    public void deleteUser(DeleteUser_Params params) throws ClientException {
-        doPost("/DeleteUser", params);
-    }
-
-    public GetAllValues_Result getAllValues() throws ClientException {
-        return (GetAllValues_Result)doGet("/GetAllValues");
-    }
-
-    public void addValue(AddValue_Params params) throws ClientException {
-        doPost("/AddValue", params);
-    }
-
-    public void updateValue(UpdateValue_Params params) throws ClientException {
-        doPost("/UpdateValue", params);
-    }
-
-    public void deleteValue(DeleteValue_Params params) throws ClientException {
-        doPost("/DeleteValue", params);
-    }
-
+    /**
+     * Do a GET.
+     *
+     * @param urlPath the path
+     * @return the requested data
+     * @throws ClientException
+     */
     private Object doGet(String urlPath) throws ClientException {
         // Make HTTP GET request to the specified URL,
         // and return the object returned by the server
         return null;
     }
 
+    /**
+     * Do a POST
+     *
+     * @param urlPath the path
+     * @param postData the data being posted
+     * @throws ClientException
+     */
     private void doPost(String urlPath, Object postData) throws ClientException {
         // Make HTTP POST request to the specified URL,
         // passing in the specified postData object

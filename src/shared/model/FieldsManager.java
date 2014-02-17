@@ -14,6 +14,11 @@ import java.util.List;
  */
 public class FieldsManager {
 
+    /**
+     * Initialize the Database object.
+     *
+     * @throws ModelException the model exception
+     */
     public static void initialize() throws ModelException {
         try {
             Database.initialize();
@@ -23,6 +28,12 @@ public class FieldsManager {
         }
     }
 
+    /**
+     * Gets all fields.
+     *
+     * @return the all fields
+     * @throws ModelException the model exception
+     */
     public static List<Field> getAllFields() throws ModelException {
 
         Database db = new Database();
@@ -39,6 +50,12 @@ public class FieldsManager {
         }
     }
 
+    /**
+     * Add field.
+     *
+     * @param field the field
+     * @throws ModelException the model exception
+     */
     public static void addField(Field field) throws ModelException {
 
         Database db = new Database();
@@ -54,6 +71,12 @@ public class FieldsManager {
         }
     }
 
+    /**
+     * Update field.
+     *
+     * @param field the field
+     * @throws ModelException the model exception
+     */
     public static void updateField(Field field) throws ModelException {
 
         Database db = new Database();
@@ -69,6 +92,12 @@ public class FieldsManager {
         }
     }
 
+    /**
+     * Delete field.
+     *
+     * @param field the field
+     * @throws ModelException the model exception
+     */
     public static void deleteField(Field field) throws ModelException {
 
         Database db = new Database();

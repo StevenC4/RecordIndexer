@@ -9,14 +9,33 @@ package shared.model;
  */
 public class Project {
 
+    /**
+     * The unique project ID
+     */
     int projectId;
+
+    /**
+     * The title of the project
+     */
     String title;
+
+    /**
+     * The number of records per image
+     */
     int recordsPerImage;
+
+    /**
+     * The uppermost y-coordinate of the first record in the image
+     */
     int firstYCoord;
+
+    /**
+     * The height of each record
+     */
     int recordHeight;
 
     /**
-     * Instantiates a new Project.
+     * Instantiates a new Project with default values.
      */
     public Project() {
         setProjectId(-1);

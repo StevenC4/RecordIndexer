@@ -17,18 +17,35 @@ import java.util.logging.Logger;
  */
 public class BatchesDAO {
 
+    /**
+     * The logger
+     */
     private static Logger logger;
 
     static {
         logger = Logger.getLogger("recordindexer");
     }
 
+    /**
+     * The database object
+     */
     private Database db;
 
+    /**
+     * Instantiates a new BatchesDAO.
+     *
+     * @param db the database object
+     */
     BatchesDAO(Database db) {
         this.db = db;
     }
 
+    /**
+     * Gets all batches from the database.
+     *
+     * @return all the batches
+     * @throws DatabaseException the database exception
+     */
     public List<Batch> getAll() throws DatabaseException {
 
         logger.entering("server.database.BatchesDAO", "getAll");
@@ -58,6 +75,12 @@ public class BatchesDAO {
         return batches;
     }
 
+    /**
+     * Add a batch to the database.
+     *
+     * @param batch the batch
+     * @throws DatabaseException the database exception
+     */
     public void add(Batch batch) throws DatabaseException {
 
         logger.entering("server.database.BatchesDAO", "add");
@@ -81,6 +104,12 @@ public class BatchesDAO {
         logger.exiting("server.database.BatchesDAO", "add");
     }
 
+    /**
+     * Update the batch in the database.
+     *
+     * @param batch the batch
+     * @throws DatabaseException the database exception
+     */
     public void update(Batch batch) throws DatabaseException {
 
         logger.entering("server.database.BatchesDAO", "update");
@@ -107,6 +136,12 @@ public class BatchesDAO {
         logger.exiting("server.database.BatchesDAO", "update");
     }
 
+    /**
+     * Delete the batch from the database.
+     *
+     * @param batch the batch
+     * @throws DatabaseException the database exception
+     */
     public void delete(Batch batch) throws DatabaseException {
 
         logger.entering("server.database.BatchesDAO", "delete");

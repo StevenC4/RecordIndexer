@@ -9,16 +9,43 @@ package shared.model;
  */
 public class User {
 
+    /**
+     * The unique user ID
+     */
     private int userId;
+
+    /**
+     * The user's username
+     */
     private String username;
+
+    /**
+     * The user's password
+     */
     private String password;
+
+    /**
+     * The user's first name
+     */
     private String firstName;
+
+    /**
+     * The user's last name
+     */
     private String lastName;
+
+    /**
+     * The user's email address
+     */
     private String email;
+
+    /**
+     * The number of records indexed by the user
+     */
     private int indexedRecords;
 
     /**
-     * Instantiates a new User.
+     * Instantiates a new User with default values.
      */
     public User() {
         setUserId(-1);

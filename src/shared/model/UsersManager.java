@@ -14,6 +14,11 @@ import java.util.List;
  */
 public class UsersManager {
 
+    /**
+     * Initialize the Database object.
+     *
+     * @throws ModelException the model exception
+     */
     public static void initialize() throws ModelException {
         try {
             Database.initialize();
@@ -23,6 +28,12 @@ public class UsersManager {
         }
     }
 
+    /**
+     * Gets all users.
+     *
+     * @return the all users
+     * @throws ModelException the model exception
+     */
     public static List<User> getAllUsers() throws ModelException {
 
         Database db = new Database();
@@ -39,6 +50,12 @@ public class UsersManager {
         }
     }
 
+    /**
+     * Add user.
+     *
+     * @param user the user
+     * @throws ModelException the model exception
+     */
     public static void addUser(User user) throws ModelException {
 
         Database db = new Database();
@@ -54,6 +71,12 @@ public class UsersManager {
         }
     }
 
+    /**
+     * Update user.
+     *
+     * @param user the user
+     * @throws ModelException the model exception
+     */
     public static void updateUser(User user) throws ModelException {
 
         Database db = new Database();
@@ -69,6 +92,12 @@ public class UsersManager {
         }
     }
 
+    /**
+     * Delete user.
+     *
+     * @param user the user
+     * @throws ModelException the model exception
+     */
     public static void deleteUser(User user) throws ModelException {
 
         Database db = new Database();

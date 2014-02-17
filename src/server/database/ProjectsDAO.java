@@ -19,18 +19,34 @@ import java.util.logging.Logger;
  */
 public class ProjectsDAO {
 
+    /**
+     * The logger
+     */
     private static Logger logger;
 
     static {
         logger = Logger.getLogger("recordindexer");
     }
 
+    /**
+     * The database object
+     */
     private Database db;
 
+    /**
+     * Instantiates a new ProjectsDAO.
+     * @param db the database object
+     */
     ProjectsDAO(Database db)  {
         this.db = db;
     }
 
+    /**
+     * Gets all the projects from the database.
+     *
+     * @return all the projects from the database
+     * @throws DatabaseException the database exception
+     */
     public List<Project> getAll() throws DatabaseException {
 
         logger.entering("server.database.ProjectsDAO", "getAll");
@@ -61,6 +77,12 @@ public class ProjectsDAO {
         return projects;
     }
 
+    /**
+     * Add the project to the databases.
+     *
+     * @param project the project
+     * @throws DatabaseException the database exception
+     */
     public void add(Project project) throws DatabaseException {
 
         logger.entering("server.database.ProjectsDAO", "add");
@@ -85,6 +107,12 @@ public class ProjectsDAO {
         logger.exiting("server.database.ProjectsDAO", "add");
     }
 
+    /**
+     * Update the project in the database.
+     *
+     * @param project the project
+     * @throws DatabaseException the database exception
+     */
     public void update(Project project) throws DatabaseException {
 
         logger.entering("server.database.ProjectsDAO", "update");
@@ -114,6 +142,12 @@ public class ProjectsDAO {
         logger.exiting("server.database.ProjectsDAO", "update");
     }
 
+    /**
+     * Delete the project from the database.
+     *
+     * @param project the project
+     * @throws DatabaseException the database exception
+     */
     public void delete(Project project) throws DatabaseException {
 
         logger.entering("server.database.ProjectsDAO", "delete");

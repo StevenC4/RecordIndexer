@@ -9,16 +9,43 @@ package shared.model;
  */
 public class Field {
 
+    /**
+     * The unique field ID
+     */
     private int fieldId;
+
+    /**
+     * The column position of the field in the table
+     */
     private int position;
+
+    /**
+     * The ID of the project to which the field corresponds
+     */
     private int projectId;
+
+    /**
+     * The right-most x-coordinate of the field within the image
+     */
     private int xCoord;
+
+    /**
+     * The width of the field within the image
+     */
     private int width;
+
+    /**
+     * The file path of the help document for the field
+     */
     private String helpHTML;
+
+    /**
+     * The path of the document containing known data for the field
+     */
     private String knownData;
 
     /**
-     * Instantiates a new Field.
+     * Instantiates a new Field with defauly values.
      */
     public Field() {
         setFieldId(-1);

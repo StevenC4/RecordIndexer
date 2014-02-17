@@ -14,6 +14,11 @@ import java.util.List;
  */
 public class ProjectsManager {
 
+    /**
+     * Initialize the Database object.
+     *
+     * @throws ModelException the model exception
+     */
     public static void initialize() throws ModelException {
         try {
             Database.initialize();
@@ -23,6 +28,12 @@ public class ProjectsManager {
         }
     }
 
+    /**
+     * Gets all projects.
+     *
+     * @return the all projects
+     * @throws ModelException the model exception
+     */
     public static List<Project> getAllProjects() throws ModelException {
 
         Database db = new Database();
@@ -39,6 +50,12 @@ public class ProjectsManager {
         }
     }
 
+    /**
+     * Add project.
+     *
+     * @param project the project
+     * @throws ModelException the model exception
+     */
     public static void addProject(Project project) throws ModelException {
 
         Database db = new Database();
@@ -54,6 +71,12 @@ public class ProjectsManager {
         }
     }
 
+    /**
+     * Update project.
+     *
+     * @param project the project
+     * @throws ModelException the model exception
+     */
     public static void updateProject(Project project) throws ModelException {
 
         Database db = new Database();
@@ -69,6 +92,12 @@ public class ProjectsManager {
         }
     }
 
+    /**
+     * Delete project.
+     *
+     * @param project the project
+     * @throws ModelException the model exception
+     */
     public static void deleteProject(Project project) throws ModelException {
 
         Database db = new Database();

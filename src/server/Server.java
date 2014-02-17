@@ -1,8 +1,6 @@
 package server;
 
-import client.communication.ClientCommunicator;
 import com.sun.net.httpserver.*;
-import shared.communication.GetAllBatches_Result;
 import shared.model.*;
 import java.io.*;
 import java.net.*;
@@ -89,26 +87,6 @@ public class Server {
         server.createContext("/AddBatch", addBatchHandler);
         server.createContext("/UpdateBatch", updateBatchHandler);
         server.createContext("/DeleteBatch", deleteBatchHandler);
-
-        server.createContext("/GetAllFields", getAllFieldsHandler);
-        server.createContext("/AddField", addFieldHandler);
-        server.createContext("/UpdateField", updateFieldHandler);
-        server.createContext("/DeleteField", deleteFieldHandler);
-
-        server.createContext("/GetAllProjects", getAllProjectsHandler);
-        server.createContext("/AddProject", addProjectHandler);
-        server.createContext("/UpdateProject", updateProjectHandler);
-        server.createContext("/DeleteProject", deleteProjectHandler);
-
-        server.createContext("/GetAllUsers", getAllUsersHandler);
-        server.createContext("/AddUser", addUserHandler);
-        server.createContext("/UpdateUser", updateUserHandler);
-        server.createContext("/DeleteUser", deleteUserHandler);
-
-        server.createContext("/GetAllValues", getAllValuesHandler);
-        server.createContext("/AddValue", addValueHandler);
-        server.createContext("/UpdateValue", updateValueHandler);
-        server.createContext("/DeleteValue", deleteValueHandler);
 
         logger.info("Starting HTTP Server");
 

@@ -18,18 +18,35 @@ import java.util.logging.Logger;
  */
 public class UsersDAO {
 
+    /**
+     * The logger
+     */
     private static Logger logger;
 
     static {
         logger = Logger.getLogger("recordindexer");
     }
 
+    /**
+     * The database object
+     */
     private Database db;
 
+    /**
+     * Instantiates a new UsersDAO.
+     *
+     * @param db the database
+     */
     UsersDAO(Database db) {
         this.db = db;
     }
 
+    /**
+     * Gets all the users from the database.
+     *
+     * @return all the users from the database
+     * @throws DatabaseException the database exception
+     */
     public List<User> getAll() throws DatabaseException {
 
         logger.entering("server.database.UsersDAO", "getAll");
@@ -62,6 +79,12 @@ public class UsersDAO {
         return users;
     }
 
+    /**
+     * Add the user to the database.
+     *
+     * @param user the user
+     * @throws DatabaseException the database exception
+     */
     public void add(User user) throws DatabaseException {
 
         logger.entering("server.database.UsersDAO", "add");
@@ -88,6 +111,12 @@ public class UsersDAO {
         logger.exiting("server.database.UsersDAO", "add");
     }
 
+    /**
+     * Update the user in the database.
+     *
+     * @param user the user
+     * @throws DatabaseException the database exception
+     */
     public void update(User user) throws DatabaseException {
 
         logger.entering("server.database.UsersDAO", "update");
@@ -121,6 +150,12 @@ public class UsersDAO {
         logger.exiting("server.database.UsersDAO", "update");
     }
 
+    /**
+     * Delete the user from the database.
+     *
+     * @param user the user
+     * @throws DatabaseException the database exception
+     */
     public void delete(User user) throws DatabaseException {
 
         logger.entering("server.database.UsersDAO", "delete");

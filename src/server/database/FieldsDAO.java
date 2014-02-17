@@ -17,18 +17,35 @@ import java.util.logging.Logger;
  */
 public class FieldsDAO {
 
+    /**
+     * The logger
+     */
     private static Logger logger;
 
     static {
         logger = Logger.getLogger("recordindexer");
     }
 
+    /**
+     * The database object
+     */
     private Database db;
 
+    /**
+     * Instantiates a new FieldsDAO.
+     *
+     * @param db the database object
+     */
     FieldsDAO (Database db) {
         this.db = db;
     }
 
+    /**
+     * Gets all fields from the database.
+     *
+     * @return all the fields
+     * @throws DatabaseException the database exception
+     */
     public List<Field> getAll() throws DatabaseException {
 
         logger.entering("server.database.FieldsDAO", "getAll");
@@ -61,6 +78,12 @@ public class FieldsDAO {
         return fields;
     }
 
+    /**
+     * Add the field to the database.
+     *
+     * @param field the field
+     * @throws DatabaseException the database exception
+     */
     public void add(Field field) throws DatabaseException {
 
         logger.entering("server.database.FieldsDAO", "add");
@@ -87,6 +110,12 @@ public class FieldsDAO {
         logger.exiting("server.database.FieldsDAO", "add");
     }
 
+    /**
+     * Update the field in the database.
+     *
+     * @param field the field
+     * @throws DatabaseException the database exception
+     */
     public void update(Field field) throws DatabaseException {
 
         logger.entering("server.database.FieldsDAO", "update");
@@ -120,6 +149,12 @@ public class FieldsDAO {
         logger.exiting("server.database.FieldsDAO", "update");
     }
 
+    /**
+     * Delete the field from the database.
+     *
+     * @param field the field
+     * @throws DatabaseException the database exception
+     */
     public void delete(Field field) throws DatabaseException {
 
         logger.entering("server.database.FieldsDAO", "delete");
