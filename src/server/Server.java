@@ -83,17 +83,21 @@ public class Server {
 
         server.setExecutor(null); // use the default executor
 
-        server.createContext("/GetAllBatches", getAllBatchesHandler);
-        server.createContext("/AddBatch", addBatchHandler);
-        server.createContext("/UpdateBatch", updateBatchHandler);
-        server.createContext("/DeleteBatch", deleteBatchHandler);
+        server.createContext("/ValidateUser", validateUserHandler);
+        server.createContext("/GetProjects", getProjectsHandler);
+        server.createContext("/GetSampleImage", getSampleImageHandler);
+        server.createContext("/DownloadBatch", downloadBatchHandler);
+        server.createContext("/SubmitBatch", submitBatchHandler);
+        server.createContext("/GetFields", getFieldsHandler);
+        server.createContext("/Search", searchHandler);
+        server.createContext("/DownloadFile", downloadFileHandler);
 
         logger.info("Starting HTTP Server");
 
         server.start();
     }
 
-    private HttpHandler getAllBatchesHandler = new HttpHandler() {
+    private HttpHandler validateUserHandler = new HttpHandler() {
 
         @Override
         public void handle(HttpExchange exchange) throws IOException {
@@ -108,7 +112,7 @@ public class Server {
         }
     };
 
-    private HttpHandler addBatchHandler = new HttpHandler() {
+    private HttpHandler getProjectsHandler = new HttpHandler() {
 
         @Override
         public void handle(HttpExchange exchange) throws IOException {
@@ -121,7 +125,7 @@ public class Server {
         }
     };
 
-    private HttpHandler updateBatchHandler = new HttpHandler() {
+    private HttpHandler getSampleImageHandler = new HttpHandler() {
 
         @Override
         public void handle(HttpExchange exchange) throws IOException {
@@ -134,7 +138,7 @@ public class Server {
         }
     };
 
-    private HttpHandler deleteBatchHandler = new HttpHandler() {
+    private HttpHandler downloadBatchHandler = new HttpHandler() {
 
         @Override
         public void handle(HttpExchange exchange) throws IOException {
@@ -147,7 +151,7 @@ public class Server {
         }
     };
 
-    private HttpHandler getAllFieldsHandler = new HttpHandler() {
+    private HttpHandler submitBatchHandler = new HttpHandler() {
 
         @Override
         public void handle(HttpExchange exchange) throws IOException {
@@ -162,7 +166,7 @@ public class Server {
         }
     };
 
-    private HttpHandler addFieldHandler = new HttpHandler() {
+    private HttpHandler getFieldsHandler = new HttpHandler() {
 
         @Override
         public void handle(HttpExchange exchange) throws IOException {
@@ -175,7 +179,7 @@ public class Server {
         }
     };
 
-    private HttpHandler updateFieldHandler = new HttpHandler() {
+    private HttpHandler searchHandler = new HttpHandler() {
 
         @Override
         public void handle(HttpExchange exchange) throws IOException {
@@ -188,7 +192,7 @@ public class Server {
         }
     };
 
-    private HttpHandler deleteFieldHandler = new HttpHandler() {
+    private HttpHandler downloadFileHandler = new HttpHandler() {
 
         @Override
         public void handle(HttpExchange exchange) throws IOException {
@@ -197,168 +201,6 @@ public class Server {
             // 1. Deserialize the request object from the request body
             // 2. Extract the field to be deleted from the request object
             // 3. Call the model to delete the field
-
-        }
-    };
-
-    private HttpHandler getAllProjectsHandler = new HttpHandler() {
-
-        @Override
-        public void handle(HttpExchange exchange) throws IOException {
-
-            // Process GetAllProjects request
-            // 1. Call model to get a list of all projects
-            // 2. Create a result object
-            // 3. Populate it with the list of projects
-            // 4. Serialize the result object
-            // 5. Return the serialized result object in the response body
-
-        }
-    };
-
-    private HttpHandler addProjectHandler = new HttpHandler() {
-
-        @Override
-        public void handle(HttpExchange exchange) throws IOException {
-
-            // Process AddProject request
-            // 1. Deserialize the request object from the request body
-            // 2. Extract the new project object from the request object
-            // 3. Call the model to add the new project
-
-        }
-    };
-
-    private HttpHandler updateProjectHandler = new HttpHandler() {
-
-        @Override
-        public void handle(HttpExchange exchange) throws IOException {
-
-            // Process UpdateProject request
-            // 1. Deserialize the request object from the request body
-            // 2. Extract the project to be updated from the request object
-            // 3. Call the model to update the project
-
-        }
-    };
-
-    private HttpHandler deleteProjectHandler = new HttpHandler() {
-
-        @Override
-        public void handle(HttpExchange exchange) throws IOException {
-
-            // Process DeleteProject request
-            // 1. Deserialize the request object from the request body
-            // 2. Extract the project to be deleted from the request object
-            // 3. Call the model to delete the project
-
-        }
-    };
-
-    private HttpHandler getAllUsersHandler = new HttpHandler() {
-
-        @Override
-        public void handle(HttpExchange exchange) throws IOException {
-
-            // Process GetAllUsers request
-            // 1. Call model to get a list of all users
-            // 2. Create a result object
-            // 3. Populate it with the list of users
-            // 4. Serialize the result object
-            // 5. Return the serialized result object in the response body
-
-        }
-    };
-
-    private HttpHandler addUserHandler = new HttpHandler() {
-
-        @Override
-        public void handle(HttpExchange exchange) throws IOException {
-
-            // Process AddUser request
-            // 1. Deserialize the request object from the request body
-            // 2. Extract the new user object from the request object
-            // 3. Call the model to add the new user
-
-        }
-    };
-
-    private HttpHandler updateUserHandler = new HttpHandler() {
-
-        @Override
-        public void handle(HttpExchange exchange) throws IOException {
-
-            // Process UpdateUser request
-            // 1. Deserialize the request object from the request body
-            // 2. Extract the user to be updated from the request object
-            // 3. Call the model to update the user
-
-        }
-    };
-
-    private HttpHandler deleteUserHandler = new HttpHandler() {
-
-        @Override
-        public void handle(HttpExchange exchange) throws IOException {
-
-            // Process DeleteUser request
-            // 1. Deserialize the request object from the request body
-            // 2. Extract the user to be deleted from the request object
-            // 3. Call the model to delete the user
-
-        }
-    };
-
-    private HttpHandler getAllValuesHandler = new HttpHandler() {
-
-        @Override
-        public void handle(HttpExchange exchange) throws IOException {
-
-            // Process GetAllValues request
-            // 1. Call model to get a list of all values
-            // 2. Create a result object
-            // 3. Populate it with the list of values
-            // 4. Serialize the result object
-            // 5. Return the serialized result object in the response body
-
-        }
-    };
-
-    private HttpHandler addValueHandler = new HttpHandler() {
-
-        @Override
-        public void handle(HttpExchange exchange) throws IOException {
-
-            // Process AddValue request
-            // 1. Deserialize the request object from the request body
-            // 2. Extract the new value object from the request object
-            // 3. Call the model to add the new value
-
-        }
-    };
-
-    private HttpHandler updateValueHandler = new HttpHandler() {
-
-        @Override
-        public void handle(HttpExchange exchange) throws IOException {
-
-            // Process UpdateValue request
-            // 1. Deserialize the request object from the request body
-            // 2. Extract the value to be updated from the request object
-            // 3. Call the model to update the value
-
-        }
-    };
-
-    private HttpHandler deleteValueHandler = new HttpHandler() {
-
-        @Override
-        public void handle(HttpExchange exchange) throws IOException {
-
-            // Process DeleteValue request
-            // 1. Deserialize the request object from the request body
-            // 2. Extract the value to be deleted from the request object
-            // 3. Call the model to delete the value
 
         }
     };
