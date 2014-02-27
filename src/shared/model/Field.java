@@ -15,14 +15,11 @@ public class Field {
     private int fieldId;
 
     /**
-     * The column position of the field in the table
-     */
-    private int position;
-
-    /**
      * The ID of the project to which the field corresponds
      */
     private int projectId;
+
+    private String title;
 
     /**
      * The right-most x-coordinate of the field within the image
@@ -49,7 +46,7 @@ public class Field {
      */
     public Field() {
         setFieldId(-1);
-        setPosition(-1);
+        setTitle(null);
         setProjectId(-1);
         setxCoord(-1);
         setWidth(-1);
@@ -61,16 +58,15 @@ public class Field {
      * Instantiates a new Field.
      *
      * @param fieldId the unique field id
-     * @param position the column position of the field within the table
      * @param projectId the unique project id
      * @param xCoord the left-most x coordinate of the field within the image
      * @param width the width of the field within the image
      * @param helpHTML the HTML page containing the help instructions for the field
      * @param knownData the known data for the particular field
      */
-    public Field(int fieldId, int position, int projectId, int xCoord, int width, String helpHTML, String knownData) {
+    public Field(int fieldId, String title, int projectId, int xCoord, int width, String helpHTML, String knownData) {
         setFieldId(fieldId);
-        setPosition(position);
+        setTitle(title);
         setProjectId(projectId);
         setxCoord(xCoord);
         setWidth(width);
@@ -96,22 +92,12 @@ public class Field {
         this.fieldId = fieldId;
     }
 
-    /**
-     * Gets the position of the field within the table.
-     *
-     * @return the position of the field within the table
-     */
-    public int getPosition() {
-        return position;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    /**
-     * Sets the position of the field within the table.
-     *
-     * @param position the position of the field within the table
-     */
-    public void setPosition(int position) {
-        this.position = position;
+    public String getTitle() {
+        return title;
     }
 
     /**

@@ -112,4 +112,33 @@ public class ProjectsManager {
             throw new ModelException(e.getMessage(), e);
         }
     }
+
+    public static void deleteAllProjects() throws ModelException {
+
+        Database db = new Database();
+
+        try {
+            db.startTransaction();
+            db.getProjectsDAO().deleteAll();
+            db.endTransaction(true);
+        }
+        catch (DatabaseException e) {
+            db.endTransaction(false);
+            throw new ModelException(e.getMessage(), e);
+        }
+    }
+
+    public void addList(List<Project> projectList) throws ModelException {
+        Database db = new Database();
+
+        try {
+            db.startTransaction();
+            db.getProjectsDAO().addList(projectList);
+            db.endTransaction(true);
+        }
+        catch (DatabaseException e) {
+            db.endTransaction(false);
+            throw new ModelException(e.getMessage(), e);
+        }
+    }
 }

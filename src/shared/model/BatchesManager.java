@@ -112,4 +112,51 @@ public class BatchesManager {
             throw new ModelException(e.getMessage(), e);
         }
     }
+
+    public static void deleteAllBatches() throws ModelException {
+
+        Database db = new Database();
+
+        try {
+            db.startTransaction();
+            db.getBatchesDAO().deleteAll();
+            db.endTransaction(true);
+        }
+        catch (DatabaseException e) {
+            db.endTransaction(false);
+            throw new ModelException(e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Gets sample image of the project.
+     *
+     * @param projectId the project id
+     * @throws ModelException the model exception
+     */
+    public static void getSampleImage(int projectId) throws ModelException {
+        Database db = new Database();
+
+        try {
+            db.startTransaction();
+            db.getBatchesDAO().getSampleImage(projectId);
+            db.endTransaction(true);
+        } catch (DatabaseException e) {
+            db.endTransaction(false);
+            throw new ModelException(e.getMessage(), e);
+        }
+    }
+
+    public void addList(List<Batch> batchList) throws ModelException {
+        Database db = new Database();
+
+        try {
+            db.startTransaction();
+            db.getBatchesDAO().addList(batchList);
+            db.endTransaction(true);
+        } catch (DatabaseException e) {
+            db.endTransaction(false);
+            throw new ModelException(e.getMessage(), e);
+        }
+    }
 }

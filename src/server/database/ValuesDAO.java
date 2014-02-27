@@ -64,6 +64,7 @@ public class ValuesDAO {
                 value.setProjectId(rs.getInt("project_id"));
                 value.setFieldId(rs.getInt("field_id"));
                 value.setBatchId(rs.getInt("batch_id"));
+                value.setRecordId(rs.getInt("record_id"));
                 value.setValue(rs.getString("value"));
                 values.add(value);
             }
@@ -87,8 +88,8 @@ public class ValuesDAO {
         logger.entering("server.database.ValuesDAO", "add");
 
         String query = "INSERT INTO entered_values" +
-                "(project_id, field_id, batch_id, value) VALUES" +
-                "(?,?,?,?)";
+                "(project_id, field_id, batch_id, record_id, value) VALUES" +
+                "(?,?,?,?,?)";
 
         try {
             PreparedStatement statement = db.getConnection().prepareStatement(query);
@@ -96,7 +97,8 @@ public class ValuesDAO {
             statement.setInt(1, value.getProjectId());
             statement.setInt(2, value.getFieldId());
             statement.setInt(3, value.getBatchId());
-            statement.setString(4, value.getValue());
+            statement.setInt(4, value.getRecordId());
+            statement.setString(5, value.getValue());
 
             statement.executeUpdate();
         } catch (Exception e) {
@@ -120,9 +122,10 @@ public class ValuesDAO {
                 "project_id = ?, " +
                 "field_id = ?, " +
                 "batch_id = ?, " +
+                "record_id = ?, " +
                 "value = ? " +
                 "WHERE value_id = ?" +
-                "(?,?,?,?,?)";
+                "(?,?,?,?,?,?)";
 
         try {
             PreparedStatement statement = db.getConnection().prepareStatement(query);
@@ -130,8 +133,9 @@ public class ValuesDAO {
             statement.setInt(1, value.getProjectId());
             statement.setInt(2, value.getFieldId());
             statement.setInt(3, value.getBatchId());
-            statement.setString(4, value.getValue());
+            statement.setInt(4, value.getRecordId());
             statement.setString(5, value.getValue());
+            statement.setString(6, value.getValue());
 
             statement.executeUpdate();
         } catch (Exception e) {
@@ -165,5 +169,63 @@ public class ValuesDAO {
 
         logger.exiting("server.database.ValuesDAO", "delete");
     }
-    
+
+    public void deleteAll() throws DatabaseException {
+
+        logger.entering("server.database.ValuesDAO", "deleteAll");
+
+        String query = "DELETE FROM entered_values";
+        String resetIncrement = "UPDATE sqlite_sequence SET seq=? WHERE name=?";
+
+        try {
+            PreparedStatement statement = db.getConnection().prepareStatement(query);
+            statement.executeUpdate();
+            statement = db.getConnection().prepareStatement(resetIncrement);
+            statement.setInt(1, 0);
+            statement.setString(2, "entered_values");
+            statement.executeUpdate();
+        } catch (Exception e) {
+            throw new DatabaseException(e.getMessage(), e);
+        }
+
+        logger.exiting("server.database.ValuesDAO", "deleteAll");
+    }
+
+    /**
+     * Search the database for values corresponding to certain fields.
+     *
+     * @param fields the fields to search for the values
+     * @param searchValues the search values corresponding to each field
+     * @return the list of values that match the search criteria
+     */
+    public List<Value> search(String fields, String searchValues) {
+        return null;
+    }
+
+    public void addList(List<Value> valueList) throws DatabaseException {
+
+        logger.entering("server.database.ValuesDAO", "addList");
+
+
+        try {
+            for (int i = 0; i < valueList.size(); i++) {
+                String query = "INSERT INTO entered_values" +
+                        "(project_id, field_id, batch_id, record_id, value) VALUES" +
+                        "(?,?,?,?,?)";
+                PreparedStatement statement = db.getConnection().prepareStatement(query);
+
+                statement.setInt(1, valueList.get(i).getProjectId());
+                statement.setInt(2, valueList.get(i).getFieldId());
+                statement.setInt(3, valueList.get(i).getBatchId());
+                statement.setInt(4, valueList.get(i).getRecordId());
+                statement.setString(5, valueList.get(i).getValue());
+
+                statement.executeUpdate();
+            }
+        } catch (Exception e) {
+            throw new DatabaseException(e.getMessage(), e);
+        }
+
+        logger.exiting("server.database.ValuesDAO", "addList");
+    }
 }

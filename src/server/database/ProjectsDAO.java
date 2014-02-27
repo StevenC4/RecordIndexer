@@ -167,4 +167,49 @@ public class ProjectsDAO {
         logger.exiting("server.database.ProjectsDAO", "delete");
     }
 
+    public void deleteAll() throws DatabaseException {
+
+        logger.entering("server.database.ProjectsDAO", "deleteAll");
+
+        String query = "DELETE FROM projects";
+        String resetIncrement = "UPDATE sqlite_sequence SET seq=? WHERE name=?";
+
+        try {
+            PreparedStatement statement = db.getConnection().prepareStatement(query);
+            statement.executeUpdate();
+            statement = db.getConnection().prepareStatement(resetIncrement);
+            statement.setInt(1, 0);
+            statement.setString(2, "projects");
+            statement.executeUpdate();
+        } catch (Exception e) {
+            throw new DatabaseException(e.getMessage(), e);
+        }
+
+        logger.exiting("server.database.ProjectsDAO", "deleteAll");
+    }
+
+    public void addList(List<Project> projectList) throws DatabaseException {
+        logger.entering("server.database.ProjectsDAO", "addList");
+
+
+        try {
+            for (int i = 0; i < projectList.size(); i++) {
+                String query = "INSERT INTO projects" +
+                        "(title, records_per_image, first_y_coord, record_height) VALUES" +
+                        "(?,?,?,?)";
+                PreparedStatement statement = db.getConnection().prepareStatement(query);
+
+                statement.setString(1, projectList.get(i).getTitle());
+                statement.setInt(2, projectList.get(i).getRecordsPerImage());
+                statement.setInt(3, projectList.get(i).getFirstYCoord());
+                statement.setInt(4, projectList.get(i).getRecordHeight());
+
+                statement.executeUpdate();
+            }
+        } catch (Exception e) {
+            throw new DatabaseException(e.getMessage(), e);
+        }
+
+        logger.exiting("server.database.ProjectsDAO", "addList");
+    }
 }

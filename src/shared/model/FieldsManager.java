@@ -112,4 +112,34 @@ public class FieldsManager {
             throw new ModelException(e.getMessage(), e);
         }
     }
+
+    public static void deleteAllFields() throws ModelException {
+
+        Database db = new Database();
+
+        try {
+            db.startTransaction();
+            db.getFieldsDAO().deleteAll();
+            db.endTransaction(true);
+        }
+        catch (DatabaseException e) {
+            db.endTransaction(false);
+            throw new ModelException(e.getMessage(), e);
+        }
+    }
+
+    public void addList(List<Field> fieldList) throws ModelException {
+
+        Database db = new Database();
+
+        try {
+            db.startTransaction();
+            db.getFieldsDAO().addList(fieldList);
+            db.endTransaction(true);
+        }
+        catch (DatabaseException e) {
+            db.endTransaction(false);
+            throw new ModelException(e.getMessage(), e);
+        }
+    }
 }

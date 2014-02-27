@@ -112,4 +112,34 @@ public class ValuesManager {
             throw new ModelException(e.getMessage(), e);
         }
     }
+
+    public static void deleteAllValues() throws ModelException {
+
+        Database db = new Database();
+
+        try {
+            db.startTransaction();
+            db.getValuesDAO().deleteAll();
+            db.endTransaction(true);
+        }
+        catch (DatabaseException e) {
+            db.endTransaction(false);
+            throw new ModelException(e.getMessage(), e);
+        }
+    }
+
+    public void addList(List<Value> valueList) throws ModelException {
+
+        Database db = new Database();
+
+        try {
+            db.startTransaction();
+            db.getValuesDAO().addList(valueList);
+            db.endTransaction(true);
+        }
+        catch (DatabaseException e) {
+            db.endTransaction(false);
+            throw new ModelException(e.getMessage(), e);
+        }
+    }
 }

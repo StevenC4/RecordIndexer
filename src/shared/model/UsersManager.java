@@ -112,4 +112,53 @@ public class UsersManager {
             throw new ModelException(e.getMessage(), e);
         }
     }
+
+    /**
+     * Validate user.
+     *
+     * @param username the username
+     * @param password the password
+     * @throws ModelException the model exception
+     */
+    public static void validateUser(String username, String password) throws ModelException {
+        Database db = new Database();
+
+        try {
+            db.startTransaction();
+            db.getUsersDAO().validateUser(username, password);
+            db.endTransaction(true);
+        } catch (DatabaseException e) {
+            db.endTransaction(false);
+            throw new ModelException(e.getMessage(), e);
+        }
+    }
+
+    public static void deleteAllUsers() throws ModelException {
+
+        Database db = new Database();
+
+        try {
+            db.startTransaction();
+            db.getUsersDAO().deleteAll();
+            db.endTransaction(true);
+        }
+        catch (DatabaseException e) {
+            db.endTransaction(false);
+            throw new ModelException(e.getMessage(), e);
+        }
+    }
+
+    public void addList(List<User> userList) throws ModelException {
+        Database db = new Database();
+
+        try {
+            db.startTransaction();
+            db.getUsersDAO().addList(userList);
+            db.endTransaction(true);
+        }
+        catch (DatabaseException e) {
+            db.endTransaction(false);
+            throw new ModelException(e.getMessage(), e);
+        }
+    }
 }

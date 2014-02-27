@@ -1,6 +1,7 @@
 package server.database;
 
 import shared.model.Batch;
+import shared.model.Project;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -161,4 +162,101 @@ public class BatchesDAO {
         logger.exiting("server.database.BatchesDAO", "delete");
     }
 
+    public void deleteAll() throws DatabaseException {
+
+        logger.entering("server.database.BatchesDAO", "deleteAll");
+
+        String query = "DELETE FROM batches";
+        String resetIncrement = "UPDATE sqlite_sequence SET seq=? WHERE name=?";
+
+        try {
+            PreparedStatement statement = db.getConnection().prepareStatement(query);
+            statement.executeUpdate();
+            statement = db.getConnection().prepareStatement(resetIncrement);
+            statement.setInt(1, 0);
+            statement.setString(2, "batches");
+            statement.executeUpdate();
+        } catch (Exception e) {
+            throw new DatabaseException(e.getMessage(), e);
+        }
+
+        logger.exiting("server.database.BatchesDAO", "deleteAll");
+    }
+
+    /**
+     * Gets sample image for the project.
+     *
+     * @param projectId the project id
+     * @return the sample image
+     * @throws DatabaseException the database exception
+     */
+    public String getSampleImage(int projectId) throws DatabaseException {
+
+        logger.entering("server.database.BatchesDAO", "getSampleImage");
+
+        String path;
+        String query = "SELECT path FROM batches WHERE project_id = ?";
+
+        try {
+            PreparedStatement statement = db.getConnection().prepareStatement(query);
+
+            statement.setInt(1, projectId);
+
+            ResultSet rs = statement.executeQuery();
+            if (rs.next()) {
+                path = rs.getString("path");
+            } else {
+                throw new Exception("Project ID is invalid or has no corresponding batches");
+            }
+        } catch (Exception e) {
+            throw new DatabaseException(e.getMessage(), e);
+        }
+
+        return path;
+    }
+
+    /**
+     * Download batch.
+     *
+     * @param projectId the project id
+     * @return the batch
+     * @throws DatabaseException the database exception
+     */
+    public Batch downloadBatch(int projectId) throws DatabaseException {
+        return null;
+    }
+
+    /**
+     * Submit batch.
+     *
+     * @param batch the batch
+     * @throws DatabaseException the database exception
+     */
+    public void submitBatch(Batch batch) throws DatabaseException {
+
+    }
+
+    public void addList(List<Batch> batchList) throws DatabaseException {
+
+        logger.entering("server.database.BatchesDAO", "add");
+
+        try {
+            for (int i = 0; i < batchList.size(); i++) {
+                String query = "INSERT INTO batches" +
+                        "(project_id, path, status) VALUES" +
+                        "(?,?,?)";
+                PreparedStatement statement = db.getConnection().prepareStatement(query);
+
+                statement.setInt(1, batchList.get(i).getProjectId());
+                statement.setString(2, batchList.get(i).getPath());
+                statement.setString(3, batchList.get(i).getStatus());
+
+                statement.executeUpdate();
+            }
+        } catch (Exception e) {
+            throw new DatabaseException(e.getMessage(), e);
+        }
+
+        logger.exiting("server.database.BatchesDAO", "add");
+    }
 }

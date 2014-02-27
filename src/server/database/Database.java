@@ -1,5 +1,6 @@
 package server.database;
 
+import java.io.File;
 import java.sql.*;
 import java.util.logging.*;
 
@@ -11,6 +12,10 @@ import java.util.logging.*;
  * To change this template use File | Settings | File Templates.
  */
 public class Database {
+
+    private static final String DATABASE_DIRECTORY = "database";
+    private static final String DATABASE_FILE = "indexing_tables.sqlite";
+    private static final String DATABASE_URL = "jdbc:sqlite:" + DATABASE_DIRECTORY + File.separator + DATABASE_FILE;
 
     /**
      * The logger
@@ -29,8 +34,8 @@ public class Database {
     public static void initialize() throws DatabaseException {
         logger.entering("server.database.Database", "initialize");
 
-        final String driverName = "org.sqlite.JDBC";
         try {
+            final String driverName = "org.sqlite.JDBC";
             Class.forName(driverName);
         } catch (Exception e) {
             throw new DatabaseException(e.getMessage());
@@ -121,17 +126,19 @@ public class Database {
     public void startTransaction() throws DatabaseException {
         logger.entering("server.database.Database", "startTransaction");
 
-        final String jdbc = "jdbc:sqlite";
-        final String dbName = "C:/Dropbox/CS240/P1_Record_Indexer/database/indexing_tables.sqlite";
-        final String dbUrl = jdbc + ":" + dbName;
         try {
-            connection = DriverManager.getConnection(dbUrl);
+            assert (connection != null);
+            connection = DriverManager.getConnection(DATABASE_URL);
             connection.setAutoCommit(false);
         } catch (Exception e) {
             throw new DatabaseException(e.getMessage());
         }
 
         logger.exiting("server.database.Database", "startTransaction");
+    }
+
+    public boolean inTransaction() {
+        return (connection != null);
     }
 
     /**
@@ -142,20 +149,58 @@ public class Database {
     public void endTransaction(boolean commit) {
         logger.entering("server.database.Database", "endTransaction");
 
-        try {
-            if (commit) {
-                connection.commit();
-            } else {
-                connection.rollback();
+        if (connection != null) {
+            try {
+                if (commit) {
+                    connection.commit();
+                } else {
+                    connection.rollback();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally {
+                safeClose(connection);
+                connection = null;
             }
-            connection.close();
-        } catch (Exception e) {
-
-        } finally {
-            connection = null;
         }
 
         logger.exiting("server.database.Database", "endTransaction");
+    }
+
+    public static void safeClose(Connection conn) {
+        if (conn != null) {
+            try {
+                conn.close();
+            }
+            catch (SQLException e) {}
+        }
+    }
+
+    public static void safeClose(Statement stmt) {
+        if (stmt != null) {
+            try {
+                stmt.close();
+            }
+            catch (SQLException e) {}
+        }
+    }
+
+    public static void safeClose(PreparedStatement stmt) {
+        if (stmt != null) {
+            try {
+                stmt.close();
+            }
+            catch (SQLException e) {}
+        }
+    }
+
+    public static void safeClose(ResultSet rs) {
+        if (rs != null) {
+            try {
+                rs.close();
+            }
+            catch (SQLException e) {}
+        }
     }
 
 }

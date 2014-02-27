@@ -1,5 +1,7 @@
 package shared.model;
 
+import com.thoughtworks.xstream.annotations.XStreamAlias;
+
 /**
  * Created with IntelliJ IDEA.
  * User: Steven
@@ -7,6 +9,7 @@ package shared.model;
  * Time: 3:18 PM
  * To change this template use File | Settings | File Templates.
  */
+
 public class User {
 
     /**
@@ -42,6 +45,7 @@ public class User {
     /**
      * The number of records indexed by the user
      */
+    @XStreamAlias("indexedrecords")
     private int indexedRecords;
 
     /**

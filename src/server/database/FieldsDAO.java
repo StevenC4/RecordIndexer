@@ -61,7 +61,6 @@ public class FieldsDAO {
             while (rs.next()) {
                 Field field = new Field();
                 field.setFieldId(rs.getInt("field_id"));
-                field.setPosition(rs.getInt("position"));
                 field.setProjectId(rs.getInt("project_id"));
                 field.setxCoord(rs.getInt("x_coord"));
                 field.setWidth(rs.getInt("width"));
@@ -89,18 +88,17 @@ public class FieldsDAO {
         logger.entering("server.database.FieldsDAO", "add");
 
         String query = "INSERT INTO fields" +
-                "(position, project_id, x_coord, width, help_html, known_data) VALUES" +
-                "(?,?,?,?,?,?)";
+                "(project_id, x_coord, width, help_html, known_data) VALUES" +
+                "(?,?,?,?,?)";
 
         try {
             PreparedStatement statement = db.getConnection().prepareStatement(query);
 
-            statement.setInt(1, field.getPosition());
-            statement.setInt(2, field.getProjectId());
-            statement.setInt(3, field.getxCoord());
-            statement.setInt(4, field.getWidth());
-            statement.setString(5, field.getHelpHTML());
-            statement.setString(6, field.getKnownData());
+            statement.setInt(1, field.getProjectId());
+            statement.setInt(2, field.getxCoord());
+            statement.setInt(3, field.getWidth());
+            statement.setString(4, field.getHelpHTML());
+            statement.setString(5, field.getKnownData());
 
             statement.executeUpdate();
         } catch (Exception e) {
@@ -121,25 +119,23 @@ public class FieldsDAO {
         logger.entering("server.database.FieldsDAO", "update");
 
         String query = "UPDATE fields SET " +
-                "position = ?, " +
                 "project_id = ?, " +
                 "x_coord = ?, " +
                 "width = ? " +
                 "help_html = ? " +
                 "known_data = ? " +
                 "WHERE field_id = ?" +
-                "(?,?,?,?,?)";
+                "(?,?,?,?,?,?)";
 
         try {
             PreparedStatement statement = db.getConnection().prepareStatement(query);
 
-            statement.setInt(1, field.getPosition());
-            statement.setInt(2, field.getProjectId());
-            statement.setInt(3, field.getxCoord());
-            statement.setInt(4, field.getWidth());
-            statement.setString(5, field.getHelpHTML());
-            statement.setString(6, field.getKnownData());
-            statement.setInt(7, field.getFieldId());
+            statement.setInt(1, field.getProjectId());
+            statement.setInt(2, field.getxCoord());
+            statement.setInt(3, field.getWidth());
+            statement.setString(4, field.getHelpHTML());
+            statement.setString(5, field.getKnownData());
+            statement.setInt(6, field.getFieldId());
 
             statement.executeUpdate();
         } catch (Exception e) {
@@ -173,5 +169,63 @@ public class FieldsDAO {
 
         logger.exiting("server.database.FieldsDAO", "delete");
     }
-    
+
+    public void deleteAll() throws DatabaseException {
+
+        logger.entering("server.database.FieldsDAO", "deleteAll");
+
+        String query = "DELETE FROM fields";
+        String resetIncrement = "UPDATE sqlite_sequence SET seq=? WHERE name=?";
+
+        try {
+            PreparedStatement statement = db.getConnection().prepareStatement(query);
+            statement.executeUpdate();
+            statement = db.getConnection().prepareStatement(resetIncrement);
+            statement.setInt(1, 0);
+            statement.setString(2, "fields");
+            statement.executeUpdate();
+        } catch (Exception e) {
+            throw new DatabaseException(e.getMessage(), e);
+        }
+
+        logger.exiting("server.database.FieldsDAO", "deleteAll");
+    }
+
+    /**
+     * Gets fields corresponding to the project ID.
+     *
+     * @param projectId the project id
+     * @return the fields
+     * @throws DatabaseException the database exception
+     */
+    public List<Field> getFields(int projectId) throws DatabaseException {
+        return null;
+    }
+
+    public void addList(List<Field> fieldList) throws DatabaseException{
+
+        logger.entering("server.database.FieldsDAO", "addList");
+
+
+        try {
+            for (int i = 0; i < fieldList.size(); i++) {
+                String query = "INSERT INTO fields" +
+                        "(project_id, x_coord, width, help_html, known_data) VALUES" +
+                        "(?,?,?,?,?)";
+                PreparedStatement statement = db.getConnection().prepareStatement(query);
+
+                statement.setInt(1, fieldList.get(i).getProjectId());
+                statement.setInt(2, fieldList.get(i).getxCoord());
+                statement.setInt(3, fieldList.get(i).getWidth());
+                statement.setString(4, fieldList.get(i).getHelpHTML());
+                statement.setString(5, fieldList.get(i).getKnownData());
+
+                statement.executeUpdate();
+            }
+        } catch (Exception e) {
+            throw new DatabaseException(e.getMessage(), e);
+        }
+
+        logger.exiting("server.database.FieldsDAO", "addList");
+    }
 }
