@@ -1,7 +1,10 @@
 package client.communication;
 
 import client.ClientException;
+import com.thoughtworks.xstream.*;
 import shared.communication.*;
+
+import java.net.URL;
 
 /**
  * Created with IntelliJ IDEA.
@@ -15,7 +18,11 @@ public class ClientCommunicator {
     /**
      * Instantiates a new ClientCommunicator.
      */
+
+    private XStream xmlStream;
+
     public ClientCommunicator() {
+        xmlStream = new XStream();
     }
 
     /**
@@ -115,6 +122,12 @@ public class ClientCommunicator {
     private Object doGet(String urlPath) throws ClientException {
         // Make HTTP GET request to the specified URL,
         // and return the object returned by the server
+        try {
+            URL url = new URL(urlPath);
+        } catch (Exception e) {
+
+        }
+
         return null;
     }
 
@@ -125,9 +138,10 @@ public class ClientCommunicator {
      * @param postData the data being posted
      * @throws ClientException
      */
-    private void doPost(String urlPath, Object postData) throws ClientException {
+    private Object doPost(String urlPath, Object postData) throws ClientException {
         // Make HTTP POST request to the specified URL,
         // passing in the specified postData object
+        return null;
     }
 
 }
