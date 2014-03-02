@@ -134,13 +134,14 @@ public class BatchesManager {
      * @param projectId the project id
      * @throws ModelException the model exception
      */
-    public static void getSampleImage(int projectId) throws ModelException {
+    public static String getSampleImage(int projectId) throws ModelException {
         Database db = new Database();
 
         try {
             db.startTransaction();
-            db.getBatchesDAO().getSampleImage(projectId);
+            String path = db.getBatchesDAO().getSampleImage(projectId);
             db.endTransaction(true);
+            return path;
         } catch (DatabaseException e) {
             db.endTransaction(false);
             throw new ModelException(e.getMessage(), e);

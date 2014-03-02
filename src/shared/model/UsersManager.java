@@ -120,17 +120,21 @@ public class UsersManager {
      * @param password the password
      * @throws ModelException the model exception
      */
-    public static void validateUser(String username, String password) throws ModelException {
+    public static boolean validateUser(String username, String password) throws ModelException {
         Database db = new Database();
+
+        boolean validated;
 
         try {
             db.startTransaction();
-            db.getUsersDAO().validateUser(username, password);
+            validated = db.getUsersDAO().validateUser(username, password);
             db.endTransaction(true);
         } catch (DatabaseException e) {
             db.endTransaction(false);
             throw new ModelException(e.getMessage(), e);
         }
+
+        return validated;
     }
 
     public static void deleteAllUsers() throws ModelException {

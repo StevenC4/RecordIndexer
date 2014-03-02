@@ -97,7 +97,8 @@ public class Server {
         server.start();
     }
 
-    private HttpHandler validateUserHandler = new HttpHandler() {
+    private HttpHandler validateUserHandler = new ValidateUserHandler();
+    /*HttpHandler() {
 
         @Override
         public void handle(HttpExchange exchange) throws IOException {
@@ -111,7 +112,7 @@ public class Server {
 
         }
     };
-
+*/
     private HttpHandler getProjectsHandler = new HttpHandler() {
 
         @Override

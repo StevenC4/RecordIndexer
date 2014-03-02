@@ -1,9 +1,11 @@
 package client.communication;
 
 import client.ClientException;
-import com.thoughtworks.xstream.*;
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.xml.DomDriver;
 import shared.communication.*;
 
+import java.net.HttpURLConnection;
 import java.net.URL;
 
 /**
@@ -22,7 +24,7 @@ public class ClientCommunicator {
     private XStream xmlStream;
 
     public ClientCommunicator() {
-        xmlStream = new XStream();
+        xmlStream = new XStream(new DomDriver());
     }
 
     /**
@@ -124,6 +126,9 @@ public class ClientCommunicator {
         // and return the object returned by the server
         try {
             URL url = new URL(urlPath);
+            HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+
+
         } catch (Exception e) {
 
         }
@@ -141,6 +146,14 @@ public class ClientCommunicator {
     private Object doPost(String urlPath, Object postData) throws ClientException {
         // Make HTTP POST request to the specified URL,
         // passing in the specified postData object
+        try {
+            URL url = new URL(urlPath);
+            HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+
+        } catch (Exception e) {
+
+        }
+
         return null;
     }
 

@@ -21,6 +21,10 @@ public class Operation_Result {
         result = null;
     }
 
+    public Operation_Result(String result) {
+        this.result = result;
+    }
+
     /**
      * Gets result.
      *

@@ -14,37 +14,13 @@ public class ValidateUser_Params {
     /**
      * The username
      */
-    private String username;
-
-    /**
-     * The password
-     */
-    private String password;
+    private User user;
 
     /**
      * Instantiates a new ValidateUser_Params object.
      */
     public ValidateUser_Params() {
-        username = null;
-        password = null;
-    }
-
-    /**
-     * Gets username.
-     *
-     * @return the username
-     */
-    public String getUsername() {
-        return username;
-    }
-
-    /**
-     * Gets password.
-     *
-     * @return the password
-     */
-    public String getPassword() {
-        return password;
+        user = null;
     }
 
     /**
@@ -53,7 +29,11 @@ public class ValidateUser_Params {
      * @param user the user
      */
     public void setUser(User user) {
-        username = user.getUsername();
-        password = user.getPassword();
+        this.user = user;
     }
+
+    public User getUser() {
+        return user;
+    }
+
 }

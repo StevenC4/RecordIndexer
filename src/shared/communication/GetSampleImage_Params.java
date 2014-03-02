@@ -11,16 +11,7 @@ import shared.model.User;
  */
 public class GetSampleImage_Params {
 
-    /**
-     * The username
-     */
-    private String username;
-
-    /**
-     * The password
-     */
-    private String password;
-
+    private User user;
     /**
      * The project ID
      */
@@ -30,8 +21,7 @@ public class GetSampleImage_Params {
      * Instantiates a new GetSampleImage_Params object.
      */
     public GetSampleImage_Params() {
-        username = null;
-        password = null;
+        user = new User();
         projectId = -1;
     }
 
@@ -40,17 +30,8 @@ public class GetSampleImage_Params {
      *
      * @return the username
      */
-    public String getUsername() {
-        return username;
-    }
-
-    /**
-     * Gets password.
-     *
-     * @return the password
-     */
-    public String getPassword() {
-        return password;
+    public User getUser() {
+        return user;
     }
 
     /**
@@ -68,8 +49,7 @@ public class GetSampleImage_Params {
      * @param user the user
      */
     public void setUser(User user) {
-        username = user.getUsername();
-        password = user.getPassword();
+        this.user = user;
     }
 
     /**
