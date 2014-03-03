@@ -30,7 +30,11 @@ public class DownloadBatchHandler implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         DownloadBatch_Params params = (DownloadBatch_Params)xmlStream.fromXML(exchange.getRequestBody());
-        Operation_Result result;
+
+        int connectionStatus = HttpURLConnection.HTTP_INTERNAL_ERROR;
+        int statusInt = -1;
+        Operation_Result result = null;
+
         StringBuilder sb;
         String resultString;
 
@@ -39,7 +43,6 @@ public class DownloadBatchHandler implements HttpHandler {
             if (validated) {
                 sb = new StringBuilder();
 
-                // Does user have a batch assigned to them?
                 if (usersManager.getCurrentBatch(params.getUser()) != -1) {
                     throw new Exception("User already has a batch checked out.");
                 }
@@ -70,15 +73,18 @@ public class DownloadBatchHandler implements HttpHandler {
             } else {
                 resultString = "FAILED\n";
             }
+
             result = new Operation_Result(resultString);
+            connectionStatus = HttpURLConnection.HTTP_OK;
+            statusInt = 0;
         } catch (Exception e) {
-            exchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, -1);
             result = new Operation_Result("FAILED\n");
+            connectionStatus = HttpURLConnection.HTTP_INTERNAL_ERROR;
+            statusInt = -1;
+        } finally {
+            exchange.sendResponseHeaders(connectionStatus, statusInt);
             xmlStream.toXML(result, exchange.getResponseBody());
             exchange.getResponseBody().close();
         }
-        exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
-        xmlStream.toXML(result, exchange.getResponseBody());
-        exchange.getResponseBody().close();
     }
 }

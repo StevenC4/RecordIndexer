@@ -34,9 +34,13 @@ public class SearchHandler implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         Search_Params params = (Search_Params)xmlStream.fromXML(exchange.getRequestBody());
-        Operation_Result result;
         StringBuilder sb;
         String resultString;
+
+        Operation_Result result = null;
+        int httpStatus = HttpURLConnection.HTTP_INTERNAL_ERROR;
+        int statusInt = -1;
+
         try {
             boolean validated = usersManager.validateUser(params.getUser().getUsername(), params.getUser().getPassword());
             if (validated) {
@@ -60,14 +64,16 @@ public class SearchHandler implements HttpHandler {
                 resultString = "FAILED\n";
             }
             result = new Operation_Result(resultString);
+            httpStatus = HttpURLConnection.HTTP_OK;
+            statusInt = 0;
         } catch (Exception e) {
-            exchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, -1);
             result = new Operation_Result("FAILED\n");
+            httpStatus = HttpURLConnection.HTTP_INTERNAL_ERROR;
+            statusInt = -1;
+        } finally {
+            exchange.sendResponseHeaders(httpStatus, statusInt);
             xmlStream.toXML(result, exchange.getResponseBody());
             exchange.getResponseBody().close();
         }
-        exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
-        xmlStream.toXML(result, exchange.getResponseBody());
-        exchange.getResponseBody().close();
     }
 }
