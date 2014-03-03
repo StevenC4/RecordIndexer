@@ -11,16 +11,7 @@ import shared.model.User;
  */
 public class SubmitBatch_Params {
 
-    /**
-     * The username
-     */
-    private String username;
-
-    /**
-     * The password
-     */
-    private String password;
-
+    private User user;
     /**
      * The ID of the batch being submitted
      */
@@ -35,28 +26,13 @@ public class SubmitBatch_Params {
      * Instantiates a new SubmitBatch_Params object.
      */
     public SubmitBatch_Params() {
-        username = null;
-        password = null;
+        user = null;
         batchId = -1;
         fieldValues = null;
     }
 
-    /**
-     * Gets username.
-     *
-     * @return the username
-     */
-    public String getUsername() {
-        return username;
-    }
-
-    /**
-     * Gets password.
-     *
-     * @return the password
-     */
-    public String getPassword() {
-        return password;
+    public User getUser() {
+        return user;
     }
 
     /**
@@ -83,8 +59,7 @@ public class SubmitBatch_Params {
      * @param user the user
      */
     public void setUser(User user) {
-        username = user.getUsername();
-        password = user.getPassword();
+        this.user = user;
     }
 
     /**

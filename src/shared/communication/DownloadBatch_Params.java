@@ -22,7 +22,7 @@ public class DownloadBatch_Params {
      * Instantiates a new DownloadBatch_Params object.
      */
     public DownloadBatch_Params() {
-        user = new User();
+        user = null;
         projectId = -1;
     }
 

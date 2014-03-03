@@ -11,15 +11,7 @@ import shared.model.User;
  */
 public class Search_Params {
 
-    /**
-     * The username
-     */
-    private String username;
-
-    /**
-     * The password
-     */
-    private String password;
+    private User user;
 
     /**
      * A comma separated string of the integers corresponding to the fields on which to search
@@ -35,28 +27,13 @@ public class Search_Params {
      * Instantiates a new Search_Params object.
      */
     public Search_Params() {
-        username = null;
-        password = null;
+        user = null;
         fields = null;
         searchValues = null;
     }
 
-    /**
-     * Gets username.
-     *
-     * @return the username
-     */
-    public String getUsername() {
-        return username;
-    }
-
-    /**
-     * Gets password.
-     *
-     * @return the password
-     */
-    public String getPassword() {
-        return password;
+    public User getUser() {
+        return user;
     }
 
     /**
@@ -83,8 +60,7 @@ public class Search_Params {
      * @param user the user
      */
     public void setUser(User user) {
-        username = user.getUsername();
-        password = user.getPassword();
+        this.user = user;
     }
 
     /**

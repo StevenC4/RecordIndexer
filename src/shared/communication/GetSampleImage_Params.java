@@ -21,7 +21,7 @@ public class GetSampleImage_Params {
      * Instantiates a new GetSampleImage_Params object.
      */
     public GetSampleImage_Params() {
-        user = new User();
+        user = null;
         projectId = -1;
     }
 

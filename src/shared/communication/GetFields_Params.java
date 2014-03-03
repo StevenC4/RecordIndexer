@@ -11,15 +11,7 @@ import shared.model.User;
  */
 public class GetFields_Params {
 
-    /**
-     * The username
-     */
-    private String username;
-
-    /**
-     * The password
-     */
-    private String password;
+    private User user;
 
     /**
      * The project ID
@@ -30,27 +22,12 @@ public class GetFields_Params {
      * Instantiates a new GetFields_Params object.
      */
     public GetFields_Params() {
-        username = null;
-        password = null;
+        user = null;
         projectId = -1;
     }
 
-    /**
-     * Gets username.
-     *
-     * @return the username
-     */
-    public String getUsername() {
-        return username;
-    }
-
-    /**
-     * Gets password.
-     *
-     * @return the password
-     */
-    public String getPassword() {
-        return password;
+    public User getUser() {
+        return user;
     }
 
     /**
@@ -68,8 +45,7 @@ public class GetFields_Params {
      * @param user the user
      */
     public void setUser(User user) {
-        username = user.getUsername();
-        password = user.getPassword();
+        this.user = user;
     }
 
     /**
