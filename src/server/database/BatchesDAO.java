@@ -238,7 +238,7 @@ public class BatchesDAO {
 
     public void addList(List<Batch> batchList) throws DatabaseException {
 
-        logger.entering("server.database.BatchesDAO", "add");
+        logger.entering("server.database.BatchesDAO", "addList");
 
         try {
             for (int i = 0; i < batchList.size(); i++) {
@@ -257,6 +257,34 @@ public class BatchesDAO {
             throw new DatabaseException(e.getMessage(), e);
         }
 
-        logger.exiting("server.database.BatchesDAO", "add");
+        logger.exiting("server.database.BatchesDAO", "addList");
+    }
+
+    public Batch getNextAvailableBatch(int projectId) throws DatabaseException {
+        logger.entering("server.database.BatchesDAO", "getNextAvailableBatch");
+
+        Batch batch;
+
+        try {
+            String query = "SELECT * FROM batches WHERE project_id=? AND status=?";
+                    PreparedStatement statement = db.getConnection().prepareStatement(query);
+
+            statement.setInt(1, projectId);
+            statement.setString(2, "new");
+
+            ResultSet rs = statement.executeQuery();
+            if (rs.next()) {
+                batch = new Batch(rs.getInt("batch_id"), rs.getInt("project_id"), rs.getString("path"), rs.getString("status"));
+            } else {
+                throw new Exception("There are no new batches associated with this project");
+            }
+
+        } catch (Exception e) {
+            throw new DatabaseException(e.getMessage(), e);
+        }
+
+        logger.exiting("server.database.BatchesDAO", "getNextAvailableBatch");
+
+        return batch;
     }
 }

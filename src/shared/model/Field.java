@@ -40,6 +40,7 @@ public class Field {
      * The path of the document containing known data for the field
      */
     private String knownData;
+    private int position;
 
     /**
      * Instantiates a new Field with defauly values.
@@ -47,6 +48,7 @@ public class Field {
     public Field() {
         setFieldId(-1);
         setTitle(null);
+        setPosition(-1);
         setProjectId(-1);
         setxCoord(-1);
         setWidth(-1);
@@ -64,9 +66,10 @@ public class Field {
      * @param helpHTML the HTML page containing the help instructions for the field
      * @param knownData the known data for the particular field
      */
-    public Field(int fieldId, String title, int projectId, int xCoord, int width, String helpHTML, String knownData) {
+    public Field(int fieldId, String title, int position, int projectId, int xCoord, int width, String helpHTML, String knownData) {
         setFieldId(fieldId);
         setTitle(title);
+        setPosition(position);
         setProjectId(projectId);
         setxCoord(xCoord);
         setWidth(width);
@@ -188,5 +191,13 @@ public class Field {
      */
     public void setKnownData(String knownData) {
         this.knownData = knownData;
+    }
+
+    public int getPosition() {
+        return position;
+    }
+
+    public void setPosition(int position) {
+        this.position = position;
     }
 }

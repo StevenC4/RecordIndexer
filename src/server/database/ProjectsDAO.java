@@ -191,7 +191,6 @@ public class ProjectsDAO {
     public void addList(List<Project> projectList) throws DatabaseException {
         logger.entering("server.database.ProjectsDAO", "addList");
 
-
         try {
             for (int i = 0; i < projectList.size(); i++) {
                 String query = "INSERT INTO projects" +
@@ -211,5 +210,30 @@ public class ProjectsDAO {
         }
 
         logger.exiting("server.database.ProjectsDAO", "addList");
+    }
+
+    public Project getProjectById(int projectId) throws DatabaseException {
+        logger.entering("server.database.ProjectsDAO", "getProjectById");
+
+        Project project;
+
+        try {
+            String query = "SELECT * FROM projects WHERE project_id=?";
+            PreparedStatement statement = db.getConnection().prepareStatement(query);
+            statement.setInt(1, projectId);
+
+            ResultSet rs = statement.executeQuery();
+            if (rs.next()) {
+                project = new Project(rs.getInt("project_id"), rs.getString("title"), rs.getInt("records_per_image"), rs.getInt("first_y_coord"), rs.getInt("record_height"));
+            } else {
+                throw new Exception("No such project found in the database");
+            }
+        } catch (Exception e) {
+            throw new DatabaseException(e.getMessage(), e);
+        }
+
+        logger.exiting("server.database.ProjectsDAO", "getProjectById");
+
+        return project;
     }
 }

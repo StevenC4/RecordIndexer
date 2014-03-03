@@ -262,4 +262,34 @@ public class UsersDAO {
 
         logger.exiting("server.database.UsersDAO", "addList");
     }
+
+    public int getCurrentBatch(User user) throws DatabaseException {
+        logger.entering("server.database.UsersDAO", "getCurrentBatch");
+
+        int currentBatch;
+
+        try {
+            String query = "SELECT current_batch from user WHERE username=? AND password=?";
+            PreparedStatement statement = db.getConnection().prepareStatement(query);
+
+            statement.setString(1, user.getUsername());
+            statement.setString(2, user.getPassword());
+
+            statement.executeUpdate();
+
+            ResultSet rs = statement.executeQuery();
+            if (rs.next()) {
+                currentBatch = rs.getInt("current_batch");
+            } else {
+                throw new Exception("There are not projects associated with the given user");
+            }
+
+        } catch (Exception e) {
+            throw new DatabaseException(e.getMessage(), e);
+        }
+
+        logger.exiting("server.database.UsersDAO", "getCurrentBatch");
+
+        return currentBatch;
+    }
 }

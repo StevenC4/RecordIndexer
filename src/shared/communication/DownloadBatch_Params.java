@@ -11,15 +11,7 @@ import shared.model.User;
  */
 public class DownloadBatch_Params {
 
-    /**
-     * The username
-     */
-    private String username;
-
-    /**
-     * The password
-     */
-    private String password;
+    private User user;
 
     /**
      * The project ID
@@ -30,8 +22,7 @@ public class DownloadBatch_Params {
      * Instantiates a new DownloadBatch_Params object.
      */
     public DownloadBatch_Params() {
-        username = null;
-        password = null;
+        user = new User();
         projectId = -1;
     }
 
@@ -40,19 +31,9 @@ public class DownloadBatch_Params {
      *
      * @return the username
      */
-    public String getUsername() {
-        return username;
+    public User getUser() {
+        return user;
     }
-
-    /**
-     * Gets password.
-     *
-     * @return the password
-     */
-    public String getPassword() {
-        return password;
-    }
-
     /**
      * Gets project id.
      *
@@ -68,8 +49,7 @@ public class DownloadBatch_Params {
      * @param user the user
      */
     public void setUser(User user) {
-        username = user.getUsername();
-        password = user.getPassword();
+        this.user = user;
     }
 
     /**

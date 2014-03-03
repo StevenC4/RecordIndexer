@@ -160,4 +160,18 @@ public class BatchesManager {
             throw new ModelException(e.getMessage(), e);
         }
     }
+
+    public Batch getNextAvailableBatch(int projectId) throws ModelException {
+        Database db = new Database();
+
+        try {
+            db.startTransaction();
+            Batch batch = db.getBatchesDAO().getNextAvailableBatch(projectId);
+            db.endTransaction(true);
+            return batch;
+        } catch (DatabaseException e) {
+            db.endTransaction(false);
+            throw new ModelException(e.getMessage(), e);
+        }
+    }
 }

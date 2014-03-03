@@ -206,19 +206,20 @@ public class FieldsDAO {
 
         logger.entering("server.database.FieldsDAO", "addList");
 
-
         try {
             for (int i = 0; i < fieldList.size(); i++) {
                 String query = "INSERT INTO fields" +
-                        "(project_id, x_coord, width, help_html, known_data) VALUES" +
-                        "(?,?,?,?,?)";
+                        "(project_id, title, position, x_coord, width, help_html, known_data) VALUES" +
+                        "(?,?,?,?,?,?,?)";
                 PreparedStatement statement = db.getConnection().prepareStatement(query);
 
                 statement.setInt(1, fieldList.get(i).getProjectId());
-                statement.setInt(2, fieldList.get(i).getxCoord());
-                statement.setInt(3, fieldList.get(i).getWidth());
-                statement.setString(4, fieldList.get(i).getHelpHTML());
-                statement.setString(5, fieldList.get(i).getKnownData());
+                statement.setString(2, fieldList.get(i).getTitle());
+                statement.setInt(3, fieldList.get(i).getPosition());
+                statement.setInt(4, fieldList.get(i).getxCoord());
+                statement.setInt(5, fieldList.get(i).getWidth());
+                statement.setString(6, fieldList.get(i).getHelpHTML());
+                statement.setString(7, fieldList.get(i).getKnownData());
 
                 statement.executeUpdate();
             }
@@ -227,5 +228,34 @@ public class FieldsDAO {
         }
 
         logger.exiting("server.database.FieldsDAO", "addList");
+    }
+
+    public List<Field> getProjectFields(int projectId) throws DatabaseException {
+        logger.entering("server.database.FieldsDAO", "getProjectFields");
+
+        List<Field> fields;
+
+        try {
+            String query = "SELECT * FROM fields WHERE project_id=?";
+            PreparedStatement statement = db.getConnection().prepareStatement(query);
+            statement.setInt(1, projectId);
+
+            ResultSet rs = statement.executeQuery();
+            if (rs.next()) {
+                fields = new ArrayList<Field>();
+                while (rs.next()) {
+                    fields.add(new Field(rs.getInt("field_id"), rs.getString("title"), rs.getInt("position"), rs.getInt("project_id"),
+                            rs.getInt("x_coord"), rs.getInt("width"), rs.getString("html_help"), rs.getString("known_data")));
+                }
+            } else {
+                throw new Exception("Invalid project ID");
+            }
+        } catch (Exception e) {
+            throw new DatabaseException(e.getMessage(), e);
+        }
+
+        logger.exiting("server.database.FieldsDAO", "getProjectFields");
+
+        return fields;
     }
 }

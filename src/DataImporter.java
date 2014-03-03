@@ -94,8 +94,7 @@ public class DataImporter {
             String email = ((Element)userElement.getElementsByTagName("email").item(0)).getTextContent();
             int indexedrecords = Integer.parseInt(((Element)userElement.getElementsByTagName("indexedrecords").item(0)).getTextContent());
 
-//            User user = new User(i + 1, username, password, firstname, lastname, email, indexedrecords);
-            userList.add(new User(i + 1, username, password, firstname, lastname, email, indexedrecords));
+            userList.add(new User(i + 1, username, password, firstname, lastname, email, indexedrecords, -1));
         }
     }
 
@@ -113,7 +112,6 @@ public class DataImporter {
             int firstYCoord = Integer.parseInt(projectElement.getElementsByTagName("firstycoord").item(0).getTextContent());
             int recordHeight = Integer.parseInt(projectElement.getElementsByTagName("recordheight").item(0).getTextContent());
 
-//            Project project = new Project(projectId, projectTitle, recordsPerImage, firstYCoord, recordHeight);
             projectList.add(new Project(projectId, projectTitle, recordsPerImage, firstYCoord, recordHeight));
 
             NodeList fields = projectElement.getElementsByTagName("field");
@@ -143,8 +141,7 @@ public class DataImporter {
                 knownData = fieldElement.getElementsByTagName("knowndata").item(0).getTextContent();
             }
 
-//            Field field = new Field(fieldId, fieldTitle, projectId, xCoord, width, helpHtml, knownData);
-            fieldList.add(new Field(fieldId, fieldTitle, projectId, xCoord, width, helpHtml, knownData));
+            fieldList.add(new Field(fieldId, fieldTitle, i + 1, projectId, xCoord, width, helpHtml, knownData));
 
             fieldIds.add(fieldId);
             fieldId++;
@@ -158,7 +155,6 @@ public class DataImporter {
             Element imageElement = (Element)images.item(i);
             String imagePath = imageElement.getElementsByTagName("file").item(0).getTextContent();
 
-//            Batch batch = new Batch(batchId, projectId, imagePath, "new");
             batchList.add(new Batch(batchId, projectId, imagePath, "new"));
 
             NodeList records = imageElement.getElementsByTagName("values");
@@ -176,7 +172,6 @@ public class DataImporter {
             for (int j = 0; j < values.getLength(); j++) {
                 String valueString = values.item(j).getTextContent();
 
-//                Value value = new Value(valueId, projectId, fieldIds.get(j), batchId, recordId, valueString);
                 valueList.add(new Value(valueId, projectId, fieldIds.get(j), batchId, recordId, valueString));
                 valueId++;
             }

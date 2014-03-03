@@ -45,8 +45,9 @@ public class User {
     /**
      * The number of records indexed by the user
      */
-    @XStreamAlias("indexedrecords")
     private int indexedRecords;
+
+    private int currentBatch;
 
     /**
      * Instantiates a new User with default values.
@@ -59,8 +60,8 @@ public class User {
         setLastName(null);
         setEmail(null);
         setIndexedRecords(-1);
+        setCurrentBatch(-1);
     }
-
     /**
      * Instantiates a new User.
      *
@@ -72,7 +73,7 @@ public class User {
      * @param email the user's email address
      * @param indexedRecords the number records indexed by the user
      */
-    public User(int userId, String username, String password, String firstName, String lastName, String email, int indexedRecords) {
+    public User(int userId, String username, String password, String firstName, String lastName, String email, int indexedRecords, int currentBatch) {
         setUserId(userId);
         setUsername(username);
         setPassword(password);
@@ -80,6 +81,7 @@ public class User {
         setLastName(lastName);
         setEmail(email);
         setIndexedRecords(indexedRecords);
+        setCurrentBatch(currentBatch);
     }
 
     /**
@@ -206,5 +208,13 @@ public class User {
      */
     public void setIndexedRecords(int indexedRecords) {
         this.indexedRecords = indexedRecords;
+    }
+
+    public int getCurrentBatch() {
+        return currentBatch;
+    }
+
+    public void setCurrentBatch(int currentBatch) {
+        this.currentBatch = currentBatch;
     }
 }

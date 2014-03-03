@@ -142,4 +142,19 @@ public class FieldsManager {
             throw new ModelException(e.getMessage(), e);
         }
     }
+
+    public List<Field> getProjectFields(int projectId) throws ModelException {
+        Database db = new Database();
+
+        try {
+            db.startTransaction();
+            List<Field> fields = db.getFieldsDAO().getProjectFields(projectId);
+            db.endTransaction(true);
+            return fields;
+        }
+        catch (DatabaseException e) {
+            db.endTransaction(false);
+            throw new ModelException(e.getMessage(), e);
+        }
+    }
 }

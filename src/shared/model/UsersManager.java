@@ -165,4 +165,19 @@ public class UsersManager {
             throw new ModelException(e.getMessage(), e);
         }
     }
+
+    public int getCurrentBatch(User user) throws ModelException {
+        Database db = new Database();
+
+        try {
+            db.startTransaction();
+            int currentBatch = db.getUsersDAO().getCurrentBatch(user);
+            db.endTransaction(true);
+            return currentBatch;
+        }
+        catch (DatabaseException e) {
+            db.endTransaction(false);
+            throw new ModelException(e.getMessage(), e);
+        }
+    }
 }

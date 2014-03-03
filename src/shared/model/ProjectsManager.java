@@ -141,4 +141,19 @@ public class ProjectsManager {
             throw new ModelException(e.getMessage(), e);
         }
     }
+
+    public Project getProjectById(int projectId) throws ModelException {
+        Database db = new Database();
+
+        try {
+            db.startTransaction();
+            Project project = db.getProjectsDAO().getProjectById(projectId);
+            db.endTransaction(true);
+            return project;
+        }
+        catch (DatabaseException e) {
+            db.endTransaction(false);
+            throw new ModelException(e.getMessage(), e);
+        }
+    }
 }

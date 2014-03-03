@@ -31,17 +31,19 @@ public class GetProjectsHandler implements HttpHandler {
     public void handle(HttpExchange exchange) throws IOException {
         ValidateUser_Params params = (ValidateUser_Params)xmlStream.fromXML(exchange.getRequestBody());
         Operation_Result result = null;
+        StringBuilder sb;
         String resultString;
         try {
             boolean validated = usersManager.validateUser(params.getUser().getUsername(), params.getUser().getPassword());
             if (validated) {
                 List<Project> projects = projectsManager.getAllProjects();
+                sb = new StringBuilder();
 
-                resultString = "";
                 for (int i = 0; i < projects.size(); i++) {
-                    resultString += projects.get(i).getProjectId() + "\n";
-                    resultString += projects.get(i).getTitle() + "\n";
+                    sb.append(projects.get(i).getProjectId()).append("\n");
+                    sb.append(projects.get(i).getTitle()).append("\n");
                 }
+                resultString = sb.toString();
             } else {
                 resultString = "FAILED\n";
             }
