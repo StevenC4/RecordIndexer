@@ -7,10 +7,12 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
 import shared.communication.GetFields_Params;
 import shared.communication.Operation_Result;
 import shared.communication.ValidateUser_Params;
-import shared.model.UsersManager;
+import shared.model.*;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -23,21 +25,42 @@ public class GetFieldsHandler implements HttpHandler {
 
     private XStream xmlStream = new XStream(new DomDriver());
     UsersManager usersManager = new UsersManager();
+    ProjectsManager projectsManager = new ProjectsManager();
+    FieldsManager fieldsManager = new FieldsManager();
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         GetFields_Params params = (GetFields_Params)xmlStream.fromXML(exchange.getRequestBody());
         Operation_Result result;
+        StringBuilder sb;
         String resultString;
         try {
             boolean validated = usersManager.validateUser(params.getUser().getUsername(), params.getUser().getPassword());
             if (validated) {
-                resultString = "TRUE\n" +
-                        params.getUser().getFirstName() + "\n" +
-                        params.getUser().getLastName() + "\n" +
-                        params.getUser().getIndexedRecords() + "\n";
+                List<Field> fields;
+                sb = new StringBuilder();
+
+
+                int projectId = params.getProjectId();
+                if (projectId != -1) {
+                    fields = fieldsManager.getProjectFields(projectId);
+                } else {
+                    List<Project> projects = projectsManager.getAllProjects();
+                    fields = new ArrayList<Field>();
+                    for (Project project : projects) {
+                        fields.addAll(fieldsManager.getProjectFields(project.getProjectId()));
+                    }
+                }
+
+                for (Field field : fields) {
+                    sb.append(field.getProjectId()).append("\n");
+                    sb.append(field.getFieldId()).append("\n");
+                    sb.append(field.getTitle()).append("\n");
+                }
+
+                resultString = sb.toString();
             } else {
-                resultString = "FALSE\n";
+                resultString = "FAILED\n";
             }
             result = new Operation_Result(resultString);
         } catch (Exception e) {
