@@ -5,13 +5,6 @@ import org.junit.Test;
 import org.junit.Before; 
 import org.junit.After; 
 
-/** 
-* Database Tester. 
-* 
-* @author <Authors name> 
-* @since <pre>Feb 12, 2014</pre> 
-* @version 1.0 
-*/ 
 public class DatabaseTest { 
 
     private Database db;
