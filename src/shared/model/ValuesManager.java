@@ -142,4 +142,19 @@ public class ValuesManager {
             throw new ModelException(e.getMessage(), e);
         }
     }
+
+    public int getNextRecordId() throws ModelException {
+        Database db = new Database();
+
+        try {
+            db.startTransaction();
+            int recordId = db.getValuesDAO().getNextRecordId();
+            db.endTransaction(true);
+            return recordId;
+        }
+        catch (DatabaseException e) {
+            db.endTransaction(false);
+            throw new ModelException(e.getMessage(), e);
+        }
+    }
 }

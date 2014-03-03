@@ -174,4 +174,18 @@ public class BatchesManager {
             throw new ModelException(e.getMessage(), e);
         }
     }
+
+    public int getProjectIdByBatchId(int batchId) throws ModelException {
+        Database db = new Database();
+
+        try {
+            db.startTransaction();
+            int projectId = db.getBatchesDAO().getProjectIdByBatchId(batchId);
+            db.endTransaction(true);
+            return projectId;
+        } catch (DatabaseException e) {
+            db.endTransaction(false);
+            throw new ModelException(e.getMessage(), e);
+        }
+    }
 }

@@ -206,7 +206,6 @@ public class ValuesDAO {
 
         logger.entering("server.database.ValuesDAO", "addList");
 
-
         try {
             for (int i = 0; i < valueList.size(); i++) {
                 String query = "INSERT INTO entered_values" +
@@ -227,5 +226,29 @@ public class ValuesDAO {
         }
 
         logger.exiting("server.database.ValuesDAO", "addList");
+    }
+
+    public int getNextRecordId() throws DatabaseException {
+        logger.entering("server.database.ValuesDAO", "getNextRecordId");
+
+        int recordId;
+
+        try {
+            String query = "SELECT MAX(record_id) FROM entered_values";
+            PreparedStatement statement = db.getConnection().prepareStatement(query);
+
+            ResultSet rs = statement.executeQuery();
+            if (rs.next()) {
+                recordId = rs.getInt("record_id") + 1;
+            } else {
+                recordId = 1;
+            }
+        } catch (Exception e) {
+            throw new DatabaseException(e.getMessage(), e);
+        }
+
+        logger.exiting("server.database.ValuesDAO", "getNextRecordId");
+
+        return recordId;
     }
 }

@@ -287,4 +287,30 @@ public class BatchesDAO {
 
         return batch;
     }
+
+    public int getProjectIdByBatchId(int batchId) throws DatabaseException {
+        logger.entering("server.database.BatchesDAO", "getProjectIdByBatchId");
+
+        int projectId;
+
+        try {
+            String query = "SELECT project_id FROM batches WHERE batch_id=?";
+            PreparedStatement statement = db.getConnection().prepareStatement(query);
+            statement.setInt(1, batchId);
+
+            ResultSet rs = statement.executeQuery();
+            if (rs.next()) {
+                projectId = rs.getInt("project_id");
+            } else {
+                throw new Exception("There are no new projects associated with this batch");
+            }
+
+        } catch (Exception e) {
+            throw new DatabaseException(e.getMessage(), e);
+        }
+
+        logger.exiting("server.database.BatchesDAO", "getProjectIdByBatchId");
+
+        return projectId;
+    }
 }
