@@ -313,4 +313,30 @@ public class BatchesDAO {
 
         return projectId;
     }
+
+    public String getPathByBatchId(int batchId) throws DatabaseException {
+        logger.entering("server.database.BatchesDAO", "getPathByBatchId");
+
+        String path;
+
+        try {
+            String query = "SELECT path FROM batches WHERE batch_id=?";
+            PreparedStatement statement = db.getConnection().prepareStatement(query);
+            statement.setInt(1, batchId);
+
+            ResultSet rs = statement.executeQuery();
+            if (rs.next()) {
+                path = rs.getString("path");
+            } else {
+                throw new Exception("There are no image files associated with this batch ID");
+            }
+
+        } catch (Exception e) {
+            throw new DatabaseException(e.getMessage(), e);
+        }
+
+        logger.exiting("server.database.BatchesDAO", "getPathByBatchId");
+
+        return path;
+    }
 }

@@ -251,4 +251,45 @@ public class ValuesDAO {
 
         return recordId;
     }
+
+    public List<Value> searchValues(String fields, String searchValues) throws DatabaseException {
+        logger.entering("server.database.ValuesDAO", "searchValues");
+
+        List<Value> values;
+
+        try {
+            values = new ArrayList<Value>();
+
+            String[] fieldsArray = fields.toLowerCase().split(",");
+            String[] searchValuesArray = searchValues.toLowerCase().split(",");
+
+            String query = "SELECT * FROM entered_values WHERE ";
+
+            for (int i = 0; i < fieldsArray.length; i++) {
+                query += "field_id=? AND LOWER(value)=? ";
+                if (i < fieldsArray.length - 1) {
+                    query += "OR ";
+                }
+            }
+            PreparedStatement statement = db.getConnection().prepareStatement(query);
+
+            for (int i = 0; i < fieldsArray.length; i++) {
+                statement.setInt(2 * i, Integer.parseInt(fieldsArray[i]));
+                statement.setString((2 * i) + 1, searchValuesArray[i]);
+            }
+
+            ResultSet rs = statement.executeQuery();
+            if (rs.next()) {
+                values.add(new Value(rs.getInt("value_id"), rs.getInt("project_id"), rs.getInt("field_id"), rs.getInt("record_id"), rs.getInt("batch_id"), rs.getString("value")));
+            } else {
+                throw new Exception("The search did not turn up any results");
+            }
+        } catch (Exception e) {
+            throw new DatabaseException(e.getMessage(), e);
+        }
+
+        logger.exiting("server.database.ValuesDAO", "searchValues");
+
+        return values;
+    }
 }

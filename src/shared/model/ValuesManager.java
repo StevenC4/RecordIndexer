@@ -157,4 +157,19 @@ public class ValuesManager {
             throw new ModelException(e.getMessage(), e);
         }
     }
+
+    public List<Value> searchValues(String fields, String searchValues) throws ModelException {
+        Database db = new Database();
+
+        try {
+            db.startTransaction();
+            List<Value> values = db.getValuesDAO().searchValues(fields, searchValues);
+            db.endTransaction(true);
+            return values;
+        }
+        catch (DatabaseException e) {
+            db.endTransaction(false);
+            throw new ModelException(e.getMessage(), e);
+        }
+    }
 }

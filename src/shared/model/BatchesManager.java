@@ -188,4 +188,18 @@ public class BatchesManager {
             throw new ModelException(e.getMessage(), e);
         }
     }
+
+    public String getPathByBatchId(int batchId) throws ModelException {
+        Database db = new Database();
+
+        try {
+            db.startTransaction();
+            String path = db.getBatchesDAO().getPathByBatchId(batchId);
+            db.endTransaction(true);
+            return path;
+        } catch (DatabaseException e) {
+            db.endTransaction(false);
+            throw new ModelException(e.getMessage(), e);
+        }
+    }
 }
