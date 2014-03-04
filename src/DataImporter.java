@@ -26,6 +26,8 @@ public class DataImporter {
     private static UsersManager usersManager;
     private static ValuesManager valuesManager;
 
+    private static final String PROJECT_DATA = "project_data";
+
     static int projectId;
     static int batchId;
     static int fieldId;
@@ -51,7 +53,7 @@ public class DataImporter {
             File fileRecordsXml = new File(args[0]);
             File baseDirectory = fileRecordsXml.getParentFile();
 
-            File outputFolder = new File("project_data" + File.separator + baseDirectory.getName());
+            File outputFolder = new File(PROJECT_DATA + File.separator + baseDirectory.getName());
             if (!outputFolder.exists()) {
                 outputFolder.mkdir();
             } else {
@@ -61,7 +63,9 @@ public class DataImporter {
             copyFolder(baseDirectory, outputFolder);
 
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-            File file = new File("project_data/Records/Records.xml");
+
+            String newFilePath = PROJECT_DATA + File.separator + baseDirectory.getName() + File.separator + fileRecordsXml.getName();
+            File file = new File(newFilePath);
             Document doc = builder.parse(file);
             doc.normalizeDocument();
 

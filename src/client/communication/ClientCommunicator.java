@@ -35,7 +35,7 @@ public class ClientCommunicator {
      * @throws ClientException the client exception
      */
     public Operation_Result ValidateUser(ValidateUser_Params params) throws ClientException {
-        return null;
+        return (Operation_Result)doPost("/ValidateUser", params);
     }
 
     /**
@@ -46,7 +46,7 @@ public class ClientCommunicator {
      * @throws ClientException the client exception
      */
     public Operation_Result GetProjects(ValidateUser_Params params) throws ClientException {
-        return null;
+        return (Operation_Result)doPost("/GetProjects", params);
     }
 
     /**
@@ -57,7 +57,7 @@ public class ClientCommunicator {
      * @throws ClientException the client exception
      */
     public Operation_Result GetSampleImage(GetSampleImage_Params params) throws ClientException {
-        return null;
+        return (Operation_Result)doPost("/GetSampleImage", params);
     }
 
     /**
@@ -68,7 +68,7 @@ public class ClientCommunicator {
      * @throws ClientException the client exception
      */
     public Operation_Result DownloadBatch(DownloadBatch_Params params) throws ClientException {
-        return null;
+        return (Operation_Result)doPost("/DownloadBatch", params);
     }
 
     /**
@@ -79,7 +79,7 @@ public class ClientCommunicator {
      * @throws ClientException the client exception
      */
     public Operation_Result SubmitBatch(SubmitBatch_Params params) throws ClientException {
-        return null;
+        return (Operation_Result)doPost("/SubmitBatch", params);
     }
 
     /**
@@ -90,7 +90,7 @@ public class ClientCommunicator {
      * @throws ClientException the client exception
      */
     public Operation_Result GetFields(GetFields_Params params) throws ClientException {
-        return null;
+        return (Operation_Result)doPost("/GetFields", params);
     }
 
     /**
@@ -101,7 +101,7 @@ public class ClientCommunicator {
      * @throws ClientException the client exception
      */
     public Operation_Result Search(Search_Params params) throws ClientException {
-        return null;
+        return (Operation_Result)doPost("/Search", params);
     }
 
     /**
@@ -110,8 +110,9 @@ public class ClientCommunicator {
      * @param params the parameters for validation and downloading the file
      * @return an Operation_Result object containing the result string
      */
-    public Operation_Result DownloadFile(DownloadFile_Params params) {
+    public Operation_Result DownloadFile(DownloadFile_Params params) throws ClientException {
         return null;
+//                (Operation_Result)doGet("/DownloadFile", params);
     }
 
     /**

@@ -127,7 +127,7 @@ public class Database {
         logger.entering("server.database.Database", "startTransaction");
 
         try {
-            assert (connection != null);
+//            assert (connection != null);
             connection = DriverManager.getConnection(DATABASE_URL);
             connection.setAutoCommit(false);
         } catch (Exception e) {

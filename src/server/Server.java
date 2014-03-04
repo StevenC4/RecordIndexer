@@ -83,131 +83,21 @@ public class Server {
 
         server.setExecutor(null); // use the default executor
 
-        server.createContext("/ValidateUser", validateUserHandler);
-        server.createContext("/GetProjects", getProjectsHandler);
-        server.createContext("/GetSampleImage", getSampleImageHandler);
-        server.createContext("/DownloadBatch", downloadBatchHandler);
-        server.createContext("/SubmitBatch", submitBatchHandler);
-        server.createContext("/GetFields", getFieldsHandler);
-        server.createContext("/Search", searchHandler);
-        server.createContext("/DownloadFile", downloadFileHandler);
+        server.createContext("/ValidateUser", new ValidateUserHandler());
+        server.createContext("/GetProjects", new GetProjectsHandler());
+        server.createContext("/GetSampleImage", new GetProjectsHandler());
+        server.createContext("/DownloadBatch", new DownloadBatchHandler());
+        server.createContext("/SubmitBatch", new SubmitBatchHandler());
+        server.createContext("/GetFields", new GetFieldsHandler());
+        server.createContext("/Search", new SearchHandler());
+        server.createContext("/DownloadFile", new DownloadFileHandler());
 
         logger.info("Starting HTTP Server");
 
         server.start();
     }
 
-    private HttpHandler validateUserHandler = new ValidateUserHandler();
-    /*HttpHandler() {
-
-        @Override
-        public void handle(HttpExchange exchange) throws IOException {
-
-            // Process GetAllBatches request
-            // 1. Call model to get a list of all batches
-            // 2. Create a result object
-            // 3. Populate it with the list of batches
-            // 4. Serialize the result object
-            // 5. Return the serialized result object in the response body
-
-        }
-    };
-*/
-    private HttpHandler getProjectsHandler = new HttpHandler() {
-
-        @Override
-        public void handle(HttpExchange exchange) throws IOException {
-
-            // Process AddBatch request
-            // 1. Deserialize the request object from the request body
-            // 2. Extract the new batch object from the request object
-            // 3. Call the model to add the new batch
-
-        }
-    };
-
-    private HttpHandler getSampleImageHandler = new HttpHandler() {
-
-        @Override
-        public void handle(HttpExchange exchange) throws IOException {
-
-            // Process UpdateBatch request
-            // 1. Deserialize the request object from the request body
-            // 2. Extract the batch to be updated from the request object
-            // 3. Call the model to update the batch
-
-        }
-    };
-
-    private HttpHandler downloadBatchHandler = new HttpHandler() {
-
-        @Override
-        public void handle(HttpExchange exchange) throws IOException {
-
-            // Process DeleteBatch request
-            // 1. Deserialize the request object from the request body
-            // 2. Extract the batch to be deleted from the request object
-            // 3. Call the model to delete the batch
-
-        }
-    };
-
-    private HttpHandler submitBatchHandler = new HttpHandler() {
-
-        @Override
-        public void handle(HttpExchange exchange) throws IOException {
-
-            // Process GetAllFields request
-            // 1. Call model to get a list of all fields
-            // 2. Create a result object
-            // 3. Populate it with the list of fields
-            // 4. Serialize the result object
-            // 5. Return the serialized result object in the response body
-
-        }
-    };
-
-    private HttpHandler getFieldsHandler = new HttpHandler() {
-
-        @Override
-        public void handle(HttpExchange exchange) throws IOException {
-
-            // Process AddField request
-            // 1. Deserialize the request object from the request body
-            // 2. Extract the new field object from the request object
-            // 3. Call the model to add the new field
-
-        }
-    };
-
-    private HttpHandler searchHandler = new HttpHandler() {
-
-        @Override
-        public void handle(HttpExchange exchange) throws IOException {
-
-            // Process UpdateField request
-            // 1. Deserialize the request object from the request body
-            // 2. Extract the field to be updated from the request object
-            // 3. Call the model to update the field
-
-        }
-    };
-
-    private HttpHandler downloadFileHandler = new HttpHandler() {
-
-        @Override
-        public void handle(HttpExchange exchange) throws IOException {
-
-            // Process DeleteField request
-            // 1. Deserialize the request object from the request body
-            // 2. Extract the field to be deleted from the request object
-            // 3. Call the model to delete the field
-
-        }
-    };
-
     public static void main(String[] args) {
         new Server().run();
     }
-
 }
