@@ -30,49 +30,49 @@ public class BatchTest {
 
     @Test
     public void testGetBatchId() throws Exception {
-        assertEquals(batchDefault.getBatchId(), -1);
-        assertEquals(batchSet.getBatchId(), batchId);
+        assertEquals(-1, batchDefault.getBatchId());
+        assertEquals(batchId, batchSet.getBatchId());
     }
 
     @Test
     public void testSetBatchId() throws Exception {
         batchDefault.setBatchId(batchId);
-        assertEquals(batchDefault.getBatchId(), batchId);
+        assertEquals(batchId, batchDefault.getBatchId());
     }
 
     @Test
     public void testGetProjectId() throws Exception {
-        assertEquals(batchDefault.getProjectId(), -1);
-        assertEquals(batchSet.getProjectId(), projectId);
+        assertEquals(-1, batchDefault.getProjectId());
+        assertEquals(projectId, batchSet.getProjectId());
     }
 
     @Test
     public void testSetProjectId() throws Exception {
         batchDefault.setProjectId(projectId);
-        assertEquals(batchDefault.getProjectId(), projectId);
+        assertEquals(projectId, batchDefault.getProjectId());
     }
 
     @Test
     public void testGetPath() throws Exception {
         assertNull(batchDefault.getPath());
-        assertEquals(batchSet.getPath(), path);
+        assertEquals(path, batchSet.getPath());
     }
 
     @Test
     public void testSetPath() throws Exception {
         batchDefault.setPath(path);
-        assertEquals(batchDefault.getPath(), path);
+        assertEquals(path, batchDefault.getPath());
     }
 
     @Test
     public void testGetStatus() throws Exception {
         assertNull(batchDefault.getStatus());
-        assertEquals(batchSet.getStatus(), status);
+        assertEquals(status, batchSet.getStatus());
     }
 
     @Test
     public void testSetStatus() throws Exception {
         batchDefault.setStatus(status);
-        assertEquals(batchDefault.getStatus(), status);
+        assertEquals(status, batchDefault.getStatus());
     }
 }

@@ -45,97 +45,97 @@ public class FieldTest {
 
     @Test
     public void testGetFieldId() throws Exception {
-        assertEquals(fieldDefault.getFieldId(), -1);
-        assertEquals(fieldSet.getFieldId(), fieldId);
+        assertEquals(-1, fieldDefault.getFieldId());
+        assertEquals(fieldId, fieldSet.getFieldId());
     }
 
     @Test
     public void testSetFieldId() throws Exception {
         fieldDefault.setFieldId(fieldId);
-        assertEquals(fieldDefault.getFieldId(), fieldId);
+        assertEquals(fieldId, fieldDefault.getFieldId());
     }
 
     @Test
     public void testSetTitle() throws Exception {
         assertNull(fieldDefault.getTitle());
-        assertEquals(fieldSet.getTitle(), title);
+        assertEquals(title, fieldSet.getTitle());
     }
 
     @Test
     public void testGetTitle() throws Exception {
         fieldDefault.setTitle(title);
-        assertEquals(fieldDefault.getTitle(), title);
+        assertEquals(title, fieldDefault.getTitle());
     }
 
     @Test
     public void testGetProjectId() throws Exception {
-        assertEquals(fieldDefault.getProjectId(), -1);
-        assertEquals(fieldSet.getProjectId(), projectId);
+        assertEquals(-1, fieldDefault.getProjectId());
+        assertEquals(projectId, fieldSet.getProjectId());
     }
 
     @Test
     public void testSetProjectId() throws Exception {
         fieldDefault.setProjectId(projectId);
-        assertEquals(fieldDefault.getProjectId(), projectId);
+        assertEquals(projectId, fieldDefault.getProjectId());
     }
 
     @Test
     public void testGetxCoord() throws Exception {
-        assertEquals(fieldDefault.getxCoord(), -1);
-        assertEquals(fieldSet.getxCoord(), xCoord);
+        assertEquals(-1, fieldDefault.getxCoord());
+        assertEquals(xCoord, fieldSet.getxCoord());
     }
 
     @Test
     public void testSetxCoord() throws Exception {
         fieldDefault.setxCoord(xCoord);
-        assertEquals(fieldDefault.getxCoord(), xCoord);
+        assertEquals(xCoord, fieldDefault.getxCoord());
     }
 
     @Test
     public void testGetWidth() throws Exception {
-        assertEquals(fieldDefault.getWidth(), -1);
-        assertEquals(fieldSet.getWidth(), width);
+        assertEquals(-1, fieldDefault.getWidth());
+        assertEquals(width, fieldSet.getWidth());
     }
 
     @Test
     public void testSetWidth() throws Exception {
         fieldDefault.setWidth(width);
-        assertEquals(fieldDefault.getWidth(), width);
+        assertEquals(width, fieldDefault.getWidth());
     }
 
     @Test
     public void testGetHelpHTML() throws Exception {
         assertNull(fieldDefault.getHelpHTML());
-        assertEquals(fieldSet.getHelpHTML(), htmlHelp);
+        assertEquals(htmlHelp, fieldSet.getHelpHTML());
     }
 
     @Test
     public void testSetHelpHTML() throws Exception {
         fieldDefault.setHelpHTML(htmlHelp);
-        assertEquals(fieldDefault.getHelpHTML(), htmlHelp);
+        assertEquals(htmlHelp, fieldDefault.getHelpHTML());
     }
 
     @Test
     public void testGetKnownData() throws Exception {
         assertNull(fieldDefault.getKnownData());
-        assertEquals(fieldSet.getKnownData(), knownData);
+        assertEquals(knownData, fieldSet.getKnownData());
     }
 
     @Test
     public void testSetKnownData() throws Exception {
         fieldDefault.setKnownData(knownData);
-        assertEquals(fieldDefault.getKnownData(), knownData);
+        assertEquals(knownData, fieldDefault.getKnownData());
     }
 
     @Test
     public void testGetPosition() throws Exception {
-        assertEquals(fieldDefault.getPosition(), -1);
-        assertEquals(fieldSet.getPosition(), position);
+        assertEquals(-1, fieldDefault.getPosition());
+        assertEquals(position, fieldSet.getPosition());
     }
 
     @Test
     public void testSetPosition() throws Exception {
         fieldDefault.setPosition(position);
-        assertEquals(fieldDefault.getPosition(), position);
+        assertEquals(position, fieldDefault.getPosition());
     }
 }
