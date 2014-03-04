@@ -4,7 +4,7 @@ import net.lingala.zip4j.core.ZipFile;
 import server.database.Database;
 import shared.model.*;
 
-import java.io.File;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,15 +48,20 @@ public class DataImporter {
             usersManager.deleteAllUsers();
             valuesManager.deleteAllValues();
 
-            String outputFolder = "./project_data";
+            File fileRecordsXml = new File(args[0]);
+            File baseDirectory = fileRecordsXml.getParentFile();
 
-            ZipFile zipFile = new ZipFile(args[0]);
-            zipFile.extractAll(outputFolder);
+            File outputFolder = new File("project_data" + File.separator + baseDirectory.getName());
+            if (!outputFolder.exists()) {
+                outputFolder.mkdir();
+            } else {
+                purgeDirectory(outputFolder);
+            }
 
-            Database db = new Database();
+            copyFolder(baseDirectory, outputFolder);
 
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-            File file = new File("C:/Dropbox/CS240/P1_Record_Indexer/project_data/Records/Records.xml");
+            File file = new File("project_data/Records/Records.xml");
             Document doc = builder.parse(file);
             doc.normalizeDocument();
 
@@ -176,6 +181,39 @@ public class DataImporter {
                 valueId++;
             }
             recordId++;
+        }
+    }
+
+    public static void copyFolder(File src, File dst) throws IOException {
+        if (src.isDirectory()) {
+            if (!dst.exists()) {
+                dst.mkdir();
+            }
+
+            String[] files = src.list();
+            for (String file : files) {
+                File srcFile = new File(src, file);
+                File dstFile = new File(dst, file);
+                copyFolder(srcFile, dstFile);
+            }
+        } else {
+            InputStream in = new FileInputStream(src);
+            OutputStream out = new FileOutputStream(dst);
+
+            byte[] buffer = new byte[1024];
+            int length;
+            while((length = in.read(buffer)) > 0) {
+                out.write(buffer, 0, length);
+            }
+            in.close();
+            out.close();
+        }
+    }
+
+    public static void purgeDirectory(File dir) {
+        for (File file: dir.listFiles()) {
+            if (file.isDirectory()) purgeDirectory(file);
+            file.delete();
         }
     }
 }
