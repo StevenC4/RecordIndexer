@@ -23,6 +23,10 @@ public class ClientCommunicator {
 
     private XStream xmlStream;
 
+    private static final String SERVER_HOST = "localhost";
+    private static final int SERVER_PORT = 8081;
+    private static final String URL_PREFIX = "http://" + SERVER_HOST + ":" + SERVER_PORT;
+
     public ClientCommunicator() {
         xmlStream = new XStream(new DomDriver());
     }
@@ -125,16 +129,24 @@ public class ClientCommunicator {
     private Object doGet(String urlPath) throws ClientException {
         // Make HTTP GET request to the specified URL,
         // and return the object returned by the server
+        Operation_Result result = new Operation_Result();
         try {
-            URL url = new URL(urlPath);
+            URL url = new URL(URL_PREFIX + urlPath);
             HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.connect();
 
-
+            if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                if(connection.getContentLength() == 0) {
+                    result = ((Operation_Result) xmlStream.fromXML(connection.getInputStream()));
+                }
+            } else {
+                throw new ClientException(String.format("doGet failed"));
+            }
         } catch (Exception e) {
-
+            throw new ClientException(String.format("doGet failed: %s", e.getMessage()), e);
         }
-
-        return null;
+        return result;
     }
 
     /**
@@ -147,14 +159,30 @@ public class ClientCommunicator {
     private Object doPost(String urlPath, Object postData) throws ClientException {
         // Make HTTP POST request to the specified URL,
         // passing in the specified postData object
+        Operation_Result result = new Operation_Result();
+
         try {
-            URL url = new URL(urlPath);
+            URL url = new URL(URL_PREFIX + urlPath);
             HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+            connection.setRequestMethod("POST");
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.connect();
+            xmlStream.toXML(postData, connection.getOutputStream());
+            connection.getOutputStream().close();
 
-        } catch (Exception e) {
-
+            if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                int length = connection.getContentLength();
+                if(connection.getContentLength() == -1) {
+                    result = ((Operation_Result)xmlStream.fromXML(connection.getInputStream()));
+                }
+            } else {
+                throw new ClientException(String.format("doPost failed"));
+            }
         }
-
-        return null;
+        catch (Exception e) {
+            throw new ClientException(String.format("doPost failed: %s", e.getMessage()), e);
+        }
+        return result;
     }
 }

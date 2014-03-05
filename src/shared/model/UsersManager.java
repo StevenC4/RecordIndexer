@@ -180,4 +180,19 @@ public class UsersManager {
             throw new ModelException(e.getMessage(), e);
         }
     }
+
+    public User getUserByUsername(String username) throws ModelException {
+        Database db = new Database();
+
+        try {
+            db.startTransaction();
+            User user = db.getUsersDAO().getUserByUsername(username);
+            db.endTransaction(true);
+            return user;
+        }
+        catch (DatabaseException e) {
+            db.endTransaction(false);
+            throw new ModelException(e.getMessage(), e);
+        }
+    }
 }

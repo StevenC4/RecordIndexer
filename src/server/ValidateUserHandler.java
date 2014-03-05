@@ -36,10 +36,11 @@ public class ValidateUserHandler implements HttpHandler {
         try {
             boolean validated = usersManager.validateUser(params.getUser().getUsername(), params.getUser().getPassword());
             if (validated) {
+                User user = usersManager.getUserByUsername(params.getUser().getUsername());
                 resultString = "TRUE\n" +
-                        params.getUser().getFirstName() + "\n" +
-                        params.getUser().getLastName() + "\n" +
-                        params.getUser().getIndexedRecords() + "\n";
+                        user.getFirstName() + "\n" +
+                        user.getLastName() + "\n" +
+                        user.getIndexedRecords() + "\n";
             } else {
                 resultString = "FALSE\n";
             }
@@ -48,8 +49,8 @@ public class ValidateUserHandler implements HttpHandler {
             statusInt = 0;
         } catch (Exception e) {
             result = new Operation_Result("FAILED\n");
-            httpStatus = HttpURLConnection.HTTP_INTERNAL_ERROR;
-            statusInt = -1;
+//            httpStatus = HttpURLConnection.HTTP_INTERNAL_ERROR;
+//            statusInt = -1;
         } finally {
             exchange.sendResponseHeaders(httpStatus, statusInt);
             xmlStream.toXML(result, exchange.getResponseBody());

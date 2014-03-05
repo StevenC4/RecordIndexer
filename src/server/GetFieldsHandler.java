@@ -69,7 +69,7 @@ public class GetFieldsHandler implements HttpHandler {
 
             result = new Operation_Result(resultString);
             httpStatus = HttpURLConnection.HTTP_OK;
-            statusInt = 0;
+            statusInt = -1;
         } catch (Exception e) {
             result = new Operation_Result("FAILED\n");
             httpStatus = HttpURLConnection.HTTP_INTERNAL_ERROR;

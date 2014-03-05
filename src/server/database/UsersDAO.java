@@ -243,8 +243,8 @@ public class UsersDAO {
         try {
             for (int i = 0; i < userList.size(); i++) {
                 String query = "INSERT INTO users" +
-                    "(username, password, first_name, last_name, email, indexed_records) VALUES" +
-                    "(?,?,?,?,?,?)";
+                    "(username, password, first_name, last_name, email, indexed_records, current_batch) VALUES" +
+                    "(?,?,?,?,?,?,?)";
                 PreparedStatement statement = db.getConnection().prepareStatement(query);
 
                 statement.setString(1, userList.get(i).getUsername());
@@ -253,6 +253,7 @@ public class UsersDAO {
                 statement.setString(4, userList.get(i).getLastName());
                 statement.setString(5, userList.get(i).getEmail());
                 statement.setInt(6, userList.get(i).getIndexedRecords());
+                statement.setInt(7, userList.get(i).getCurrentBatch());
 
                 statement.executeUpdate();
             }
@@ -291,5 +292,36 @@ public class UsersDAO {
         logger.exiting("server.database.UsersDAO", "getCurrentBatch");
 
         return currentBatch;
+    }
+
+    public User getUserByUsername(String username) throws DatabaseException {
+        logger.entering("server.database.UsersDAO", "getUserByUsername");
+
+        User user;
+
+        try {
+            String query = "SELECT * from users WHERE username=?";
+            PreparedStatement statement = db.getConnection().prepareStatement(query);
+
+            statement.setString(1, username);
+
+            statement.executeQuery();
+
+            ResultSet rs = statement.executeQuery();
+            if (rs.next()) {
+                user = new User(rs.getInt("user_id"), rs.getString("username"), rs.getString("password"),
+                                rs.getString("first_name"), rs.getString("password"), rs.getString("email"),
+                                rs.getInt("indexed_records"), rs.getInt("current_batch"));
+            } else {
+                throw new Exception("There are no users associated with the given username");
+            }
+
+        } catch (Exception e) {
+            throw new DatabaseException(e.getMessage(), e);
+        }
+
+        logger.exiting("server.database.UsersDAO", "getUserByUsername");
+
+        return user;
     }
 }

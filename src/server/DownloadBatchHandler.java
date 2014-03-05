@@ -69,6 +69,9 @@ public class DownloadBatchHandler implements HttpHandler {
                     }
                 }
 
+                batch.setStatus("checked out");
+                batchesManager.updateBatch(batch);
+
                 resultString = sb.toString();
             } else {
                 resultString = "FAILED\n";
@@ -76,7 +79,7 @@ public class DownloadBatchHandler implements HttpHandler {
 
             result = new Operation_Result(resultString);
             connectionStatus = HttpURLConnection.HTTP_OK;
-            statusInt = 0;
+            statusInt = -1;
         } catch (Exception e) {
             result = new Operation_Result("FAILED\n");
             connectionStatus = HttpURLConnection.HTTP_INTERNAL_ERROR;
