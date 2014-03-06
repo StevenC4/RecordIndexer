@@ -133,8 +133,8 @@ public class UsersDAO {
                 "last_name = ?, " +
                 "email = ?, " +
                 "indexed_records = ?, " +
-                "WHERE user_id = ?" +
-                "(?,?,?,?,?,?,?)";
+                "current_batch = ? " +
+                "WHERE user_id = ?";
 
         try {
             PreparedStatement statement = db.getConnection().prepareStatement(query);
@@ -145,7 +145,8 @@ public class UsersDAO {
             statement.setString(4, user.getLastName());
             statement.setString(5, user.getEmail());
             statement.setInt(6, user.getIndexedRecords());
-            statement.setInt(7, user.getUserId());
+            statement.setInt(7, user.getCurrentBatch());
+            statement.setInt(8, user.getUserId());
 
             statement.executeUpdate();
         } catch (Exception e) {
@@ -270,13 +271,11 @@ public class UsersDAO {
         int currentBatch;
 
         try {
-            String query = "SELECT current_batch from user WHERE username=? AND password=?";
+            String query = "SELECT current_batch from users WHERE username=? AND password=?";
             PreparedStatement statement = db.getConnection().prepareStatement(query);
 
             statement.setString(1, user.getUsername());
             statement.setString(2, user.getPassword());
-
-            statement.executeUpdate();
 
             ResultSet rs = statement.executeQuery();
             if (rs.next()) {

@@ -118,9 +118,8 @@ public class BatchesDAO {
         String query = "UPDATE batches SET " +
                 "project_id = ?, " +
                 "path = ?, " +
-                "status = ?, " +
-                "WHERE batch_id = ?" +
-                "(?,?,?,?)";
+                "status = ? " +
+                "WHERE batch_id = ?";
 
         try {
             PreparedStatement statement = db.getConnection().prepareStatement(query);
@@ -128,6 +127,7 @@ public class BatchesDAO {
             statement.setInt(1, batch.getProjectId());
             statement.setString(2, batch.getPath());
             statement.setString(3, batch.getStatus());
+            statement.setInt(4, batch.getBatchId());
 
             statement.executeUpdate();
         } catch (Exception e) {

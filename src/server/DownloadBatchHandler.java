@@ -31,8 +31,8 @@ public class DownloadBatchHandler implements HttpHandler {
     public void handle(HttpExchange exchange) throws IOException {
         DownloadBatch_Params params = (DownloadBatch_Params)xmlStream.fromXML(exchange.getRequestBody());
 
-        int connectionStatus = HttpURLConnection.HTTP_INTERNAL_ERROR;
-        int statusInt = -1;
+        int httpStatus = HttpURLConnection.HTTP_INTERNAL_ERROR;
+        int length = 0;
         Operation_Result result = null;
 
         StringBuilder sb;
@@ -72,20 +72,22 @@ public class DownloadBatchHandler implements HttpHandler {
                 batch.setStatus("checked out");
                 batchesManager.updateBatch(batch);
 
+                User user = usersManager.getUserByUsername(params.getUser().getUsername());
+                user.setCurrentBatch(batch.getBatchId());
+                usersManager.updateUser(user);
+
                 resultString = sb.toString();
             } else {
                 resultString = "FAILED\n";
             }
 
             result = new Operation_Result(resultString);
-            connectionStatus = HttpURLConnection.HTTP_OK;
-            statusInt = -1;
+            httpStatus = HttpURLConnection.HTTP_OK;
         } catch (Exception e) {
             result = new Operation_Result("FAILED\n");
-            connectionStatus = HttpURLConnection.HTTP_INTERNAL_ERROR;
-            statusInt = -1;
+            httpStatus = HttpURLConnection.HTTP_INTERNAL_ERROR;
         } finally {
-            exchange.sendResponseHeaders(connectionStatus, statusInt);
+            exchange.sendResponseHeaders(httpStatus, length);
             xmlStream.toXML(result, exchange.getResponseBody());
             exchange.getResponseBody().close();
         }

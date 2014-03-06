@@ -245,7 +245,7 @@ public class FieldsDAO {
                 fields = new ArrayList<Field>();
                 while (rs.next()) {
                     fields.add(new Field(rs.getInt("field_id"), rs.getString("title"), rs.getInt("position"), rs.getInt("project_id"),
-                            rs.getInt("x_coord"), rs.getInt("width"), rs.getString("html_help"), rs.getString("known_data")));
+                            rs.getInt("x_coord"), rs.getInt("width"), rs.getString("help_html"), rs.getString("known_data")));
                 }
             } else {
                 throw new Exception("Invalid project ID");

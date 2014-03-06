@@ -25,10 +25,13 @@ public class GetSampleImageHandler implements HttpHandler {
     UsersManager usersManager = new UsersManager();
     BatchesManager batchesManager = new BatchesManager();
 
+    Operation_Result result = new Operation_Result();
+    int httpStatus = HttpURLConnection.HTTP_OK;
+    int length = 0;
+
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         GetSampleImage_Params params = (GetSampleImage_Params)xmlStream.fromXML(exchange.getRequestBody());
-        Operation_Result result;
         String resultString;
         try {
             boolean validated = usersManager.validateUser(params.getUser().getUsername(), params.getUser().getPassword());
@@ -40,13 +43,12 @@ public class GetSampleImageHandler implements HttpHandler {
             }
             result = new Operation_Result(resultString);
         } catch (Exception e) {
-            exchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, -1);
             result = new Operation_Result("FAILED\n");
+            httpStatus = HttpURLConnection.HTTP_INTERNAL_ERROR;
+        } finally {
+            exchange.sendResponseHeaders(httpStatus, length);
             xmlStream.toXML(result, exchange.getResponseBody());
             exchange.getResponseBody().close();
         }
-        exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
-        xmlStream.toXML(result, exchange.getResponseBody());
-        exchange.getResponseBody().close();
     }
 }

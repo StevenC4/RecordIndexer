@@ -34,8 +34,8 @@ public class GetFieldsHandler implements HttpHandler {
         StringBuilder sb;
         String resultString;
 
-        int statusInt = HttpURLConnection.HTTP_INTERNAL_ERROR;
-        int httpStatus = -1;
+        int httpStatus = HttpURLConnection.HTTP_INTERNAL_ERROR;
+        int length = 0;
         Operation_Result result = null;
 
         try {
@@ -69,13 +69,11 @@ public class GetFieldsHandler implements HttpHandler {
 
             result = new Operation_Result(resultString);
             httpStatus = HttpURLConnection.HTTP_OK;
-            statusInt = -1;
         } catch (Exception e) {
             result = new Operation_Result("FAILED\n");
             httpStatus = HttpURLConnection.HTTP_INTERNAL_ERROR;
-            statusInt = -1;
         } finally {
-            exchange.sendResponseHeaders(httpStatus, statusInt);
+            exchange.sendResponseHeaders(httpStatus, length);
             xmlStream.toXML(result, exchange.getResponseBody());
             exchange.getResponseBody().close();
         }

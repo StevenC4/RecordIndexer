@@ -9,6 +9,18 @@ package shared.communication;
  */
 public class DownloadFile_Params {
 
+    private String path;
 
+    public DownloadFile_Params() {
+        path = null;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    public String getPath() {
+        return path;
+    }
 
 }

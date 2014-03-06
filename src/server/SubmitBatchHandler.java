@@ -37,7 +37,7 @@ public class SubmitBatchHandler implements HttpHandler {
 
         Operation_Result result = null;
         int httpStatus = HttpURLConnection.HTTP_INTERNAL_ERROR;
-        int statusInt = -1;
+        int length = 0;
 
         try {
             boolean validated = usersManager.validateUser(params.getUser().getUsername(), params.getUser().getPassword());
@@ -75,13 +75,11 @@ public class SubmitBatchHandler implements HttpHandler {
             }
             result = new Operation_Result(resultString);
             httpStatus = HttpURLConnection.HTTP_OK;
-            statusInt = 0;
         } catch (Exception e) {
             httpStatus = HttpURLConnection.HTTP_INTERNAL_ERROR;
-            statusInt = -1;
             result = new Operation_Result("FAILED\n");
         } finally {
-            exchange.sendResponseHeaders(httpStatus, statusInt);
+            exchange.sendResponseHeaders(httpStatus, length);
             xmlStream.toXML(result, exchange.getResponseBody());
             exchange.getResponseBody().close();
         }

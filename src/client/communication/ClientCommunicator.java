@@ -137,9 +137,7 @@ public class ClientCommunicator {
             connection.connect();
 
             if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                if(connection.getContentLength() == 0) {
-                    result = ((Operation_Result) xmlStream.fromXML(connection.getInputStream()));
-                }
+                result = ((Operation_Result) xmlStream.fromXML(connection.getInputStream()));
             } else {
                 throw new ClientException(String.format("doGet failed"));
             }
@@ -172,12 +170,9 @@ public class ClientCommunicator {
             connection.getOutputStream().close();
 
             if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                int length = connection.getContentLength();
-                if(connection.getContentLength() == -1) {
-                    result = ((Operation_Result)xmlStream.fromXML(connection.getInputStream()));
-                }
+                result = ((Operation_Result)xmlStream.fromXML(connection.getInputStream()));
             } else {
-                throw new ClientException(String.format("doPost failed"));
+                result = new Operation_Result("FAILED\n");
             }
         }
         catch (Exception e) {
