@@ -3,6 +3,7 @@ package server.database;
 import shared.model.Batch;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -37,6 +38,63 @@ public class BatchesDAO {
     BatchesDAO(Database db) {
         this.db = db;
     }
+
+    /**
+     * For testing only
+     * @param batch
+     * @throws DatabaseException
+     */
+
+    public void add(Batch batch) throws DatabaseException {
+
+        logger.entering("server.database.BatchesDAO", "add");
+
+        String query = "INSERT INTO batches" +
+                "(batch_id, project_id, path, status) VALUES" +
+                "(?,?,?,?)";
+
+        try {
+            PreparedStatement statement = db.getConnection().prepareStatement(query);
+
+            statement.setInt(1, batch.getBatchId());
+            statement.setInt(2, batch.getProjectId());
+            statement.setString(3, batch.getPath());
+            statement.setString(4, batch.getStatus());
+
+            statement.executeUpdate();
+        } catch (Exception e) {
+            throw new DatabaseException(e.getMessage(), e);
+        }
+
+        logger.exiting("server.database.BatchesDAO", "add");
+    }
+
+    public List<Batch> getAll() throws DatabaseException {
+
+        logger.entering("server.database.BatchesDAO", "getAll");
+
+        List<Batch> batches = new ArrayList<Batch>();
+        String query = "SELECT * FROM batches";
+
+        try {
+            PreparedStatement statement = db.getConnection().prepareStatement(query);
+
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()) {
+                batches.add(new Batch(rs.getInt("batch_id"), rs.getInt("project_id"), rs.getString("path"), rs.getString("status")));
+            }
+        } catch (Exception e) {
+            throw new DatabaseException(e.getMessage(), e);
+        }
+
+        logger.exiting("server.database.BatchesDAO", "getAll");
+
+        return batches;
+    }
+
+    /**
+     * End testing methods
+     */
 
     /**
      * Update the batch in the database.

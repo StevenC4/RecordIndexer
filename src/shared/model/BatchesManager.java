@@ -3,6 +3,7 @@ package shared.model;
 import server.database.Database;
 import server.database.DatabaseException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -26,6 +27,45 @@ public class BatchesManager {
         catch (DatabaseException e) {
             throw new ModelException(e.getMessage(), e);
         }
+    }
+
+    /**
+     * For testing purposes
+     * @param batch
+     * @throws ModelException
+     */
+
+    public static void addBatch(Batch batch) throws ModelException {
+
+        Database db = new Database();
+
+        try {
+            db.startTransaction();
+            db.getBatchesDAO().add(batch);
+            db.endTransaction(true);
+        }
+        catch (DatabaseException e) {
+            db.endTransaction(false);
+            throw new ModelException(e.getMessage(), e);
+        }
+    }
+
+    public static List<Batch> getAllBatches() throws ModelException {
+
+        Database db = new Database();
+        List<Batch> batches;
+
+        try {
+            db.startTransaction();
+            batches = db.getBatchesDAO().getAll();
+            db.endTransaction(true);
+        }
+        catch (DatabaseException e) {
+            db.endTransaction(false);
+            throw new ModelException(e.getMessage(), e);
+        }
+
+        return batches;
     }
 
     /**

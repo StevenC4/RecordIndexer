@@ -32,7 +32,7 @@ public class DownloadBatchHandler implements HttpHandler {
     public void handle(HttpExchange exchange) throws IOException {
         DownloadBatch_Params params = (DownloadBatch_Params)xmlStream.fromXML(exchange.getRequestBody());
 
-        int httpStatus = HttpURLConnection.HTTP_INTERNAL_ERROR;
+        int httpStatus = HttpURLConnection.HTTP_OK;
         int length = 0;
         DownloadBatch_Result result = new DownloadBatch_Result();
 
@@ -43,8 +43,6 @@ public class DownloadBatchHandler implements HttpHandler {
             boolean validated = usersManager.validateUser(params.getUser().getUsername(), params.getUser().getPassword());
 
             if (validated) {
-                sb = new StringBuilder();
-
                 if (usersManager.getCurrentBatch(params.getUser()) != -1) {
                     throw new Exception("User already has a batch checked out.");
                 }
@@ -67,10 +65,10 @@ public class DownloadBatchHandler implements HttpHandler {
                 result.setFailed(true);
             }
 
-            httpStatus = HttpURLConnection.HTTP_OK;
+//            httpStatus = HttpURLConnection.HTTP_OK;
         } catch (Exception e) {
             result.setFailed(true);
-            httpStatus = HttpURLConnection.HTTP_INTERNAL_ERROR;
+//            httpStatus = HttpURLConnection.HTTP_INTERNAL_ERROR;
         } finally {
             exchange.sendResponseHeaders(httpStatus, length);
             xmlStream.toXML(result, exchange.getResponseBody());

@@ -46,7 +46,7 @@ public class GetSampleImageHandler implements HttpHandler {
 
         } catch (Exception e) {
             result.setFailed(true);
-            httpStatus = HttpURLConnection.HTTP_INTERNAL_ERROR;
+//            httpStatus = HttpURLConnection.HTTP_INTERNAL_ERROR;
         } finally {
             exchange.sendResponseHeaders(httpStatus, length);
             xmlStream.toXML(result, exchange.getResponseBody());

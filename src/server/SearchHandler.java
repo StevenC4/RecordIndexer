@@ -38,7 +38,7 @@ public class SearchHandler implements HttpHandler {
         StringBuilder sb;
         Search_Result result = new Search_Result();
 
-        int httpStatus = HttpURLConnection.HTTP_INTERNAL_ERROR;
+        int httpStatus = HttpURLConnection.HTTP_OK;
         int length = 0;
 
         try {
@@ -56,10 +56,10 @@ public class SearchHandler implements HttpHandler {
                 result.setFailed(true);
             }
 
-            httpStatus = HttpURLConnection.HTTP_OK;
+//            httpStatus = HttpURLConnection.HTTP_OK;
         } catch (Exception e) {
             result.setFailed(true);
-            httpStatus = HttpURLConnection.HTTP_INTERNAL_ERROR;
+//            httpStatus = HttpURLConnection.HTTP_INTERNAL_ERROR;
         } finally {
             exchange.sendResponseHeaders(httpStatus, length);
             xmlStream.toXML(result, exchange.getResponseBody());

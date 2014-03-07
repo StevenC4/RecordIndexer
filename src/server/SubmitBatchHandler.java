@@ -35,7 +35,7 @@ public class SubmitBatchHandler implements HttpHandler {
         SubmitBatch_Params params = (SubmitBatch_Params)xmlStream.fromXML(exchange.getRequestBody());
         SubmitBatch_Result result = new SubmitBatch_Result();
 
-        int httpStatus = HttpURLConnection.HTTP_INTERNAL_ERROR;
+        int httpStatus = HttpURLConnection.HTTP_OK;
         int length = 0;
 
         try {
@@ -75,9 +75,9 @@ public class SubmitBatchHandler implements HttpHandler {
                 result.setFailed(true);
             }
 
-            httpStatus = HttpURLConnection.HTTP_OK;
+//            httpStatus = HttpURLConnection.HTTP_OK;
         } catch (Exception e) {
-            httpStatus = HttpURLConnection.HTTP_INTERNAL_ERROR;
+//            httpStatus = HttpURLConnection.HTTP_INTERNAL_ERROR;
             result.setFailed(true);
         } finally {
             exchange.sendResponseHeaders(httpStatus, length);

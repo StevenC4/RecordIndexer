@@ -34,7 +34,7 @@ public class GetProjectsHandler implements HttpHandler {
         StringBuilder sb;
 
         GetProjects_Result result = new GetProjects_Result();
-        int httpStatus = HttpURLConnection.HTTP_INTERNAL_ERROR;
+        int httpStatus = HttpURLConnection.HTTP_OK;
         int length = 0;
 
         try {
@@ -46,10 +46,10 @@ public class GetProjectsHandler implements HttpHandler {
                 result.setFailed(true);
             }
 
-            httpStatus = HttpURLConnection.HTTP_OK;
+//            httpStatus = HttpURLConnection.HTTP_OK;
         } catch (Exception e) {
             result.setFailed(true);
-            httpStatus = HttpURLConnection.HTTP_INTERNAL_ERROR;
+//            httpStatus = HttpURLConnection.HTTP_INTERNAL_ERROR;
         } finally {
             exchange.sendResponseHeaders(httpStatus, length);
             xmlStream.toXML(result, exchange.getResponseBody());

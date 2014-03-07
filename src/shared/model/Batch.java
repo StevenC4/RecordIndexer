@@ -126,4 +126,27 @@ public class Batch {
         this.status = status;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Batch batch = (Batch) o;
+
+        if (batchId != batch.batchId) return false;
+        if (projectId != batch.projectId) return false;
+        if (!path.equals(batch.path)) return false;
+        if (!status.equals(batch.status)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = batchId;
+        result = 31 * result + projectId;
+        result = 31 * result + path.hashCode();
+        result = 31 * result + status.hashCode();
+        return result;
+    }
 }
