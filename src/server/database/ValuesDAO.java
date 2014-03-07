@@ -38,6 +38,64 @@ public class ValuesDAO {
         this.db = db;
     }
 
+    /*
+     * For testing
+     */
+
+    public void add(Value value) throws DatabaseException {
+
+        logger.entering("server.database.ValuesDAO", "add");
+
+        String query = "INSERT INTO entered_values" +
+                "(value_id, project_id, field_id, batch_id, record_id, value) VALUES" +
+                "(?,?,?,?,?,?)";
+
+        try {
+            PreparedStatement statement = db.getConnection().prepareStatement(query);
+
+            statement.setInt(1, value.getValueId());
+            statement.setInt(2, value.getProjectId());
+            statement.setInt(3, value.getFieldId());
+            statement.setInt(4, value.getBatchId());
+            statement.setInt(5, value.getRecordId());
+            statement.setString(6, value.getValue());
+
+            statement.executeUpdate();
+        } catch (Exception e) {
+            throw new DatabaseException(e.getMessage(), e);
+        }
+
+        logger.exiting("server.database.ValuesDAO", "add");
+    }
+
+    public List<Value> getAll() throws DatabaseException {
+
+        logger.entering("server.database.ValuesDAO", "addList");
+
+        List<Value> values = new ArrayList<Value>();
+        String query = "SELECT * FROM entered_values";
+
+        try {
+            PreparedStatement statement = db.getConnection().prepareStatement(query);
+
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()) {
+                values.add(new Value(rs.getInt("value_id"), rs.getInt("project_id"), rs.getInt("field_id"),
+                                     rs.getInt("batch_id"), rs.getInt("record_id"), rs.getString("value")));
+            }
+        } catch (Exception e) {
+            throw new DatabaseException(e.getMessage(), e);
+        }
+
+        logger.exiting("server.database.ValuesDAO", "addList");
+
+        return values;
+    }
+
+    /*
+     * End testing
+     */
+
     public void deleteAll() throws DatabaseException {
 
         logger.entering("server.database.ValuesDAO", "deleteAll");
@@ -123,21 +181,29 @@ public class ValuesDAO {
             String query = "SELECT * FROM entered_values WHERE ";
 
             for (int i = 0; i < fieldsArray.length; i++) {
-                query += "field_id=? AND LOWER(value)=? ";
-                if (i < fieldsArray.length - 1) {
-                    query += "OR ";
+                for (int j = 0; j < searchValuesArray.length; j++) {
+                    query += "(field_id=? AND LOWER(value)=?) ";
+                    if (i < fieldsArray.length - 1 || j < searchValuesArray.length - 1) {
+                        query += "OR ";
+                    }
                 }
             }
             PreparedStatement statement = db.getConnection().prepareStatement(query);
 
+            int count = 1;
             for (int i = 0; i < fieldsArray.length; i++) {
-                statement.setInt(2 * i, Integer.parseInt(fieldsArray[i]));
-                statement.setString((2 * i) + 1, searchValuesArray[i]);
+                for (int j = 0; j < searchValuesArray.length; j++) {
+                    statement.setInt(count++, Integer.parseInt(fieldsArray[i]));
+                    statement.setString(count++, searchValuesArray[j]);
+                }
             }
 
             ResultSet rs = statement.executeQuery();
             if (rs.next()) {
-                values.add(new Value(rs.getInt("value_id"), rs.getInt("project_id"), rs.getInt("field_id"), rs.getInt("record_id"), rs.getInt("batch_id"), rs.getString("value")));
+                values.add(new Value(rs.getInt("value_id"), rs.getInt("project_id"), rs.getInt("field_id"), rs.getInt("batch_id"), rs.getInt("record_id"), rs.getString("value")));
+                while (rs.next()) {
+                    values.add(new Value(rs.getInt("value_id"), rs.getInt("project_id"), rs.getInt("field_id"), rs.getInt("batch_id"), rs.getInt("record_id"), rs.getString("value")));
+                }
             } else {
                 throw new Exception("The search did not turn up any results");
             }

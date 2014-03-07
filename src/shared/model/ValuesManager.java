@@ -3,6 +3,8 @@ package shared.model;
 import server.database.Database;
 import server.database.DatabaseException;
 
+import java.nio.file.attribute.UserDefinedFileAttributeView;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,6 +29,45 @@ public class ValuesManager {
             throw new ModelException(e.getMessage(), e);
         }
     }
+
+    /*
+     * Used for testing
+     */
+
+    public void addValue(Value value) throws ModelException {
+        Database db = new Database();
+
+        try {
+            db.startTransaction();
+            db.getValuesDAO().add(value);
+            db.endTransaction(true);
+        }
+        catch (DatabaseException e) {
+            db.endTransaction(false);
+            throw new ModelException(e.getMessage(), e);
+        }
+    }
+
+    public List<Value> getAllValues() throws ModelException {
+        Database db = new Database();
+        List<Value> values = new ArrayList<Value>();
+
+        try {
+            db.startTransaction();
+            values = db.getValuesDAO().getAll();
+            db.endTransaction(true);
+        }
+        catch (DatabaseException e) {
+            db.endTransaction(false);
+            throw new ModelException(e.getMessage(), e);
+        }
+
+        return values;
+    }
+
+    /*
+     * End testing
+     */
 
     public static void deleteAllValues() throws ModelException {
 

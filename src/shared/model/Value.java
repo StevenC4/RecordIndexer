@@ -164,4 +164,32 @@ public class Value {
     public void setValue(String value) {
         this.value = value;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Value value1 = (Value) o;
+
+        if (batchId != value1.batchId) return false;
+        if (fieldId != value1.fieldId) return false;
+        if (projectId != value1.projectId) return false;
+        if (recordId != value1.recordId) return false;
+        if (valueId != value1.valueId) return false;
+        if (!value.toLowerCase().equals(value1.value.toLowerCase())) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = valueId;
+        result = 31 * result + projectId;
+        result = 31 * result + fieldId;
+        result = 31 * result + recordId;
+        result = 31 * result + batchId;
+        result = 31 * result + value.toLowerCase().hashCode();
+        return result;
+    }
 }
