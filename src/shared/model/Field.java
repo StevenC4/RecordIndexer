@@ -200,4 +200,36 @@ public class Field {
     public void setPosition(int position) {
         this.position = position;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Field field = (Field) o;
+
+        if (fieldId != field.fieldId) return false;
+        if (position != field.position) return false;
+        if (projectId != field.projectId) return false;
+        if (width != field.width) return false;
+        if (xCoord != field.xCoord) return false;
+        if (!helpHTML.equals(field.helpHTML)) return false;
+        if (knownData != null ? !knownData.equals(field.knownData) : field.knownData != null) return false;
+        if (!title.equals(field.title)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = fieldId;
+        result = 31 * result + projectId;
+        result = 31 * result + title.hashCode();
+        result = 31 * result + xCoord;
+        result = 31 * result + width;
+        result = 31 * result + helpHTML.hashCode();
+        result = 31 * result + (knownData != null ? knownData.hashCode() : 0);
+        result = 31 * result + position;
+        return result;
+    }
 }

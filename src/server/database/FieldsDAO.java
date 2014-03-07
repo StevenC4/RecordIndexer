@@ -39,6 +39,65 @@ public class FieldsDAO {
         this.db = db;
     }
 
+    /*
+     * For testing
+     */
+
+    public void add(Field field) throws DatabaseException {
+
+        logger.entering("server.database.FieldsDAO", "add");
+
+        String query = "INSERT INTO fields" +
+                "(field_id, title, position, project_id, x_coord, width, help_html, known_data) VALUES" +
+                "(?,?,?,?,?,?,?,?)";
+
+        try {
+            PreparedStatement statement = db.getConnection().prepareStatement(query);
+            statement.setInt(1, field.getFieldId());
+            statement.setString(2, field.getTitle());
+            statement.setInt(3, field.getPosition());
+            statement.setInt(4, field.getProjectId());
+            statement.setInt(5, field.getxCoord());
+            statement.setInt(6, field.getWidth());
+            statement.setString(7, field.getHelpHTML());
+            statement.setString(8, field.getKnownData());
+            statement.executeUpdate();
+        } catch (Exception e) {
+            throw new DatabaseException(e.getMessage(), e);
+        }
+
+        logger.exiting("server.database.FieldsDAO", "add");
+    }
+
+    public List<Field> getAll() throws DatabaseException {
+
+        logger.entering("server.database.FieldsDAO", "getAll");
+
+        List<Field> fields = new ArrayList<Field>();
+        String query = "SELECT * FROM fields";
+
+        try {
+            PreparedStatement statement = db.getConnection().prepareStatement(query);
+
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()) {
+                fields.add(new Field(rs.getInt("field_id"), rs.getString("title"), rs.getInt("position"),
+                                     rs.getInt("project_id"), rs.getInt("x_coord"), rs.getInt("width"),
+                                     rs.getString("help_html"), rs.getString("known_data")));
+            }
+        } catch (Exception e) {
+            throw new DatabaseException(e.getMessage(), e);
+        }
+
+        logger.exiting("server.database.FieldsDAO", "getAll");
+
+        return fields;
+    }
+
+    /*
+     * End tesing
+     */
+
     public void deleteAll() throws DatabaseException {
 
         logger.entering("server.database.FieldsDAO", "deleteAll");
@@ -99,14 +158,10 @@ public class FieldsDAO {
             statement.setInt(1, projectId);
 
             ResultSet rs = statement.executeQuery();
-            if (rs.next()) {
-                fields = new ArrayList<Field>();
-                while (rs.next()) {
-                    fields.add(new Field(rs.getInt("field_id"), rs.getString("title"), rs.getInt("position"), rs.getInt("project_id"),
-                            rs.getInt("x_coord"), rs.getInt("width"), rs.getString("help_html"), rs.getString("known_data")));
-                }
-            } else {
-                throw new Exception("Invalid project ID");
+            fields = new ArrayList<Field>();
+            while (rs.next()) {
+                fields.add(new Field(rs.getInt("field_id"), rs.getString("title"), rs.getInt("position"), rs.getInt("project_id"),
+                        rs.getInt("x_coord"), rs.getInt("width"), rs.getString("help_html"), rs.getString("known_data")));
             }
         } catch (Exception e) {
             throw new DatabaseException(e.getMessage(), e);
