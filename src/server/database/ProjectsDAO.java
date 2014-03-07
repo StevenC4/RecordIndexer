@@ -38,6 +38,37 @@ public class ProjectsDAO {
         this.db = db;
     }
 
+    /*
+     * For testing
+     */
+
+    public void add(Project project) throws DatabaseException{
+        logger.entering("server.database.ProjectsDAO", "add");
+
+        String query = "INSERT INTO projects" +
+                "(title, records_per_image, first_y_coord, record_height) VALUES" +
+                "(?,?,?,?)";
+
+        try {
+            PreparedStatement statement = db.getConnection().prepareStatement(query);
+
+            statement.setString(1, project.getTitle());
+            statement.setInt(2, project.getRecordsPerImage());
+            statement.setInt(3, project.getFirstYCoord());
+            statement.setInt(4, project.getRecordHeight());
+
+            statement.executeUpdate();
+        } catch (Exception e) {
+            throw new DatabaseException(e.getMessage(), e);
+        }
+
+        logger.exiting("server.database.ProjectsDAO", "add");
+    }
+
+    /*
+     * End testing
+     */
+
     /**
      * Gets all the projects from the database.
      *

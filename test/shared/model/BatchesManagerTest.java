@@ -22,8 +22,8 @@ public class BatchesManagerTest {
 
     @Before
     public void before() throws Exception {
-        Database.initialize();
         batchesManager = new BatchesManager();
+        batchesManager.initialize();
         batchesManager.deleteAllBatches();
     }
 
@@ -38,6 +38,7 @@ public class BatchesManagerTest {
      */
     @Test
     public void testUpdateBatch() throws Exception {
+        batchesManager.deleteAllBatches();
         Batch batchBefore = new Batch(1, 1, "/images/test.png", "new");
         Batch batchAfter = new Batch(1, 1, "/images/test.png", "checked out");
         batchesManager.addBatch(batchBefore);
@@ -69,6 +70,7 @@ public class BatchesManagerTest {
      */
     @Test
     public void testGetSampleImage() throws Exception {
+        batchesManager.deleteAllBatches();
         Batch batch1 = new Batch(1, 1, "/images/test1.png", "new");
         Batch batch2 = new Batch(2, 1, "/images/test2.png", "new");
         Batch batch3 = new Batch(3, 2, "/images/test3.png", "new");
@@ -96,10 +98,7 @@ public class BatchesManagerTest {
         batches.add(new Batch(4, 2, "6", "test4"));
         batchesManager.addList(batches);
         List<Batch> returnedList = batchesManager.getAllBatches();
-        assertEquals(batches.size(), returnedList.size());
-        for (int i = 0; i < batches.size(); i++) {
-            assertEquals(batches.get(i), returnedList.get(i));
-        }
+        assertEquals(batches, returnedList);
     }
 
     /**

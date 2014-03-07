@@ -28,6 +28,28 @@ public class ProjectsManager {
         }
     }
 
+    /*
+     * For testing
+     */
+
+    public void addProject(Project project) throws ModelException {
+        Database db = new Database();
+
+        try {
+            db.startTransaction();
+            db.getProjectsDAO().add(project);
+            db.endTransaction(true);
+        }
+        catch (DatabaseException e) {
+            db.endTransaction(false);
+            throw new ModelException(e.getMessage(), e);
+        }
+    }
+
+    /*
+     * End testing
+     */
+
     /**
      * Gets all projects.
      *

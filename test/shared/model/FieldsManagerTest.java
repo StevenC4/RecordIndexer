@@ -22,8 +22,8 @@ public class FieldsManagerTest {
 
     @Before
     public void before() throws Exception {
-        Database.initialize();
         fieldsManager = new FieldsManager();
+        fieldsManager.initialize();
         FieldsManager.deleteAllFields();
     }
 
@@ -58,10 +58,7 @@ public class FieldsManagerTest {
         fields.add(new Field(4, "title4", 6, 1, 354, 14, "help4.html", "knownData1.html"));
         fieldsManager.addList(fields);
         List<Field> returnedList = fieldsManager.getAllFields();
-        assertEquals(fields.size(), returnedList.size());
-        for (int i = 0; i < fields.size(); i++) {
-            assertEquals(fields.get(i), returnedList.get(i));
-        }
+        assertEquals(fields, returnedList);
     }
 
     /**

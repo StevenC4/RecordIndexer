@@ -151,4 +151,30 @@ public class Project {
     public void setRecordHeight(int recordHeight) {
         this.recordHeight = recordHeight;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Project project = (Project) o;
+
+        if (firstYCoord != project.firstYCoord) return false;
+        if (projectId != project.projectId) return false;
+        if (recordHeight != project.recordHeight) return false;
+        if (recordsPerImage != project.recordsPerImage) return false;
+        if (!title.equals(project.title)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = projectId;
+        result = 31 * result + title.hashCode();
+        result = 31 * result + recordsPerImage;
+        result = 31 * result + firstYCoord;
+        result = 31 * result + recordHeight;
+        return result;
+    }
 }
