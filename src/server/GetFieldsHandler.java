@@ -5,6 +5,7 @@ import com.sun.net.httpserver.HttpHandler;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 import shared.communication.GetFields_Params;
+import shared.communication.GetFields_Result;
 import shared.communication.Operation_Result;
 import shared.communication.ValidateUser_Params;
 import shared.model.*;
@@ -36,14 +37,12 @@ public class GetFieldsHandler implements HttpHandler {
 
         int httpStatus = HttpURLConnection.HTTP_INTERNAL_ERROR;
         int length = 0;
-        Operation_Result result = null;
+        GetFields_Result result = new GetFields_Result();
 
         try {
             boolean validated = usersManager.validateUser(params.getUser().getUsername(), params.getUser().getPassword());
             if (validated) {
                 List<Field> fields;
-                sb = new StringBuilder();
-
 
                 int projectId = params.getProjectId();
                 if (projectId != -1) {
@@ -56,21 +55,14 @@ public class GetFieldsHandler implements HttpHandler {
                     }
                 }
 
-                for (Field field : fields) {
-                    sb.append(field.getProjectId()).append("\n");
-                    sb.append(field.getFieldId()).append("\n");
-                    sb.append(field.getTitle()).append("\n");
-                }
-
-                resultString = sb.toString();
+                result.setFields(fields);
             } else {
-                resultString = "FAILED\n";
+                result.setFailed(true);
             }
 
-            result = new Operation_Result(resultString);
             httpStatus = HttpURLConnection.HTTP_OK;
         } catch (Exception e) {
-            result = new Operation_Result("FAILED\n");
+            result.setFailed(true);
             httpStatus = HttpURLConnection.HTTP_INTERNAL_ERROR;
         } finally {
             exchange.sendResponseHeaders(httpStatus, length);

@@ -6,6 +6,7 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 import shared.communication.Operation_Result;
 import shared.communication.Search_Params;
+import shared.communication.Search_Result;
 import shared.communication.ValidateUser_Params;
 import shared.model.BatchesManager;
 import shared.model.UsersManager;
@@ -35,38 +36,29 @@ public class SearchHandler implements HttpHandler {
     public void handle(HttpExchange exchange) throws IOException {
         Search_Params params = (Search_Params)xmlStream.fromXML(exchange.getRequestBody());
         StringBuilder sb;
-        String resultString;
+        Search_Result result = new Search_Result();
 
-        Operation_Result result = null;
         int httpStatus = HttpURLConnection.HTTP_INTERNAL_ERROR;
         int length = 0;
 
         try {
             boolean validated = usersManager.validateUser(params.getUser().getUsername(), params.getUser().getPassword());
             if (validated) {
-                sb = new StringBuilder();
-
                 List<Value> values = valuesManager.searchValues(params.getFields(), params.getSearchValues());
                 List<String> paths = new ArrayList<String>();
                 for (int i = 0; i < values.size(); i++) {
-                    paths.add(batchesManager.getPathByBatchId(values.get(i).getBatchId()));
+                    paths.add(batchesManager.getBatchByBatchId(values.get(i).getBatchId()).getPath());
                 }
 
-                for (int i = 0; i < values.size(); i++) {
-                    sb.append(values.get(i).getBatchId()).append("\n");
-                    sb.append(paths.get(i)).append("\n");
-                    sb.append(values.get(i).getRecordId()).append("\n");
-                    sb.append(values.get(i).getFieldId()).append("\n");
-                }
-
-                resultString = sb.toString();
+                result.setValues(values);
+                result.setPaths(paths);
             } else {
-                resultString = "FAILED\n";
+                result.setFailed(true);
             }
-            result = new Operation_Result(resultString);
+
             httpStatus = HttpURLConnection.HTTP_OK;
         } catch (Exception e) {
-            result = new Operation_Result("FAILED\n");
+            result.setFailed(true);
             httpStatus = HttpURLConnection.HTTP_INTERNAL_ERROR;
         } finally {
             exchange.sendResponseHeaders(httpStatus, length);

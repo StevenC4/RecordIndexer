@@ -36,19 +36,18 @@ public class DownloadFileHandler implements HttpHandler {
         DownloadFile_Params params = (DownloadFile_Params)xmlStream.fromXML(exchange.getRequestBody());
         String resultString;
 
-        Operation_Result result = null;
+        Operation_Result result = new Operation_Result();
         int httpStatus = HttpURLConnection.HTTP_INTERNAL_ERROR;
         int length = 0;
 
         try {
-                resultString = "True";
+            resultString = "True";
 
 
 
-            result = new Operation_Result(resultString);
             httpStatus = HttpURLConnection.HTTP_OK;
         } catch (Exception e) {
-            result = new Operation_Result("FAILED\n");
+            result.setFailed(true);
             httpStatus = HttpURLConnection.HTTP_INTERNAL_ERROR;
         } finally {
             exchange.sendResponseHeaders(httpStatus, length);

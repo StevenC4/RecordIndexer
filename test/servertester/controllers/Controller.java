@@ -112,8 +112,8 @@ public class Controller implements IController {
         param.setUser(user);
         getView().setRequest("Validate User:\nUsername: " + user.getUsername() + "\nPassword: " + user.getPassword());
         try {
-            Operation_Result result = clientCommunicator.ValidateUser(param);
-            getView().setResponse(result.getResult());
+            ValidateUser_Result result = clientCommunicator.ValidateUser(param);
+            getView().setResponse(result.toString());
         } catch (Exception e) {}
 	}
 	
@@ -125,8 +125,8 @@ public class Controller implements IController {
         getView().setRequest("Get Project:\nUsername: " + user.getUsername() + "\nPassword: " + user.getPassword());
         param.setUser(user);
         try {
-            Operation_Result result = clientCommunicator.GetProjects(param);
-            getView().setResponse(result.getResult());
+            GetProjects_Result result = clientCommunicator.GetProjects(param);
+            getView().setResponse(result.toString());
         } catch (Exception e) {}
 	}
 	
@@ -138,8 +138,8 @@ public class Controller implements IController {
         params.setUser(user);
         params.setProjectId(Integer.parseInt(getView().getParameterValues()[2].trim()));
         try {
-            Operation_Result result = clientCommunicator.GetSampleImage(params);
-            getView().setResponse(result.getResult());
+            GetSampleImage_Result result = clientCommunicator.GetSampleImage(params);
+            getView().setResponse(result.toString());
         } catch (Exception e) {}
 	}
 	
@@ -151,8 +151,8 @@ public class Controller implements IController {
         params.setUser(user);
         params.setProjectId(Integer.parseInt(getView().getParameterValues()[2].trim()));
         try {
-            Operation_Result result = clientCommunicator.DownloadBatch(params);
-            getView().setResponse(result.getResult());
+            DownloadBatch_Result result = clientCommunicator.DownloadBatch(params);
+            getView().setResponse(result.toString());
         } catch (Exception e) {}
 	}
 	
@@ -164,8 +164,8 @@ public class Controller implements IController {
         params.setUser(user);
         params.setProjectId(Integer.parseInt(getView().getParameterValues()[2].trim()));
         try {
-            Operation_Result result = clientCommunicator.GetFields(params);
-            getView().setResponse(result.getResult());
+            GetFields_Result result = clientCommunicator.GetFields(params);
+            getView().setResponse(result.toString());
         } catch (Exception e) {}
 	}
 	
@@ -178,8 +178,8 @@ public class Controller implements IController {
         params.setBatchId(Integer.parseInt(getView().getParameterValues()[2].trim()));
         params.setFieldValues(getView().getParameterValues()[3]);
         try {
-            Operation_Result result = clientCommunicator.SubmitBatch(params);
-            getView().setResponse(result.getResult());
+            SubmitBatch_Result result = clientCommunicator.SubmitBatch(params);
+            getView().setResponse(result.toString());
         } catch (Exception e) {}
 	}
 	
@@ -192,8 +192,8 @@ public class Controller implements IController {
         params.setFields(getView().getParameterValues()[2]);
         params.setSearchValues(getView().getParameterValues()[3]);
         try {
-            Operation_Result result = clientCommunicator.Search(params);
-            getView().setResponse(result.getResult());
+            Search_Result result = clientCommunicator.Search(params);
+            getView().setResponse(result.toString());
         } catch (Exception e) {}
 	}
 }

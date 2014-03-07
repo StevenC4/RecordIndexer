@@ -50,69 +50,6 @@ public class ProjectsManager {
         }
     }
 
-    /**
-     * Add project.
-     *
-     * @param project the project
-     * @throws ModelException the model exception
-     */
-    public static void addProject(Project project) throws ModelException {
-
-        Database db = new Database();
-
-        try {
-            db.startTransaction();
-            db.getProjectsDAO().add(project);
-            db.endTransaction(true);
-        }
-        catch (DatabaseException e) {
-            db.endTransaction(false);
-            throw new ModelException(e.getMessage(), e);
-        }
-    }
-
-    /**
-     * Update project.
-     *
-     * @param project the project
-     * @throws ModelException the model exception
-     */
-    public static void updateProject(Project project) throws ModelException {
-
-        Database db = new Database();
-
-        try {
-            db.startTransaction();
-            db.getProjectsDAO().update(project);
-            db.endTransaction(true);
-        }
-        catch (DatabaseException e) {
-            db.endTransaction(false);
-            throw new ModelException(e.getMessage(), e);
-        }
-    }
-
-    /**
-     * Delete project.
-     *
-     * @param project the project
-     * @throws ModelException the model exception
-     */
-    public static void deleteProject(Project project) throws ModelException {
-
-        Database db = new Database();
-
-        try {
-            db.startTransaction();
-            db.getProjectsDAO().delete(project);
-            db.endTransaction(true);
-        }
-        catch (DatabaseException e) {
-            db.endTransaction(false);
-            throw new ModelException(e.getMessage(), e);
-        }
-    }
-
     public static void deleteAllProjects() throws ModelException {
 
         Database db = new Database();

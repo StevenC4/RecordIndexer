@@ -1,12 +1,8 @@
 package server.database;
 
 import shared.model.User;
-
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -40,80 +36,6 @@ public class UsersDAO {
      */
     UsersDAO(Database db) {
         this.db = db;
-    }
-
-    /**
-     * Gets all the users from the database.
-     *
-     * @return all the users from the database
-     * @throws DatabaseException the database exception
-     */
-    public List<User> getAll() throws DatabaseException {
-
-        logger.entering("server.database.UsersDAO", "getAll");
-
-        List<User> users = new ArrayList<User>();
-        PreparedStatement statement = null;
-        ResultSet rs = null;
-
-        try {
-            String query = "SELECT * FROM users";
-            statement = db.getConnection().prepareStatement(query);
-
-            rs = statement.executeQuery();
-            while (rs.next()) {
-                User user = new User();
-                user.setUserId(rs.getInt("user_id"));
-                user.setUsername(rs.getString("username"));
-                user.setPassword(rs.getString("password"));
-                user.setFirstName(rs.getString("first_name"));
-                user.setLastName(rs.getString("last_name"));
-                user.setEmail(rs.getString("email"));
-                user.setIndexedRecords(rs.getInt("indexed_records"));
-                users.add(user);
-            }
-        } catch (Exception e) {
-            throw new DatabaseException(e.getMessage(), e);
-        } finally {
-            Database.safeClose(rs);
-            Database.safeClose(statement);
-        }
-
-        logger.exiting("server.database.UsersDAO", "getAll");
-
-        return users;
-    }
-
-    /**
-     * Add the user to the database.
-     *
-     * @param user the user
-     * @throws DatabaseException the database exception
-     */
-    public void add(User user) throws DatabaseException {
-
-        logger.entering("server.database.UsersDAO", "add");
-
-        String query = "INSERT INTO users" +
-                "(username, password, first_name, last_name, email, indexed_records) VALUES" +
-                "(?,?,?,?,?,?)";
-
-        try {
-            PreparedStatement statement = db.getConnection().prepareStatement(query);
-
-            statement.setString(1, user.getUsername());
-            statement.setString(2, user.getPassword());
-            statement.setString(3, user.getFirstName());
-            statement.setString(4, user.getLastName());
-            statement.setString(5, user.getEmail());
-            statement.setInt(6, user.getIndexedRecords());
-
-            statement.executeUpdate();
-        } catch (Exception e) {
-            throw new DatabaseException(e.getMessage(), e);
-        }
-
-        logger.exiting("server.database.UsersDAO", "add");
     }
 
     /**
@@ -154,31 +76,6 @@ public class UsersDAO {
         }
 
         logger.exiting("server.database.UsersDAO", "update");
-    }
-
-    /**
-     * Delete the user from the database.
-     *
-     * @param user the user
-     * @throws DatabaseException the database exception
-     */
-    public void delete(User user) throws DatabaseException {
-
-        logger.entering("server.database.UsersDAO", "delete");
-
-        String query = "DELETE users WHERE user_id = ?";
-
-        try {
-            PreparedStatement statement = db.getConnection().prepareStatement(query);
-
-            statement.setInt(1, user.getUserId());
-
-            statement.executeUpdate();
-        } catch (Exception e) {
-            throw new DatabaseException(e.getMessage(), e);
-        }
-
-        logger.exiting("server.database.UsersDAO", "delete");
     }
 
     public void deleteAll() throws DatabaseException {

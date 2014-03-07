@@ -4,10 +4,9 @@ import com.sun.net.httpserver.*;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 import server.database.Database;
-import shared.model.*;
+
 import java.io.*;
 import java.net.*;
-import java.util.logging.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -18,13 +17,18 @@ import java.util.logging.*;
  */
 public class Server {
 
-    private static final int SERVER_PORT_NUMBER = 8081;
+    private static int SERVER_PORT = 8081;
     private static final int MAX_WAITING_CONNECTIONS = 10;
 
     private HttpServer server;
     private XStream xmlStream = new XStream(new DomDriver());
 
     private Server() {
+        return;
+    }
+
+    private Server(int port) {
+        SERVER_PORT = port;
         return;
     }
 
@@ -39,7 +43,7 @@ public class Server {
         }
 
         try {
-            server = HttpServer.create(new InetSocketAddress(SERVER_PORT_NUMBER),
+            server = HttpServer.create(new InetSocketAddress(SERVER_PORT),
                     MAX_WAITING_CONNECTIONS);
         }
         catch (IOException e) {

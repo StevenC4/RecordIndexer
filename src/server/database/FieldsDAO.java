@@ -1,7 +1,6 @@
 package server.database;
 
 import shared.model.Field;
-
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
@@ -40,136 +39,6 @@ public class FieldsDAO {
         this.db = db;
     }
 
-    /**
-     * Gets all fields from the database.
-     *
-     * @return all the fields
-     * @throws DatabaseException the database exception
-     */
-    public List<Field> getAll() throws DatabaseException {
-
-        logger.entering("server.database.FieldsDAO", "getAll");
-
-        String query = "SELECT * FROM fields";
-        List<Field> fields;
-
-        try {
-            PreparedStatement statement = db.getConnection().prepareStatement(query);
-            ResultSet rs = statement.executeQuery();
-
-            fields = new ArrayList<Field>();
-            while (rs.next()) {
-                Field field = new Field();
-                field.setFieldId(rs.getInt("field_id"));
-                field.setProjectId(rs.getInt("project_id"));
-                field.setxCoord(rs.getInt("x_coord"));
-                field.setWidth(rs.getInt("width"));
-                field.setHelpHTML(rs.getString("help_html"));
-                field.setKnownData(rs.getString("known_data"));
-                fields.add(field);
-            }
-        } catch (Exception e) {
-            throw new DatabaseException(e.getMessage(), e);
-        }
-
-        logger.exiting("server.database.FieldsDAO", "getAll");
-
-        return fields;
-    }
-
-    /**
-     * Add the field to the database.
-     *
-     * @param field the field
-     * @throws DatabaseException the database exception
-     */
-    public void add(Field field) throws DatabaseException {
-
-        logger.entering("server.database.FieldsDAO", "add");
-
-        String query = "INSERT INTO fields" +
-                "(project_id, x_coord, width, help_html, known_data) VALUES" +
-                "(?,?,?,?,?)";
-
-        try {
-            PreparedStatement statement = db.getConnection().prepareStatement(query);
-
-            statement.setInt(1, field.getProjectId());
-            statement.setInt(2, field.getxCoord());
-            statement.setInt(3, field.getWidth());
-            statement.setString(4, field.getHelpHTML());
-            statement.setString(5, field.getKnownData());
-
-            statement.executeUpdate();
-        } catch (Exception e) {
-            throw new DatabaseException(e.getMessage(), e);
-        }
-
-        logger.exiting("server.database.FieldsDAO", "add");
-    }
-
-    /**
-     * Update the field in the database.
-     *
-     * @param field the field
-     * @throws DatabaseException the database exception
-     */
-    public void update(Field field) throws DatabaseException {
-
-        logger.entering("server.database.FieldsDAO", "update");
-
-        String query = "UPDATE fields SET " +
-                "project_id = ?, " +
-                "x_coord = ?, " +
-                "width = ? " +
-                "help_html = ? " +
-                "known_data = ? " +
-                "WHERE field_id = ?" +
-                "(?,?,?,?,?,?)";
-
-        try {
-            PreparedStatement statement = db.getConnection().prepareStatement(query);
-
-            statement.setInt(1, field.getProjectId());
-            statement.setInt(2, field.getxCoord());
-            statement.setInt(3, field.getWidth());
-            statement.setString(4, field.getHelpHTML());
-            statement.setString(5, field.getKnownData());
-            statement.setInt(6, field.getFieldId());
-
-            statement.executeUpdate();
-        } catch (Exception e) {
-            throw new DatabaseException(e.getMessage(), e);
-        }
-
-        logger.exiting("server.database.FieldsDAO", "update");
-    }
-
-    /**
-     * Delete the field from the database.
-     *
-     * @param field the field
-     * @throws DatabaseException the database exception
-     */
-    public void delete(Field field) throws DatabaseException {
-
-        logger.entering("server.database.FieldsDAO", "delete");
-
-        String query = "DELETE fields WHERE field_id = ?";
-
-        try {
-            PreparedStatement statement = db.getConnection().prepareStatement(query);
-
-            statement.setInt(1, field.getFieldId());
-
-            statement.executeUpdate();
-        } catch (Exception e) {
-            throw new DatabaseException(e.getMessage(), e);
-        }
-
-        logger.exiting("server.database.FieldsDAO", "delete");
-    }
-
     public void deleteAll() throws DatabaseException {
 
         logger.entering("server.database.FieldsDAO", "deleteAll");
@@ -189,17 +58,6 @@ public class FieldsDAO {
         }
 
         logger.exiting("server.database.FieldsDAO", "deleteAll");
-    }
-
-    /**
-     * Gets fields corresponding to the project ID.
-     *
-     * @param projectId the project id
-     * @return the fields
-     * @throws DatabaseException the database exception
-     */
-    public List<Field> getFields(int projectId) throws DatabaseException {
-        return null;
     }
 
     public void addList(List<Field> fieldList) throws DatabaseException{

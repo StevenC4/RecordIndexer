@@ -6,6 +6,7 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 import shared.communication.Operation_Result;
 import shared.communication.ValidateUser_Params;
+import shared.communication.ValidateUser_Result;
 import shared.model.User;
 import shared.model.UsersManager;
 
@@ -27,9 +28,8 @@ public class ValidateUserHandler implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         ValidateUser_Params params = (ValidateUser_Params)xmlStream.fromXML(exchange.getRequestBody());
-        String resultString;
 
-        Operation_Result result = null;
+        ValidateUser_Result result = new ValidateUser_Result();
         int httpStatus = HttpURLConnection.HTTP_INTERNAL_ERROR;
         int length = 0;
 
@@ -37,17 +37,13 @@ public class ValidateUserHandler implements HttpHandler {
             boolean validated = usersManager.validateUser(params.getUser().getUsername(), params.getUser().getPassword());
             if (validated) {
                 User user = usersManager.getUserByUsername(params.getUser().getUsername());
-                resultString = "TRUE\n" +
-                        user.getFirstName() + "\n" +
-                        user.getLastName() + "\n" +
-                        user.getIndexedRecords() + "\n";
-            } else {
-                resultString = "FALSE\n";
+                result.setUser(user);
+                result.setValidated(true);
             }
-            result = new Operation_Result(resultString);
+
             httpStatus = HttpURLConnection.HTTP_OK;
         } catch (Exception e) {
-            result = new Operation_Result("FAILED\n");
+            result.setFailed(true);
             httpStatus = HttpURLConnection.HTTP_INTERNAL_ERROR;
         } finally {
             exchange.sendResponseHeaders(httpStatus, length);

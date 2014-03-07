@@ -5,6 +5,7 @@ import com.sun.net.httpserver.HttpHandler;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 import shared.communication.DownloadBatch_Params;
+import shared.communication.DownloadBatch_Result;
 import shared.communication.Operation_Result;
 import shared.model.*;
 
@@ -33,13 +34,14 @@ public class DownloadBatchHandler implements HttpHandler {
 
         int httpStatus = HttpURLConnection.HTTP_INTERNAL_ERROR;
         int length = 0;
-        Operation_Result result = null;
+        DownloadBatch_Result result = new DownloadBatch_Result();
 
         StringBuilder sb;
         String resultString;
 
         try {
             boolean validated = usersManager.validateUser(params.getUser().getUsername(), params.getUser().getPassword());
+
             if (validated) {
                 sb = new StringBuilder();
 
@@ -51,24 +53,6 @@ public class DownloadBatchHandler implements HttpHandler {
                 Batch batch = batchesManager.getNextAvailableBatch(params.getProjectId());
                 List<Field> fields = fieldsManager.getProjectFields(params.getProjectId());
 
-                sb.append(batch.getBatchId()).append("\n");
-                sb.append(project.getProjectId()).append("\n");
-                sb.append(batch.getPath()).append("\n");
-                sb.append(project.getFirstYCoord()).append("\n");
-                sb.append(project.getRecordsPerImage()).append("\n");
-                sb.append(fields.size()).append("\n");
-                for (Field field : fields) {
-                    sb.append(field.getFieldId()).append("\n");
-                    sb.append(field.getPosition()).append("\n");
-                    sb.append(field.getTitle()).append("\n");
-                    sb.append(field.getHelpHTML()).append("\n");
-                    sb.append(field.getxCoord()).append("\n");
-                    sb.append(field.getWidth()).append("\n");
-                    if (field.getKnownData() != null) {
-                        sb.append(field.getKnownData()).append("\n");
-                    }
-                }
-
                 batch.setStatus("checked out");
                 batchesManager.updateBatch(batch);
 
@@ -76,15 +60,16 @@ public class DownloadBatchHandler implements HttpHandler {
                 user.setCurrentBatch(batch.getBatchId());
                 usersManager.updateUser(user);
 
-                resultString = sb.toString();
+                result.setProject(project);
+                result.setBatch(batch);
+                result.setFields(fields);
             } else {
-                resultString = "FAILED\n";
+                result.setFailed(true);
             }
 
-            result = new Operation_Result(resultString);
             httpStatus = HttpURLConnection.HTTP_OK;
         } catch (Exception e) {
-            result = new Operation_Result("FAILED\n");
+            result.setFailed(true);
             httpStatus = HttpURLConnection.HTTP_INTERNAL_ERROR;
         } finally {
             exchange.sendResponseHeaders(httpStatus, length);

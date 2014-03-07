@@ -6,6 +6,7 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 import shared.communication.Operation_Result;
 import shared.communication.SubmitBatch_Params;
+import shared.communication.SubmitBatch_Result;
 import shared.communication.ValidateUser_Params;
 import shared.model.*;
 
@@ -32,10 +33,8 @@ public class SubmitBatchHandler implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         SubmitBatch_Params params = (SubmitBatch_Params)xmlStream.fromXML(exchange.getRequestBody());
-        StringBuilder sb;
-        String resultString;
+        SubmitBatch_Result result = new SubmitBatch_Result();
 
-        Operation_Result result = null;
         int httpStatus = HttpURLConnection.HTTP_INTERNAL_ERROR;
         int length = 0;
 
@@ -44,22 +43,26 @@ public class SubmitBatchHandler implements HttpHandler {
             if (validated) {
 
                 int batchId = params.getBatchId();
-                int projectId = batchesManager.getProjectIdByBatchId(batchId);
+                User user = params.getUser();
+                if (usersManager.getUserByUsername(user.getUsername()).getCurrentBatch() != batchId) {
+                    throw new Exception("The batch ID inputted does not match the batch ID checked out to the user");
+                }
+                int projectId = batchesManager.getBatchByBatchId(batchId).getProjectId();
                 int recordId = valuesManager.getNextRecordId();
                 List<Field> fields = fieldsManager.getProjectFields(projectId);
                 List<Value> values = new ArrayList<Value>();
-                User user = params.getUser();
                 Batch batch = batchesManager.getBatchByBatchId(batchId);
 
                 String[] recordArray = params.getFieldValues().split(";");
                 for (int i = 0; i < recordArray.length; i++) {
-                    String[] valuesArray = recordArray[i].split(",");
+                    String[] valuesArray = recordArray[i].split(",", -1);
                     for (int j = 0; j < fields.size(); j++) {
                         values.add(new Value(-1, projectId, fields.get(j).getFieldId(), recordId, batchId, valuesArray[j]));
                     }
                     recordId++;
                 }
 
+                user = usersManager.getUserByUsername(user.getUsername());
                 user.setIndexedRecords(user.getIndexedRecords() + recordArray.length);
                 user.setCurrentBatch(-1);
 
@@ -68,16 +71,14 @@ public class SubmitBatchHandler implements HttpHandler {
                 valuesManager.addList(values);
                 usersManager.updateUser(user);
                 batchesManager.updateBatch(batch);
-
-                resultString = "TRUE\n";
             } else {
-                resultString = "FAILED\n";
+                result.setFailed(true);
             }
-            result = new Operation_Result(resultString);
+
             httpStatus = HttpURLConnection.HTTP_OK;
         } catch (Exception e) {
             httpStatus = HttpURLConnection.HTTP_INTERNAL_ERROR;
-            result = new Operation_Result("FAILED\n");
+            result.setFailed(true);
         } finally {
             exchange.sendResponseHeaders(httpStatus, length);
             xmlStream.toXML(result, exchange.getResponseBody());

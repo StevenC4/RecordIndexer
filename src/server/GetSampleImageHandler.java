@@ -5,7 +5,9 @@ import com.sun.net.httpserver.HttpHandler;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 import shared.communication.GetSampleImage_Params;
+import shared.communication.GetSampleImage_Result;
 import shared.communication.Operation_Result;
+import shared.model.Batch;
 import shared.model.BatchesManager;
 import shared.model.UsersManager;
 
@@ -25,7 +27,7 @@ public class GetSampleImageHandler implements HttpHandler {
     UsersManager usersManager = new UsersManager();
     BatchesManager batchesManager = new BatchesManager();
 
-    Operation_Result result = new Operation_Result();
+    GetSampleImage_Result result = new GetSampleImage_Result();
     int httpStatus = HttpURLConnection.HTTP_OK;
     int length = 0;
 
@@ -36,14 +38,14 @@ public class GetSampleImageHandler implements HttpHandler {
         try {
             boolean validated = usersManager.validateUser(params.getUser().getUsername(), params.getUser().getPassword());
             if (validated) {
-                String path = batchesManager.getSampleImage(params.getProjectId());
-                resultString = path + "\n";
+                Batch batch = batchesManager.getSampleImage(params.getProjectId());
+                result.setBatch(batch);
             } else {
-                resultString = "FAILED\n";
+                result.setFailed(true);
             }
-            result = new Operation_Result(resultString);
+
         } catch (Exception e) {
-            result = new Operation_Result("FAILED\n");
+            result.setFailed(true);
             httpStatus = HttpURLConnection.HTTP_INTERNAL_ERROR;
         } finally {
             exchange.sendResponseHeaders(httpStatus, length);

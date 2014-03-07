@@ -29,49 +29,6 @@ public class UsersManager {
     }
 
     /**
-     * Gets all users.
-     *
-     * @return the all users
-     * @throws ModelException the model exception
-     */
-    public static List<User> getAllUsers() throws ModelException {
-
-        Database db = new Database();
-
-        try {
-            db.startTransaction();
-            List<User> users = db.getUsersDAO().getAll();
-            db.endTransaction(true);
-            return users;
-        }
-        catch (DatabaseException e) {
-            db.endTransaction(false);
-            throw new ModelException(e.getMessage(), e);
-        }
-    }
-
-    /**
-     * Add user.
-     *
-     * @param user the user
-     * @throws ModelException the model exception
-     */
-    public static void addUser(User user) throws ModelException {
-
-        Database db = new Database();
-
-        try {
-            db.startTransaction();
-            db.getUsersDAO().add(user);
-            db.endTransaction(true);
-        }
-        catch (DatabaseException e) {
-            db.endTransaction(false);
-            throw new ModelException(e.getMessage(), e);
-        }
-    }
-
-    /**
      * Update user.
      *
      * @param user the user
@@ -84,27 +41,6 @@ public class UsersManager {
         try {
             db.startTransaction();
             db.getUsersDAO().update(user);
-            db.endTransaction(true);
-        }
-        catch (DatabaseException e) {
-            db.endTransaction(false);
-            throw new ModelException(e.getMessage(), e);
-        }
-    }
-
-    /**
-     * Delete user.
-     *
-     * @param user the user
-     * @throws ModelException the model exception
-     */
-    public static void deleteUser(User user) throws ModelException {
-
-        Database db = new Database();
-
-        try {
-            db.startTransaction();
-            db.getUsersDAO().delete(user);
             db.endTransaction(true);
         }
         catch (DatabaseException e) {

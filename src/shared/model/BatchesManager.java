@@ -29,49 +29,6 @@ public class BatchesManager {
     }
 
     /**
-     * Gets all batches.
-     *
-     * @return the all batches
-     * @throws ModelException the model exception
-     */
-    public static List<Batch> getAllBatches() throws ModelException {
-
-        Database db = new Database();
-
-        try {
-            db.startTransaction();
-            List<Batch> batches = db.getBatchesDAO().getAll();
-            db.endTransaction(true);
-            return batches;
-        }
-        catch (DatabaseException e) {
-            db.endTransaction(false);
-            throw new ModelException(e.getMessage(), e);
-        }
-    }
-
-    /**
-     * Add batch.
-     *
-     * @param batch the batch
-     * @throws ModelException the model exception
-     */
-    public static void addBatch(Batch batch) throws ModelException {
-
-        Database db = new Database();
-
-        try {
-            db.startTransaction();
-            db.getBatchesDAO().add(batch);
-            db.endTransaction(true);
-        }
-        catch (DatabaseException e) {
-            db.endTransaction(false);
-            throw new ModelException(e.getMessage(), e);
-        }
-    }
-
-    /**
      * Update batch.
      *
      * @param batch the batch
@@ -84,27 +41,6 @@ public class BatchesManager {
         try {
             db.startTransaction();
             db.getBatchesDAO().update(batch);
-            db.endTransaction(true);
-        }
-        catch (DatabaseException e) {
-            db.endTransaction(false);
-            throw new ModelException(e.getMessage(), e);
-        }
-    }
-
-    /**
-     * Delete batch.
-     *
-     * @param batch the batch
-     * @throws ModelException the model exception
-     */
-    public static void deleteBatch(Batch batch) throws ModelException {
-
-        Database db = new Database();
-
-        try {
-            db.startTransaction();
-            db.getBatchesDAO().delete(batch);
             db.endTransaction(true);
         }
         catch (DatabaseException e) {
@@ -134,14 +70,14 @@ public class BatchesManager {
      * @param projectId the project id
      * @throws ModelException the model exception
      */
-    public static String getSampleImage(int projectId) throws ModelException {
+    public static Batch getSampleImage(int projectId) throws ModelException {
         Database db = new Database();
 
         try {
             db.startTransaction();
-            String path = db.getBatchesDAO().getSampleImage(projectId);
+            Batch batch = db.getBatchesDAO().getSampleImage(projectId);
             db.endTransaction(true);
-            return path;
+            return batch;
         } catch (DatabaseException e) {
             db.endTransaction(false);
             throw new ModelException(e.getMessage(), e);
@@ -169,34 +105,6 @@ public class BatchesManager {
             Batch batch = db.getBatchesDAO().getNextAvailableBatch(projectId);
             db.endTransaction(true);
             return batch;
-        } catch (DatabaseException e) {
-            db.endTransaction(false);
-            throw new ModelException(e.getMessage(), e);
-        }
-    }
-
-    public int getProjectIdByBatchId(int batchId) throws ModelException {
-        Database db = new Database();
-
-        try {
-            db.startTransaction();
-            int projectId = db.getBatchesDAO().getProjectIdByBatchId(batchId);
-            db.endTransaction(true);
-            return projectId;
-        } catch (DatabaseException e) {
-            db.endTransaction(false);
-            throw new ModelException(e.getMessage(), e);
-        }
-    }
-
-    public String getPathByBatchId(int batchId) throws ModelException {
-        Database db = new Database();
-
-        try {
-            db.startTransaction();
-            String path = db.getBatchesDAO().getPathByBatchId(batchId);
-            db.endTransaction(true);
-            return path;
         } catch (DatabaseException e) {
             db.endTransaction(false);
             throw new ModelException(e.getMessage(), e);

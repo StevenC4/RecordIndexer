@@ -9,38 +9,25 @@ package shared.communication;
  */
 public class Operation_Result {
 
-    /**
-     * The result string
-     */
-    private String result;
+    boolean failed;
 
-    /**
-     * Instantiates a new Operation_Result object.
-     */
     public Operation_Result() {
-        result = null;
+        failed = false;
     }
 
-    public Operation_Result(String result) {
-        this.result = result;
+    public void setFailed(boolean failed) {
+        this.failed = failed;
     }
 
-    /**
-     * Gets result.
-     *
-     * @return the result
-     */
-    public String getResult() {
-        return result;
+    public boolean getFailed() {
+        return failed;
     }
 
-    /**
-     * Sets result.
-     *
-     * @param result the result
-     */
-    public void setResult(String result) {
-        this.result = result;
+    public String toString() {
+        if (failed) {
+            return "FAILED\n";
+        } else {
+            return "TRUE\n";
+        }
     }
-
 }

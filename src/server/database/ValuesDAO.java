@@ -1,8 +1,6 @@
 package server.database;
 
 import shared.model.Value;
-
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
@@ -40,136 +38,6 @@ public class ValuesDAO {
         this.db = db;
     }
 
-    /**
-     * Gets all the values from the database.
-     *
-     * @return all the values from the database
-     * @throws DatabaseException the database exception
-     */
-    public List<Value> getAll() throws DatabaseException {
-
-        logger.entering("server.database.ValuesDAO", "getAll");
-
-        String query = "SELECT * FROM entered_values";
-        List<Value> values;
-
-        try {
-            PreparedStatement statement = db.getConnection().prepareStatement(query);
-            ResultSet rs = statement.executeQuery();
-
-            values = new ArrayList<Value>();
-            while (rs.next()) {
-                Value value = new Value();
-                value.setValueId(rs.getInt("value_id"));
-                value.setProjectId(rs.getInt("project_id"));
-                value.setFieldId(rs.getInt("field_id"));
-                value.setBatchId(rs.getInt("batch_id"));
-                value.setRecordId(rs.getInt("record_id"));
-                value.setValue(rs.getString("value"));
-                values.add(value);
-            }
-        } catch (Exception e) {
-            throw new DatabaseException(e.getMessage(), e);
-        }
-
-        logger.exiting("server.database.ValuesDAO", "getAll");
-
-        return values;
-    }
-
-    /**
-     * Add the value to the database.
-     *
-     * @param value the value
-     * @throws DatabaseException the database exception
-     */
-    public void add(Value value) throws DatabaseException {
-
-        logger.entering("server.database.ValuesDAO", "add");
-
-        String query = "INSERT INTO entered_values" +
-                "(project_id, field_id, batch_id, record_id, value) VALUES" +
-                "(?,?,?,?,?)";
-
-        try {
-            PreparedStatement statement = db.getConnection().prepareStatement(query);
-
-            statement.setInt(1, value.getProjectId());
-            statement.setInt(2, value.getFieldId());
-            statement.setInt(3, value.getBatchId());
-            statement.setInt(4, value.getRecordId());
-            statement.setString(5, value.getValue());
-
-            statement.executeUpdate();
-        } catch (Exception e) {
-            throw new DatabaseException(e.getMessage(), e);
-        }
-
-        logger.exiting("server.database.ValuesDAO", "add");
-    }
-
-    /**
-     * Update the value in the database.
-     *
-     * @param value the value
-     * @throws DatabaseException the database exception
-     */
-    public void update(Value value) throws DatabaseException {
-
-        logger.entering("server.database.ValuesDAO", "update");
-
-        String query = "UPDATE entered_values SET " +
-                "project_id = ?, " +
-                "field_id = ?, " +
-                "batch_id = ?, " +
-                "record_id = ?, " +
-                "value = ? " +
-                "WHERE value_id = ?" +
-                "(?,?,?,?,?,?)";
-
-        try {
-            PreparedStatement statement = db.getConnection().prepareStatement(query);
-
-            statement.setInt(1, value.getProjectId());
-            statement.setInt(2, value.getFieldId());
-            statement.setInt(3, value.getBatchId());
-            statement.setInt(4, value.getRecordId());
-            statement.setString(5, value.getValue());
-            statement.setString(6, value.getValue());
-
-            statement.executeUpdate();
-        } catch (Exception e) {
-            throw new DatabaseException(e.getMessage(), e);
-        }
-
-        logger.exiting("server.database.ValuesDAO", "update");
-    }
-
-    /**
-     * Delete the value from the database.
-     *
-     * @param value the value
-     * @throws DatabaseException the database exception
-     */
-    public void delete(Value value) throws DatabaseException {
-
-        logger.entering("server.database.ValuesDAO", "delete");
-
-        String query = "DELETE entered_values WHERE value_id = ?";
-
-        try {
-            PreparedStatement statement = db.getConnection().prepareStatement(query);
-
-            statement.setInt(1, value.getValueId());
-
-            statement.executeUpdate();
-        } catch (Exception e) {
-            throw new DatabaseException(e.getMessage(), e);
-        }
-
-        logger.exiting("server.database.ValuesDAO", "delete");
-    }
-
     public void deleteAll() throws DatabaseException {
 
         logger.entering("server.database.ValuesDAO", "deleteAll");
@@ -189,17 +57,6 @@ public class ValuesDAO {
         }
 
         logger.exiting("server.database.ValuesDAO", "deleteAll");
-    }
-
-    /**
-     * Search the database for values corresponding to certain fields.
-     *
-     * @param fields the fields to search for the values
-     * @param searchValues the search values corresponding to each field
-     * @return the list of values that match the search criteria
-     */
-    public List<Value> search(String fields, String searchValues) {
-        return null;
     }
 
     public void addList(List<Value> valueList) throws DatabaseException {
@@ -239,7 +96,7 @@ public class ValuesDAO {
 
             ResultSet rs = statement.executeQuery();
             if (rs.next()) {
-                recordId = rs.getInt("record_id") + 1;
+                recordId = rs.getInt("MAX(record_id)") + 1;
             } else {
                 recordId = 1;
             }
