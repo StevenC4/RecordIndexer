@@ -217,4 +217,36 @@ public class User {
     public void setCurrentBatch(int currentBatch) {
         this.currentBatch = currentBatch;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        User user = (User) o;
+
+        if (currentBatch != user.currentBatch) return false;
+        if (indexedRecords != user.indexedRecords) return false;
+        if (userId != user.userId) return false;
+        if (!email.equals(user.email)) return false;
+        if (!firstName.equals(user.firstName)) return false;
+        if (!lastName.equals(user.lastName)) return false;
+        if (!password.equals(user.password)) return false;
+        if (!username.equals(user.username)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = userId;
+        result = 31 * result + username.hashCode();
+        result = 31 * result + password.hashCode();
+        result = 31 * result + firstName.hashCode();
+        result = 31 * result + lastName.hashCode();
+        result = 31 * result + email.hashCode();
+        result = 31 * result + indexedRecords;
+        result = 31 * result + currentBatch;
+        return result;
+    }
 }

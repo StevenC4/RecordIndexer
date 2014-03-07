@@ -1,5 +1,6 @@
 package shared.model;
 
+import com.sun.corba.se.impl.logging.UtilSystemException;
 import server.database.Database;
 import server.database.DatabaseException;
 
@@ -48,6 +49,45 @@ public class UsersManager {
             throw new ModelException(e.getMessage(), e);
         }
     }
+
+    /*
+     * For testing
+     */
+
+    public void addUser(User user) throws ModelException {
+        Database db = new Database();
+
+        try {
+            db.startTransaction();
+            db.getUsersDAO().add(user);
+            db.endTransaction(true);
+        }
+        catch (DatabaseException e) {
+            db.endTransaction(false);
+            throw new ModelException(e.getMessage(), e);
+        }
+    }
+
+    public List<User> getAllUsers() throws ModelException {
+        Database db = new Database();
+        List<User> users;
+
+        try {
+            db.startTransaction();
+            users = db.getUsersDAO().getAll();
+            db.endTransaction(true);
+        }
+        catch (DatabaseException e) {
+            db.endTransaction(false);
+            throw new ModelException(e.getMessage(), e);
+        }
+
+        return users;
+    }
+
+    /*
+     * End testing
+     */
 
     /**
      * Validate user.

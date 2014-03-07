@@ -3,6 +3,7 @@ package server.database;
 import shared.model.User;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -98,6 +99,64 @@ public class UsersDAO {
 
         logger.exiting("server.database.UsersDAO", "deleteAll");
     }
+
+    /*
+     * For testing
+     */
+
+    public void add(User user) throws DatabaseException {
+        logger.entering("server.database.UsersDAO", "add");
+
+        String query = "INSERT INTO users" +
+                "(username, password, first_name, last_name, email, indexed_records, current_batch) VALUES" +
+                "(?,?,?,?,?,?,?)";
+
+        try {
+            PreparedStatement statement = db.getConnection().prepareStatement(query);
+
+            statement.setString(1, user.getUsername());
+            statement.setString(2, user.getPassword());
+            statement.setString(3, user.getFirstName());
+            statement.setString(4, user.getLastName());
+            statement.setString(5, user.getEmail());
+            statement.setInt(6, user.getIndexedRecords());
+            statement.setInt(7, user.getCurrentBatch());
+
+            statement.executeUpdate();
+        } catch (Exception e) {
+            throw new DatabaseException(e.getMessage(), e);
+        }
+
+        logger.exiting("server.database.UsersDAO", "add");
+    }
+
+    public List<User> getAll() throws DatabaseException {
+        logger.entering("server.database.UsersDAO", "getAll");
+
+        List<User> users = new ArrayList<User>();
+        String query = "SELECT * FROM users";
+
+        try {
+            PreparedStatement statement = db.getConnection().prepareStatement(query);
+
+            ResultSet rs = statement.executeQuery();
+            while(rs.next()) {
+                users.add(new User(rs.getInt("user_id"), rs.getString("username"), rs.getString("password"),
+                        rs.getString("first_name"), rs.getString("last_name"), rs.getString("email"),
+                        rs.getInt("indexed_records"), rs.getInt("current_batch")));
+            }
+        } catch (Exception e) {
+            throw new DatabaseException(e.getMessage(), e);
+        }
+
+        logger.exiting("server.database.UsersDAO", "getAll");
+
+        return users;
+    }
+
+    /*
+     * End testing
+     */
 
     /**
      * Validate a user's username-password combination.
@@ -206,7 +265,7 @@ public class UsersDAO {
             ResultSet rs = statement.executeQuery();
             if (rs.next()) {
                 user = new User(rs.getInt("user_id"), rs.getString("username"), rs.getString("password"),
-                                rs.getString("first_name"), rs.getString("password"), rs.getString("email"),
+                                rs.getString("first_name"), rs.getString("last_name"), rs.getString("email"),
                                 rs.getInt("indexed_records"), rs.getInt("current_batch"));
             } else {
                 throw new Exception("There are no users associated with the given username");
