@@ -57,7 +57,7 @@ public class SubmitBatchHandler implements HttpHandler {
                 for (int i = 0; i < recordArray.length; i++) {
                     String[] valuesArray = recordArray[i].split(",", -1);
                     for (int j = 0; j < fields.size(); j++) {
-                        values.add(new Value(-1, projectId, fields.get(j).getFieldId(), recordId, batchId, valuesArray[j]));
+                        values.add(new Value(-1, projectId, fields.get(j).getFieldId(), batchId, recordId, valuesArray[j]));
                     }
                     recordId++;
                 }

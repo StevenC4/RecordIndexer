@@ -162,7 +162,11 @@ public class Controller implements IController {
         user.setUsername(getView().getParameterValues()[0]);
         user.setPassword(getView().getParameterValues()[1]);
         params.setUser(user);
-        params.setProjectId(Integer.parseInt(getView().getParameterValues()[2].trim()));
+        try {
+            params.setProjectId(getView().getParameterValues()[2].trim());
+        } catch (Exception e) {
+            params.setProjectId(null);
+        }
         try {
             GetFields_Result result = clientCommunicator.GetFields(params);
             getView().setResponse(result.toString());

@@ -61,8 +61,8 @@ public class Value {
         setValueId(valueId);
         setProjectId(projectId);
         setFieldId(fieldId);
-        setRecordId(recordId);
         setBatchId(batchId);
+        setRecordId(recordId);
         setValue(value);
     }
 

@@ -21,7 +21,6 @@ public class Server {
     private static final int MAX_WAITING_CONNECTIONS = 10;
 
     private HttpServer server;
-    private XStream xmlStream = new XStream(new DomDriver());
 
     private Server() {
         return;
@@ -55,27 +54,40 @@ public class Server {
         server.setExecutor(null); // use the default executor
 
         server.createContext("/DownloadBatch", new DownloadBatchHandler());
-        server.createContext("/DownloadFile", new DownloadFileHandler());
         server.createContext("/GetFields", new GetFieldsHandler());
         server.createContext("/GetProjects", new GetProjectsHandler());
         server.createContext("/GetSampleImage", new GetSampleImageHandler());
         server.createContext("/Search", new SearchHandler());
         server.createContext("/SubmitBatch", new SubmitBatchHandler());
         server.createContext("/ValidateUser", new ValidateUserHandler());
-        server.createContext("/", emptyHandler);
+        server.createContext("/", new DownloadFileHandler());
 
         server.start();
     }
 
-    private HttpHandler emptyHandler = new HttpHandler() {
-
-        @Override
-        public void handle(HttpExchange exchange) throws IOException {
-            System.out.println("GOT HERE");
+    public static Server main1(String[] args) {
+        Server server;
+        try {
+            int port = Integer.parseInt(args[0]);
+            server = new Server(port);
+        } catch (Exception e) {
+            server = new Server();
         }
-    };
+
+        return server;
+    }
 
     public static void main(String[] args) {
-        new Server().run();
+        Server server;
+        try {
+            int port = Integer.parseInt(args[0]);
+            new Server(port).run();
+        } catch (Exception e) {
+            new Server().run();
+        }
+    }
+
+    public void stop() {
+        server.stop(1);
     }
 }

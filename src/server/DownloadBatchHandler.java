@@ -36,9 +36,6 @@ public class DownloadBatchHandler implements HttpHandler {
         int length = 0;
         DownloadBatch_Result result = new DownloadBatch_Result();
 
-        StringBuilder sb;
-        String resultString;
-
         try {
             boolean validated = usersManager.validateUser(params.getUser().getUsername(), params.getUser().getPassword());
 
@@ -64,11 +61,8 @@ public class DownloadBatchHandler implements HttpHandler {
             } else {
                 result.setFailed(true);
             }
-
-//            httpStatus = HttpURLConnection.HTTP_OK;
         } catch (Exception e) {
             result.setFailed(true);
-//            httpStatus = HttpURLConnection.HTTP_INTERNAL_ERROR;
         } finally {
             exchange.sendResponseHeaders(httpStatus, length);
             xmlStream.toXML(result, exchange.getResponseBody());

@@ -44,9 +44,24 @@ public class GetFieldsHandler implements HttpHandler {
             if (validated) {
                 List<Field> fields;
 
-                int projectId = params.getProjectId();
-                if (projectId != -1) {
+                Integer projectId;
+                String projectIdString = (String) params.getProjectId();
+
+                try {
+                    projectId = Integer.parseInt(projectIdString);
+                } catch (Exception e) {
+                    if (projectIdString.equals("")) {
+                        projectId = null;
+                    } else {
+                        throw new Exception("Project ID is not a number or a valid input");
+                    }
+                }
+
+                if (projectId != null) {
                     fields = fieldsManager.getProjectFields(projectId);
+                    if (fields.size() == 0) {
+                        throw new Exception("There project ID provided is not valid");
+                    }
                 } else {
                     List<Project> projects = projectsManager.getAllProjects();
                     fields = new ArrayList<Field>();

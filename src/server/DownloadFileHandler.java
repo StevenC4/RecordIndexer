@@ -4,16 +4,14 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
-import shared.communication.DownloadFile_Params;
-import shared.communication.Operation_Result;
-import shared.communication.ValidateUser_Params;
-import shared.model.Project;
-import shared.model.ProjectsManager;
-import shared.model.UsersManager;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.util.List;
+import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * Created with IntelliJ IDEA.
@@ -33,26 +31,21 @@ public class DownloadFileHandler implements HttpHandler {
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        DownloadFile_Params params = (DownloadFile_Params)xmlStream.fromXML(exchange.getRequestBody());
-        String resultString;
-
-        Operation_Result result = new Operation_Result();
-        int httpStatus = HttpURLConnection.HTTP_INTERNAL_ERROR;
+        int httpStatus = HttpURLConnection.HTTP_OK;
         int length = 0;
-
+        byte[] bytes = new byte[0];
         try {
-            resultString = "True";
-
-
-
-            httpStatus = HttpURLConnection.HTTP_OK;
+            URI uri = exchange.getRequestURI();
+            File file = new File("project_data" + File.separator + "Records" + File.separator + uri.getPath());
+            bytes = Files.readAllBytes(Paths.get(file.getPath()));
         } catch (Exception e) {
-            result.setFailed(true);
             httpStatus = HttpURLConnection.HTTP_INTERNAL_ERROR;
+            length = -1;
         } finally {
             exchange.sendResponseHeaders(httpStatus, length);
-            xmlStream.toXML(result, exchange.getResponseBody());
+            exchange.getResponseBody().write(bytes);
             exchange.getResponseBody().close();
         }
+
     }
 }

@@ -4,9 +4,13 @@ import client.ClientException;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 import shared.communication.*;
+import shared.model.Batch;
+import shared.model.Field;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -23,15 +27,27 @@ public class ClientCommunicator {
 
     private XStream xmlStream;
 
-    private static final String SERVER_HOST = "localhost";
+    private static String SERVER_HOST = "localhost";
     private static int SERVER_PORT = 8081;
     private static final String URL_PREFIX = "http://" + SERVER_HOST + ":" + SERVER_PORT;
+    private static final String URL_PREFIX_2 = URL_PREFIX + "/";
 
     public ClientCommunicator() {
         xmlStream = new XStream(new DomDriver());
     }
 
     public ClientCommunicator(int port) {
+        SERVER_PORT = port;
+        xmlStream = new XStream(new DomDriver());
+    }
+
+    public ClientCommunicator(String host) {
+        SERVER_HOST = host;
+        xmlStream = new XStream(new DomDriver());
+    }
+
+    public ClientCommunicator(String host, int port) {
+        SERVER_HOST = host;
         SERVER_PORT = port;
         xmlStream = new XStream(new DomDriver());
     }
@@ -66,7 +82,17 @@ public class ClientCommunicator {
      * @throws ClientException the client exception
      */
     public GetSampleImage_Result GetSampleImage(GetSampleImage_Params params) throws ClientException {
-        return (GetSampleImage_Result)doPost("/GetSampleImage", params);
+        GetSampleImage_Result result = (GetSampleImage_Result)doPost("/GetSampleImage", params);
+
+        if (!result.getFailed()) {
+            Batch batch = result.getBatch();
+            String path = batch.getPath();
+            path = URL_PREFIX_2 + path;
+            batch.setPath(path);
+            result.setBatch(batch);
+        }
+
+        return result;
     }
 
     /**
@@ -77,7 +103,22 @@ public class ClientCommunicator {
      * @throws ClientException the client exception
      */
     public DownloadBatch_Result DownloadBatch(DownloadBatch_Params params) throws ClientException {
-        return (DownloadBatch_Result)doPost("/DownloadBatch", params);
+        DownloadBatch_Result result = (DownloadBatch_Result)doPost("/DownloadBatch", params);
+
+        if (!result.getFailed()) {
+            result.getBatch().setPath(URL_PREFIX_2 + result.getBatch().getPath());
+            List<Field> fields = new ArrayList<Field>();
+            for (Field field : result.getFields()) {
+                field.setHelpHTML(URL_PREFIX_2 + field.getHelpHTML());
+                if (field.getKnownData() != null) {
+                    field.setKnownData(URL_PREFIX_2 + field.getKnownData());
+                }
+                fields.add(field);
+            }
+            result.setFields(fields);
+        }
+
+        return result;
     }
 
     /**
@@ -110,7 +151,17 @@ public class ClientCommunicator {
      * @throws ClientException the client exception
      */
     public Search_Result Search(Search_Params params) throws ClientException {
-        return (Search_Result)doPost("/Search", params);
+        Search_Result result = (Search_Result)doPost("/Search", params);
+
+        if (!result.getFailed()) {
+            List<String> paths = new ArrayList<String>();
+            for (String path : result.getPaths()) {
+                paths.add(URL_PREFIX_2 + path);
+            }
+            result.setPaths(paths);
+        }
+
+        return result;
     }
 
     /**
