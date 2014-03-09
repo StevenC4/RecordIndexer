@@ -29,27 +29,55 @@ public class ClientCommunicator {
 
     private static String SERVER_HOST = "localhost";
     private static int SERVER_PORT = 8081;
-    private static final String URL_PREFIX = "http://" + SERVER_HOST + ":" + SERVER_PORT;
-    private static final String URL_PREFIX_2 = URL_PREFIX + "/";
+    private static String URL_PREFIX;
+    private static String URL_PREFIX_2;
 
     public ClientCommunicator() {
         xmlStream = new XStream(new DomDriver());
+        setPaths();
     }
 
     public ClientCommunicator(int port) {
         SERVER_PORT = port;
         xmlStream = new XStream(new DomDriver());
+        setPaths();
     }
 
     public ClientCommunicator(String host) {
         SERVER_HOST = host;
         xmlStream = new XStream(new DomDriver());
+        setPaths();
     }
 
     public ClientCommunicator(String host, int port) {
         SERVER_HOST = host;
         SERVER_PORT = port;
         xmlStream = new XStream(new DomDriver());
+        setPaths();
+    }
+
+    public String getServerHost() {
+        return SERVER_HOST;
+    }
+
+    public void setServerHost(String host) {
+        SERVER_HOST = host;
+        setPaths();
+    }
+
+    public int getServerPort() {
+        return SERVER_PORT;
+    }
+
+    public void setServerPort(int port) {
+        SERVER_PORT = port;
+        setPaths();
+    }
+
+    public void setPaths()
+    {
+        URL_PREFIX = "http://" + SERVER_HOST + ":" + SERVER_PORT;
+        URL_PREFIX_2 = URL_PREFIX + "/";
     }
 
     /**
@@ -60,7 +88,18 @@ public class ClientCommunicator {
      * @throws ClientException the client exception
      */
     public ValidateUser_Result ValidateUser(ValidateUser_Params params) throws ClientException {
-        return (ValidateUser_Result)doPost("/ValidateUser", params);
+
+        ValidateUser_Result result;
+
+        Object object = doPost("/ValidateUser", params);
+        if (object instanceof ValidateUser_Result) {
+            result = (ValidateUser_Result)object;
+        } else {
+            result = new ValidateUser_Result();
+            result.setFailed(true);
+        }
+
+        return result;
     }
 
     /**
@@ -71,7 +110,17 @@ public class ClientCommunicator {
      * @throws ClientException the client exception
      */
     public GetProjects_Result GetProjects(ValidateUser_Params params) throws ClientException {
-        return (GetProjects_Result)doPost("/GetProjects", params);
+        GetProjects_Result result;
+
+        Object object = doPost("/GetProjects", params);
+        if (object instanceof GetProjects_Result) {
+            result = (GetProjects_Result)object;
+        } else {
+            result = new GetProjects_Result();
+            result.setFailed(true);
+        }
+
+        return result;
     }
 
     /**
@@ -82,14 +131,22 @@ public class ClientCommunicator {
      * @throws ClientException the client exception
      */
     public GetSampleImage_Result GetSampleImage(GetSampleImage_Params params) throws ClientException {
-        GetSampleImage_Result result = (GetSampleImage_Result)doPost("/GetSampleImage", params);
+        GetSampleImage_Result result;
 
-        if (!result.getFailed()) {
-            Batch batch = result.getBatch();
-            String path = batch.getPath();
-            path = URL_PREFIX_2 + path;
-            batch.setPath(path);
-            result.setBatch(batch);
+        Object object = doPost("/GetSampleImage", params);
+        if (object instanceof GetSampleImage_Result) {
+            result = (GetSampleImage_Result)object;
+
+            if (!result.getFailed()) {
+                Batch batch = result.getBatch();
+                String path = batch.getPath();
+                path = URL_PREFIX_2 + path;
+                batch.setPath(path);
+                result.setBatch(batch);
+            }
+        } else {
+            result = new GetSampleImage_Result();
+            result.setFailed(true);
         }
 
         return result;
@@ -103,19 +160,27 @@ public class ClientCommunicator {
      * @throws ClientException the client exception
      */
     public DownloadBatch_Result DownloadBatch(DownloadBatch_Params params) throws ClientException {
-        DownloadBatch_Result result = (DownloadBatch_Result)doPost("/DownloadBatch", params);
+        DownloadBatch_Result result;
 
-        if (!result.getFailed()) {
-            result.getBatch().setPath(URL_PREFIX_2 + result.getBatch().getPath());
-            List<Field> fields = new ArrayList<Field>();
-            for (Field field : result.getFields()) {
-                field.setHelpHTML(URL_PREFIX_2 + field.getHelpHTML());
-                if (field.getKnownData() != null) {
-                    field.setKnownData(URL_PREFIX_2 + field.getKnownData());
+        Object object = doPost("/DownloadBatch", params);
+        if (object instanceof DownloadBatch_Result) {
+            result = (DownloadBatch_Result)object;
+
+            if (!result.getFailed()) {
+                result.getBatch().setPath(URL_PREFIX_2 + result.getBatch().getPath());
+                List<Field> fields = new ArrayList<Field>();
+                for (Field field : result.getFields()) {
+                    field.setHelpHTML(URL_PREFIX_2 + field.getHelpHTML());
+                    if (field.getKnownData() != null) {
+                        field.setKnownData(URL_PREFIX_2 + field.getKnownData());
+                    }
+                    fields.add(field);
                 }
-                fields.add(field);
+                result.setFields(fields);
             }
-            result.setFields(fields);
+        } else {
+            result = new DownloadBatch_Result();
+            result.setFailed(true);
         }
 
         return result;
@@ -129,7 +194,17 @@ public class ClientCommunicator {
      * @throws ClientException the client exception
      */
     public SubmitBatch_Result SubmitBatch(SubmitBatch_Params params) throws ClientException {
-        return (SubmitBatch_Result)doPost("/SubmitBatch", params);
+        SubmitBatch_Result result;
+
+        Object object = doPost("/SubmitBatch", params);
+        if (object instanceof SubmitBatch_Result) {
+            result = (SubmitBatch_Result)object;
+        } else {
+            result = new SubmitBatch_Result();
+            result.setFailed(true);
+        }
+
+        return result;
     }
 
     /**
@@ -140,7 +215,17 @@ public class ClientCommunicator {
      * @throws ClientException the client exception
      */
     public GetFields_Result GetFields(GetFields_Params params) throws ClientException {
-        return (GetFields_Result)doPost("/GetFields", params);
+        GetFields_Result result;
+
+        Object object = doPost("/GetFields", params);
+        if (object instanceof GetFields_Result) {
+            result = (GetFields_Result)object;
+        } else {
+            result = new GetFields_Result();
+            result.setFailed(true);
+        }
+
+        return result;
     }
 
     /**
@@ -151,14 +236,22 @@ public class ClientCommunicator {
      * @throws ClientException the client exception
      */
     public Search_Result Search(Search_Params params) throws ClientException {
-        Search_Result result = (Search_Result)doPost("/Search", params);
+        Search_Result result;
 
-        if (!result.getFailed()) {
-            List<String> paths = new ArrayList<String>();
-            for (String path : result.getPaths()) {
-                paths.add(URL_PREFIX_2 + path);
+        Object object = doPost("/Search", params);
+        if (object instanceof Search_Result) {
+            result = (Search_Result)object;
+
+            if (!result.getFailed()) {
+                List<String> paths = new ArrayList<String>();
+                for (String path : result.getPaths()) {
+                    paths.add(URL_PREFIX_2 + path);
+                }
+                result.setPaths(paths);
             }
-            result.setPaths(paths);
+        } else {
+            result = new Search_Result();
+            result.setFailed(true);
         }
 
         return result;
@@ -167,11 +260,21 @@ public class ClientCommunicator {
     /**
      * Download file.
      *
-     * @param params the parameters for validation and downloading the file
+     * @param urlPath the path for the requested resource
      * @return an Operation_Result object containing the result string
      */
-    public Operation_Result DownloadFile(DownloadFile_Params params) throws ClientException {
-        return (Operation_Result)doGet("/DownloadFile");
+    public Operation_Result DownloadFile(String urlPath) throws ClientException {
+        Operation_Result result;
+
+        Object object = doGet("/" + urlPath);
+        if (object instanceof Operation_Result) {
+            result = (Operation_Result)object;
+        } else {
+            result = new Operation_Result();
+            result.setFailed(true);
+        }
+
+        return result;
     }
 
     /**
@@ -232,7 +335,8 @@ public class ClientCommunicator {
             }
         }
         catch (Exception e) {
-            throw new ClientException(String.format("doPost failed: %s", e.getMessage()), e);
+            result.setFailed(true);
+//            throw new ClientException(String.format("doPost failed: %s", e.getMessage()), e);
         }
         return result;
     }

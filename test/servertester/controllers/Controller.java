@@ -13,7 +13,7 @@ public class Controller implements IController {
     ClientCommunicator clientCommunicator;
 	
 	public Controller() {
-        clientCommunicator = new ClientCommunicator();
+        clientCommunicator = new ClientCommunicator("localhost", 39640);
 		return;
 	}
 	
@@ -30,9 +30,8 @@ public class Controller implements IController {
 	
 	@Override
 	public void initialize() {
-		getView().setHost("localhost");
-//		getView().setPort("39640");
-		getView().setPort("8081");
+		getView().setHost(clientCommunicator.getServerHost());
+		getView().setPort(Integer.toString(clientCommunicator.getServerPort()));
 		operationSelected();
 	}
 
@@ -76,6 +75,9 @@ public class Controller implements IController {
 
 	@Override
 	public void executeOperation() {
+
+        updateHostAndPort();
+
 		switch (getView().getOperation()) {
 		case VALIDATE_USER:
 			validateUser();
@@ -113,6 +115,7 @@ public class Controller implements IController {
         getView().setRequest("Validate User:\nUsername: " + user.getUsername() + "\nPassword: " + user.getPassword());
         try {
             ValidateUser_Result result = clientCommunicator.ValidateUser(param);
+            System.out.println("TO");
             getView().setResponse(result.toString());
         } catch (Exception e) {}
 	}
@@ -200,5 +203,14 @@ public class Controller implements IController {
             getView().setResponse(result.toString());
         } catch (Exception e) {}
 	}
+
+    private void updateHostAndPort() {
+        if (!getView().getHost().trim().equals("")) {
+            clientCommunicator.setServerHost(getView().getHost().trim());
+        }
+        try {
+            clientCommunicator.setServerPort(Integer.parseInt(getView().getPort()));
+        } catch (Exception e) {}
+    }
 }
 
