@@ -48,7 +48,7 @@ public class DataImporter {
             File fileRecordsXml = new File(args[0]);
             File baseDirectory = fileRecordsXml.getParentFile();
 
-            File outputFolder = new File(PROJECT_DATA + File.separator + baseDirectory.getName());
+            File outputFolder = new File(PROJECT_DATA);
             if (!outputFolder.exists()) {
                 outputFolder.mkdir();
             } else {
@@ -59,7 +59,7 @@ public class DataImporter {
 
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 
-            String newFilePath = PROJECT_DATA + File.separator + baseDirectory.getName() + File.separator + fileRecordsXml.getName();
+            String newFilePath = PROJECT_DATA + File.separator + fileRecordsXml.getName();
             File file = new File(newFilePath);
             Document doc = builder.parse(file);
             doc.normalizeDocument();

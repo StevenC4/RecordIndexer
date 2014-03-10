@@ -35,7 +35,7 @@ public class DownloadFileHandler implements HttpHandler {
         byte[] bytes = new byte[0];
         try {
             URI uri = exchange.getRequestURI();
-            File file = new File("project_data" + File.separator + "Records" + File.separator + uri.getPath());
+            File file = new File("project_data" + File.separator + uri.getPath());
             bytes = Files.readAllBytes(Paths.get(file.getPath()));
         } catch (Exception e) {
             httpStatus = HttpURLConnection.HTTP_INTERNAL_ERROR;
