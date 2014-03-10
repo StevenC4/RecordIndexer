@@ -169,7 +169,7 @@
 	</target>
 	
 	<target name="client-tests" depends="compile" description="run automated client tests">
-		<java classname="client.ClientUnitTests" fork="yes">
+		<java classname="" fork="yes">
 			<classpath>
 				<path refid="all-classpath"/>
 			</classpath>
