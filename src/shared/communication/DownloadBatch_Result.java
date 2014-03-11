@@ -67,6 +67,7 @@ public class DownloadBatch_Result extends Operation_Result {
             sb.append(project.getProjectId()).append("\n");
             sb.append(batch.getPath()).append("\n");
             sb.append(project.getFirstYCoord()).append("\n");
+            sb.append(project.getRecordHeight()).append("\n");
             sb.append(project.getRecordsPerImage()).append("\n");
             sb.append(fields.size()).append("\n");
             for (Field field : fields) {
