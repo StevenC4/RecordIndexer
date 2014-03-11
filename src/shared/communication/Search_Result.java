@@ -52,7 +52,7 @@ public class Search_Result extends Operation_Result {
             for (int i = 0; i < values.size(); i++) {
                 sb.append(values.get(i).getBatchId()).append("\n");
                 sb.append(paths.get(i)).append("\n");
-                sb.append(values.get(i).getRecordId()).append("\n");
+                sb.append(values.get(i).getRecordNum()).append("\n");
                 sb.append(values.get(i).getFieldId()).append("\n");
             }
         }

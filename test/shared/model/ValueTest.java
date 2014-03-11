@@ -21,6 +21,7 @@ public class ValueTest {
     int fieldId;
     int recordId;
     int batchId;
+    int recordNum;
     String value;
 
     @Before
@@ -31,8 +32,9 @@ public class ValueTest {
         fieldId = 3;
         recordId = 4;
         batchId = 5;
+        recordNum = 6;
         value = "value";
-        valueSet = new Value(valueId, projectId, fieldId, batchId, recordId, value);
+        valueSet = new Value(valueId, projectId, fieldId, batchId, recordId, recordNum, value);
     }
 
     @After

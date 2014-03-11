@@ -53,13 +53,16 @@ public class SubmitBatchHandler implements HttpHandler {
                 List<Value> values = new ArrayList<Value>();
                 Batch batch = batchesManager.getBatchByBatchId(batchId);
 
+
+                int recordNum = 1;
                 String[] recordArray = params.getFieldValues().split(";");
                 for (int i = 0; i < recordArray.length; i++) {
                     String[] valuesArray = recordArray[i].split(",", -1);
                     for (int j = 0; j < fields.size(); j++) {
-                        values.add(new Value(-1, projectId, fields.get(j).getFieldId(), batchId, recordId, valuesArray[j]));
+                        values.add(new Value(-1, projectId, fields.get(j).getFieldId(), batchId, recordId, recordNum, valuesArray[j]));
                     }
                     recordId++;
+                    recordNum++;
                 }
 
                 user = usersManager.getUserByUsername(user.getUsername());

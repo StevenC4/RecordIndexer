@@ -28,6 +28,7 @@ public class DataImporter {
     static int fieldId;
     static int recordId;
     static int valueId;
+    static int recordNum;
 
     public static void main(String[] args) {
         try {
@@ -161,6 +162,7 @@ public class DataImporter {
 
             batchList.add(new Batch(batchId, projectId, imagePath, "new"));
 
+            recordNum = 1;
             NodeList records = imageElement.getElementsByTagName("values");
             addRecords(records, fieldIds, valueList);
 
@@ -176,9 +178,10 @@ public class DataImporter {
             for (int j = 0; j < values.getLength(); j++) {
                 String valueString = values.item(j).getTextContent();
 
-                valueList.add(new Value(valueId, projectId, fieldIds.get(j), batchId, recordId, valueString));
+                valueList.add(new Value(valueId, projectId, fieldIds.get(j), batchId, recordId, recordNum, valueString));
                 valueId++;
             }
+            recordNum++;
             recordId++;
         }
     }

@@ -72,22 +72,22 @@ public class ClientCommunicatorTest {
         fields.add(new Field(8, "title8", 19, 4, 350, 15, "help1.html", "knownData7.html"));
         fieldsManager.addList(fields);
 
-        values.add(new Value(1, 1, 1, 1, 1, "Abby"));
-        values.add(new Value(2, 1, 2, 1, 1, "Brittany"));
-        values.add(new Value(3, 1, 1, 1, 2, "Celeste"));
-        values.add(new Value(4, 1, 2, 1, 2, "Daniel"));
-        values.add(new Value(5, 2, 3, 3, 3, "Edward"));
-        values.add(new Value(6, 2, 4, 3, 3, "Fagner"));
-        values.add(new Value(7, 2, 3, 3, 4, "George"));
-        values.add(new Value(8, 2, 4, 3, 4, "Harry"));
-        values.add(new Value(9, 3, 5, 4, 5, "Ingrid"));
-        values.add(new Value(10, 3, 6, 4, 5, "Josie"));
-        values.add(new Value(11, 3, 5, 4, 6, "Karry"));
-        values.add(new Value(12, 3, 6, 4, 6, "Larry"));
-        values.add(new Value(13, 4, 7, 5, 7, "Monty"));
-        values.add(new Value(14, 4, 8, 5, 7, "Norton"));
-        values.add(new Value(15, 4, 7, 6, 8, "Oliver"));
-        values.add(new Value(16, 4, 8, 6, 8, "Patty"));
+        values.add(new Value(1, 1, 1, 1, 1, 1, "Abby"));
+        values.add(new Value(2, 1, 2, 1, 1, 2, "Brittany"));
+        values.add(new Value(3, 1, 1, 1, 2, 3, "Celeste"));
+        values.add(new Value(4, 1, 2, 1, 2, 4, "Daniel"));
+        values.add(new Value(5, 2, 3, 3, 3, 5, "Edward"));
+        values.add(new Value(6, 2, 4, 3, 3, 6, "Fagner"));
+        values.add(new Value(7, 2, 3, 3, 4, 7, "George"));
+        values.add(new Value(8, 2, 4, 3, 4, 8, "Harry"));
+        values.add(new Value(9, 3, 5, 4, 5, 9, "Ingrid"));
+        values.add(new Value(10, 3, 6, 4, 5, 10, "Josie"));
+        values.add(new Value(11, 3, 5, 4, 6, 11, "Karry"));
+        values.add(new Value(12, 3, 6, 4, 6, 12, "Larry"));
+        values.add(new Value(13, 4, 7, 5, 7, 13, "Monty"));
+        values.add(new Value(14, 4, 8, 5, 7, 14, "Norton"));
+        values.add(new Value(15, 4, 7, 6, 8, 15, "Oliver"));
+        values.add(new Value(16, 4, 8, 6, 8, 16, "Patty"));
         valuesManager.addList(values);
     }
 

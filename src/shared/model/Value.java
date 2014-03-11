@@ -31,6 +31,8 @@ public class Value {
      */
     private int batchId;
 
+    private int recordNum;
+
     /**
      * The actual value
      */
@@ -45,6 +47,7 @@ public class Value {
         setFieldId(-1);
         setBatchId(-1);
         setRecordId(-1);
+        setRecordNum(-1);
         setValue(null);
     }
 
@@ -57,15 +60,24 @@ public class Value {
      * @param batchId the batch id
      * @param value the value of the field
      */
-    public Value(int valueId, int projectId, int fieldId, int batchId, int recordId, String value) {
+    public Value(int valueId, int projectId, int fieldId, int batchId, int recordId, int recordNum, String value) {
         setValueId(valueId);
         setProjectId(projectId);
         setFieldId(fieldId);
         setBatchId(batchId);
         setRecordId(recordId);
+        setRecordNum(recordNum);
         setValue(value);
     }
 
+
+    public int getRecordNum() {
+        return recordNum;
+    }
+
+    public void setRecordNum(int recordNum) {
+        this.recordNum = recordNum;
+    }
 
     public int getRecordId() {
         return recordId;

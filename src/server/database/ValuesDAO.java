@@ -47,8 +47,8 @@ public class ValuesDAO {
         logger.entering("server.database.ValuesDAO", "add");
 
         String query = "INSERT INTO entered_values" +
-                "(value_id, project_id, field_id, batch_id, record_id, value) VALUES" +
-                "(?,?,?,?,?,?)";
+                "(value_id, project_id, field_id, batch_id, record_id, record_num, value) VALUES" +
+                "(?,?,?,?,?,?,?)";
 
         try {
             PreparedStatement statement = db.getConnection().prepareStatement(query);
@@ -58,7 +58,8 @@ public class ValuesDAO {
             statement.setInt(3, value.getFieldId());
             statement.setInt(4, value.getBatchId());
             statement.setInt(5, value.getRecordId());
-            statement.setString(6, value.getValue());
+            statement.setInt(6, value.getRecordNum());
+            statement.setString(7, value.getValue());
 
             statement.executeUpdate();
         } catch (Exception e) {
@@ -81,7 +82,8 @@ public class ValuesDAO {
             ResultSet rs = statement.executeQuery();
             while (rs.next()) {
                 values.add(new Value(rs.getInt("value_id"), rs.getInt("project_id"), rs.getInt("field_id"),
-                                     rs.getInt("batch_id"), rs.getInt("record_id"), rs.getString("value")));
+                                     rs.getInt("batch_id"), rs.getInt("record_id"), rs.getInt("record_num"),
+                                     rs.getString("value")));
             }
         } catch (Exception e) {
             throw new DatabaseException(e.getMessage(), e);
@@ -124,15 +126,16 @@ public class ValuesDAO {
         try {
             for (int i = 0; i < valueList.size(); i++) {
                 String query = "INSERT INTO entered_values" +
-                        "(project_id, field_id, batch_id, record_id, value) VALUES" +
-                        "(?,?,?,?,?)";
+                        "(project_id, field_id, batch_id, record_id, record_num, value) VALUES" +
+                        "(?,?,?,?,?,?)";
                 PreparedStatement statement = db.getConnection().prepareStatement(query);
 
                 statement.setInt(1, valueList.get(i).getProjectId());
                 statement.setInt(2, valueList.get(i).getFieldId());
                 statement.setInt(3, valueList.get(i).getBatchId());
                 statement.setInt(4, valueList.get(i).getRecordId());
-                statement.setString(5, valueList.get(i).getValue());
+                statement.setInt(5, valueList.get(i).getRecordNum());
+                statement.setString(6, valueList.get(i).getValue());
 
                 statement.executeUpdate();
             }
@@ -200,9 +203,9 @@ public class ValuesDAO {
 
             ResultSet rs = statement.executeQuery();
             if (rs.next()) {
-                values.add(new Value(rs.getInt("value_id"), rs.getInt("project_id"), rs.getInt("field_id"), rs.getInt("batch_id"), rs.getInt("record_id"), rs.getString("value")));
+                values.add(new Value(rs.getInt("value_id"), rs.getInt("project_id"), rs.getInt("field_id"), rs.getInt("batch_id"), rs.getInt("record_id"), rs.getInt("record_num"), rs.getString("value")));
                 while (rs.next()) {
-                    values.add(new Value(rs.getInt("value_id"), rs.getInt("project_id"), rs.getInt("field_id"), rs.getInt("batch_id"), rs.getInt("record_id"), rs.getString("value")));
+                    values.add(new Value(rs.getInt("value_id"), rs.getInt("project_id"), rs.getInt("field_id"), rs.getInt("batch_id"), rs.getInt("record_id"), rs.getInt("record_num"), rs.getString("value")));
                 }
             } else {
                 throw new Exception("The search did not turn up any results");
