@@ -1,5 +1,9 @@
 .idea/
 out/
 project_data/*
+passoff/
+javadocs/
+build/
+log.txt
 P1_Record_Indexer.iml
 RecordIndexer.tgz
