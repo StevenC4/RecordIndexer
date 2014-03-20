@@ -32,6 +32,12 @@ public class Search_Params {
         searchValues = null;
     }
 
+    public Search_Params(User user, String fields, String searchValues) {
+        this.user = user;
+        this.fields = fields;
+        this.searchValues = searchValues;
+    }
+
     public User getUser() {
         return user;
     }

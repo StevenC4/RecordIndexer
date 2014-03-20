@@ -45,7 +45,7 @@ public class GetFieldsHandler implements HttpHandler {
                 List<Field> fields;
 
                 Integer projectId;
-                String projectIdString = (String) params.getProjectId();
+                String projectIdString = params.getProjectId();
 
                 try {
                     projectId = Integer.parseInt(projectIdString);

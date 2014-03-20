@@ -6,7 +6,10 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
 import shared.communication.*;
 import shared.model.Batch;
 import shared.model.Field;
+import sun.misc.IOUtils;
 
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -263,14 +266,19 @@ public class ClientCommunicator {
      * @param urlPath the path for the requested resource
      * @return an Operation_Result object containing the result string
      */
-    public Operation_Result DownloadFile(String urlPath) throws ClientException {
-        Operation_Result result;
+    public DownloadFile_Results DownloadFile(String urlPath) throws ClientException {
+        DownloadFile_Results result;
 
-        Object object = doGet("/" + urlPath);
-        if (object instanceof Operation_Result) {
-            result = (Operation_Result)object;
+        Object object;
+        if (urlPath.contains(URL_PREFIX)) {
+            object = doGet(urlPath);
         } else {
-            result = new Operation_Result();
+            object = doGet("/" + urlPath);
+        }
+        if (object instanceof Operation_Result) {
+            result = (DownloadFile_Results)object;
+        } else {
+            result = new DownloadFile_Results();
             result.setFailed(true);
         }
 
@@ -287,15 +295,29 @@ public class ClientCommunicator {
     private Object doGet(String urlPath) throws ClientException {
         // Make HTTP GET request to the specified URL,
         // and return the object returned by the server
-        Operation_Result result = new Operation_Result();
+        DownloadFile_Results result = new DownloadFile_Results();
         try {
-            URL url = new URL(URL_PREFIX + urlPath);
+            URL url;
+            if (urlPath.contains(URL_PREFIX)) {
+                url = new URL(urlPath);
+            } else {
+                url = new URL(URL_PREFIX + urlPath);
+            }
             HttpURLConnection connection = (HttpURLConnection)url.openConnection();
             connection.setRequestMethod("GET");
             connection.connect();
 
             if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                result = ((Operation_Result) xmlStream.fromXML(connection.getInputStream()));
+                InputStream is = connection.getInputStream();
+                ByteArrayOutputStream bOut = new ByteArrayOutputStream();
+
+                byte[] bytes = new byte[1024];
+                int read = 0;
+                while ((read = is.read(bytes, 0, bytes.length)) != -1) {
+                    bOut.write(bytes, 0, read);
+                }
+                bOut.flush();
+                result.setBytes(bOut.toByteArray());
             } else {
                 throw new ClientException(String.format("doGet failed"));
             }

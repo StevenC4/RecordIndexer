@@ -23,6 +23,10 @@ public class ValidateUser_Params {
         user = null;
     }
 
+    public ValidateUser_Params(User user) {
+        this.user = user;
+    }
+
     /**
      * Sets user.
      *

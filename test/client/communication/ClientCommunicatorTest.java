@@ -233,11 +233,11 @@ public class ClientCommunicatorTest {
         User user = users.get(0);
         GetFields_Params params = new GetFields_Params();
         params.setUser(user);
-        params.setProjectId(0);
+        params.setProjectId(Integer.toString(0));
         GetFields_Result result = clientCommunicator.GetFields(params);
         assertEquals("FAILED\n", result.toString());
 
-        params.setProjectId(1);
+        params.setProjectId(Integer.toString(1));
         result = clientCommunicator.GetFields(params);
         StringBuilder sb = new StringBuilder();
         sb.append(fields.get(0).getProjectId()).append("\n");

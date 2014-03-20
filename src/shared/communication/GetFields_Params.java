@@ -16,7 +16,7 @@ public class GetFields_Params {
     /**
      * The project ID
      */
-    private Object projectId;
+    private String projectId;
 
     /**
      * Instantiates a new GetFields_Params object.
@@ -24,6 +24,11 @@ public class GetFields_Params {
     public GetFields_Params() {
         user = null;
         projectId = "";
+    }
+
+    public GetFields_Params(User user, String projectId) {
+        this.user = user;
+        this.projectId = projectId;
     }
 
     public User getUser() {
@@ -35,7 +40,7 @@ public class GetFields_Params {
      *
      * @return the project id
      */
-    public Object getProjectId() {
+    public String getProjectId() {
         return projectId;
     }
 
@@ -53,7 +58,7 @@ public class GetFields_Params {
      *
      * @param projectId the project id
      */
-    public void setProjectId(Object projectId) {
+    public void setProjectId(String projectId) {
         this.projectId = projectId;
     }
 
