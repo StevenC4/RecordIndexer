@@ -4,8 +4,10 @@ import client.communication.ClientCommunicator;
 import shared.model.User;
 import view.BatchState;
 import view.login.LoginFrame;
+import view.main.panels.ButtonsPanel;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -22,6 +24,8 @@ public class MainContainerFrame extends JFrame {
 
     BatchState batchState;
 
+    ButtonsPanel buttonsPanel;
+
     JMenuBar menuBar;
     JMenu fileMenu;
     JMenuItem downloadBatchMenuItem;
@@ -32,7 +36,11 @@ public class MainContainerFrame extends JFrame {
         this.batchState = loadBatchState(user);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.addWindowListener(new WindowCloseAdapter());
-        this.setSize(200, 200);
+        this.setPreferredSize(new Dimension(800, 400));
+        this.setLayout(new BorderLayout());
+
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
 
         menuBar = new JMenuBar();
         fileMenu = new JMenu("File");
@@ -51,6 +59,26 @@ public class MainContainerFrame extends JFrame {
         menuBar.add(fileMenu);
 
         this.setJMenuBar(menuBar);
+
+        JSplitPane verticalSplit = new JSplitPane();
+        verticalSplit.setOrientation(JSplitPane.VERTICAL_SPLIT);
+
+        JSplitPane horizontalSplit = new JSplitPane();
+        horizontalSplit.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
+        horizontalSplit.setLeftComponent(new JPanel());
+        horizontalSplit.setRightComponent(new JPanel());
+
+        verticalSplit.setTopComponent(new JPanel());
+        verticalSplit.setBottomComponent(horizontalSplit);
+
+        mainPanel.add(verticalSplit);
+
+        buttonsPanel = new ButtonsPanel(batchState);
+
+        this.add(buttonsPanel, BorderLayout.NORTH);
+        this.add(mainPanel, BorderLayout.CENTER);
+
+        this.pack();
     }
 
     class WindowCloseAdapter extends WindowAdapter {
