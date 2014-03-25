@@ -84,6 +84,17 @@ public class User {
         setCurrentBatch(currentBatch);
     }
 
+    public User(String username, String password) {
+        setUserId(-1);
+        setUsername(username);
+        setPassword(password);
+        setFirstName(null);
+        setLastName(null);
+        setEmail(null);
+        setIndexedRecords(-1);
+        setCurrentBatch(-1);
+    }
+
     /**
      * Gets the user's unique id.
      *

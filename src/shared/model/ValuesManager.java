@@ -3,7 +3,6 @@ package shared.model;
 import server.database.Database;
 import server.database.DatabaseException;
 
-import java.nio.file.attribute.UserDefinedFileAttributeView;
 import java.util.ArrayList;
 import java.util.List;
 

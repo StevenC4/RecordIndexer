@@ -1,5 +1,8 @@
 package view;
 
+import shared.model.User;
+import view.main.MainContainerFrame;
+
 import java.awt.*;
 
 /**
@@ -11,10 +14,34 @@ import java.awt.*;
  */
 public class Frames {
     public static void main(String[] args) {
-        EventQueue.invokeLater(new Runnable() {
+        /*EventQueue.invokeLater(new Runnable() {
             public void run() {
                 LoginFrame frame = new LoginFrame();
+                frame.setLocationRelativeTo(null);
                 frame.setVisible(true);
+            }
+        });*/
+        /*EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                User user = new User("test1", "test1");
+                user.setIndexedRecords(0);
+                user.setFirstName("Test");
+                user.setLastName("One");
+                LoginSuccessDialog frame = new LoginSuccessDialog(new ClientCommunicator(), user);
+                frame.setLocationRelativeTo(null);
+                frame.setVisible(true);
+            }
+        });*/
+        EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                User user = new User("test1", "test1");
+                user.setIndexedRecords(0);
+                user.setFirstName("Test");
+                user.setLastName("One");
+                BatchState batchState = new BatchState(user);
+                MainContainerFrame mainContainerFrame = new MainContainerFrame(batchState.getClientCommunicator(), batchState.getUser());
+                mainContainerFrame.setLocationRelativeTo(null);
+                mainContainerFrame.setVisible(true);
             }
         });
     }
