@@ -5,6 +5,8 @@ import shared.model.User;
 import view.BatchState;
 import view.login.LoginFrame;
 import view.main.panels.ButtonsPanel;
+import view.main.panels.FormEntryPanel;
+import view.main.panels.TableEntryPanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -25,18 +27,21 @@ public class MainContainerFrame extends JFrame {
     BatchState batchState;
 
     ButtonsPanel buttonsPanel;
+    FormEntryPanel formEntryPanel;
+    TableEntryPanel tableEntryPanel;
 
     JMenuBar menuBar;
     JMenu fileMenu;
     JMenuItem downloadBatchMenuItem;
     JMenuItem logoutMenuItem;
+
     JMenuItem exitMenuItem;
 
     public MainContainerFrame(ClientCommunicator clientCommunicator, User user) {
         this.batchState = loadBatchState(user);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.addWindowListener(new WindowCloseAdapter());
-        this.setPreferredSize(new Dimension(800, 400));
+        this.setPreferredSize(new Dimension(890, 575));
         this.setLayout(new BorderLayout());
 
         JPanel mainPanel = new JPanel();
@@ -60,12 +65,20 @@ public class MainContainerFrame extends JFrame {
 
         this.setJMenuBar(menuBar);
 
+        JTabbedPane entryTabbedPane = new JTabbedPane();
+        tableEntryPanel = new TableEntryPanel(batchState);
+        formEntryPanel = new FormEntryPanel(batchState);
+        entryTabbedPane.addTab("Table Entry", tableEntryPanel);
+        entryTabbedPane.addTab("Form Entry", formEntryPanel);
+
         JSplitPane verticalSplit = new JSplitPane();
         verticalSplit.setOrientation(JSplitPane.VERTICAL_SPLIT);
+        verticalSplit.setResizeWeight(.5d);
 
         JSplitPane horizontalSplit = new JSplitPane();
         horizontalSplit.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
-        horizontalSplit.setLeftComponent(new JPanel());
+        horizontalSplit.setResizeWeight(.5d);
+        horizontalSplit.setLeftComponent(entryTabbedPane);
         horizontalSplit.setRightComponent(new JPanel());
 
         verticalSplit.setTopComponent(new JPanel());
@@ -74,6 +87,9 @@ public class MainContainerFrame extends JFrame {
         mainPanel.add(verticalSplit);
 
         buttonsPanel = new ButtonsPanel(batchState);
+
+        batchState.addListener(buttonsPanel);
+        batchState.addListener(formEntryPanel);
 
         this.add(buttonsPanel, BorderLayout.NORTH);
         this.add(mainPanel, BorderLayout.CENTER);

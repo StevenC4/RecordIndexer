@@ -1,9 +1,9 @@
 package view.main.panels;
 
 import view.BatchState;
+import view.BatchState.BatchStateListener;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
 
 /**
@@ -13,7 +13,9 @@ import java.awt.*;
  * Time: 3:42 PM
  * To change this template use File | Settings | File Templates.
  */
-public class ButtonsPanel extends JPanel {
+public class ButtonsPanel extends JPanel implements BatchStateListener {
+
+    BatchState batchState;
 
     JButton ZoomInButton;
     JButton ZoomOutButton;
@@ -23,11 +25,10 @@ public class ButtonsPanel extends JPanel {
     JButton SubmitButton;
 
     public ButtonsPanel(BatchState batchState) {
+        this.setLayout(new FlowLayout(FlowLayout.LEFT));
 
-        //TODO: Anchor buttons left
-        this.setLayout(new GridBagLayout());
-        GridBagConstraints c = new GridBagConstraints();
-        
+        this.batchState = batchState;
+
         ZoomInButton = new JButton("Zoom In");
         ZoomOutButton = new JButton("Zoom Out");
         InvertImageButton = new JButton("Invert Image");
@@ -35,23 +36,53 @@ public class ButtonsPanel extends JPanel {
         SaveButton = new JButton("Save");
         SubmitButton = new JButton("Submit");
 
-        this.setBackground(Color.RED);
+        if (batchState.getCurrentBatch() == null) {
+            disableButtons();
+        }
 
-        c.insets = new Insets(5, 5, 5, 5);
+        this.add(ZoomInButton);
+        this.add(ZoomOutButton);
+        this.add(InvertImageButton);
+        this.add(ToggleHighlightsButton);
+        this.add(SaveButton);
+        this.add(SubmitButton);
+    }
 
-        c.anchor = GridBagConstraints.WEST;
+    private void disableButtons() {
+        ZoomInButton.setEnabled(false);
+        ZoomOutButton.setEnabled(false);
+        InvertImageButton.setEnabled(false);
+        ToggleHighlightsButton.setEnabled(false);
+        SaveButton.setEnabled(false);
+        SubmitButton.setEnabled(false);
+    }
 
-        c.gridx = 0;
-        this.add(ZoomInButton, c);
-        c.gridx = 1;
-        this.add(ZoomOutButton, c);
-        c.gridx = 2;
-        this.add(InvertImageButton, c);
-        c.gridx = 3;
-        this.add(ToggleHighlightsButton, c);
-        c.gridx = 4;
-        this.add(SaveButton, c);
-        c.gridx = 5;
-        this.add(SubmitButton, c);
+    private void enableButtons() {
+        ZoomInButton.setEnabled(true);
+        ZoomOutButton.setEnabled(true);
+        InvertImageButton.setEnabled(true);
+        ToggleHighlightsButton.setEnabled(true);
+        SaveButton.setEnabled(true);
+        SubmitButton.setEnabled(true);
+    }
+
+    @Override
+    public void batchDownloaded() {
+        enableButtons();
+    }
+
+    @Override
+    public void fieldSelected() {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void recordSelected() {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void batchSubmitted() {
+        //To change body of implemented methods use File | Settings | File Templates.
     }
 }
