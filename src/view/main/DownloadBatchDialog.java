@@ -1,7 +1,11 @@
 package view.main;
 
+import shared.communication.DownloadBatch_Params;
+import shared.communication.DownloadBatch_Result;
 import shared.communication.GetProjects_Result;
 import shared.communication.ValidateUser_Params;
+import shared.model.Batch;
+import shared.model.Field;
 import shared.model.Project;
 import view.BatchState;
 import view.login.LoginFrame;
@@ -60,7 +64,6 @@ public class DownloadBatchDialog extends JDialog {
                     projectsComboBox.addItem(project.getTitle());
                 }
                 projectsComboBox.addActionListener(new ProjectsComboBoxListener());
-                batchState.setCurrentProject(projects.get(projectsComboBox.getSelectedIndex()));
 
                 viewSampleButton = new JButton("View Sample");
                 viewSampleButton.addActionListener(new ViewSampleButtonListener());
@@ -90,9 +93,7 @@ public class DownloadBatchDialog extends JDialog {
             } else {
                 throw new Exception("There appears to be a problem with the server");
             }
-        } catch (Exception e) {
-
-        }
+        } catch (Exception e) {}
 
         this.pack();
     }
@@ -128,8 +129,34 @@ public class DownloadBatchDialog extends JDialog {
     class DownloadButtonListener implements ActionListener {
 
         @Override
-        public void actionPerformed(ActionEvent e) {
-            // TODO: Implement DownloadBatch functionality
+        public void actionPerformed(ActionEvent ae) {
+            Project project = projects.get(projectsComboBox.getSelectedIndex());
+
+            try {
+                DownloadBatch_Params params = new DownloadBatch_Params();
+                params.setUser(batchState.getUser());
+                params.setProjectId(project.getProjectId());
+
+                DownloadBatch_Result result = batchState.getClientCommunicator().DownloadBatch(params);
+
+                Batch batch;
+                List<Field> fields;
+
+                if (!result.getFailed()) {
+                    batch = result.getBatch();
+                    fields = result.getFields();
+                } else {
+                    throw new Exception("Failed to download batch");
+                }
+
+                batchState.setCurrentProject(project);
+                batchState.setCurrentFields(fields);
+                batchState.setCurrentBatch(batch);
+            } catch (Exception e) {
+
+            }
+
+            DownloadBatchDialog.this.dispose();
         }
     }
 }
