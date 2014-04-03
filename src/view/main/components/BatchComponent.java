@@ -56,6 +56,7 @@ public class BatchComponent extends JPanel implements BatchState.BatchStateListe
 
         this.addMouseListener(mouseAdapter);
         this.addMouseMotionListener(mouseAdapter);
+        this.addMouseWheelListener(mouseAdapter);
         this.addComponentListener(componentAdapter);
     }
 
@@ -350,7 +351,19 @@ public class BatchComponent extends JPanel implements BatchState.BatchStateListe
 
         @Override
         public void mouseWheelMoved(MouseWheelEvent e) {
-            return;
+            int scrollAmount;
+            if (e.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL) {
+                scrollAmount = e.getUnitsToScroll();
+            } else {
+                scrollAmount = e.getWheelRotation();
+            }
+
+            if (e.getWheelRotation() > 0) {
+                batchState.decrementZoom();
+            }
+            else if (e.getWheelRotation() < 0) {
+                batchState.incrementZoom();
+            }
         }
     };
 
