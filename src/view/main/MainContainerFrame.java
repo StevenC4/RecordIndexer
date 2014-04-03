@@ -1,10 +1,12 @@
 package view.main;
 
-import client.communication.ClientCommunicator;
 import shared.model.User;
 import view.BatchState;
 import view.login.LoginFrame;
+import view.main.components.BatchComponent;
+import view.main.components.ImageNavigationComponent;
 import view.main.panels.ButtonsPanel;
+import view.main.panels.FieldHelpPanel;
 import view.main.panels.FormEntryPanel;
 import view.main.panels.TableEntryPanel;
 
@@ -27,8 +29,11 @@ public class MainContainerFrame extends JFrame {
     BatchState batchState;
 
     ButtonsPanel buttonsPanel;
+    BatchComponent batchComponent;
     FormEntryPanel formEntryPanel;
     TableEntryPanel tableEntryPanel;
+    FieldHelpPanel fieldHelpPanel;
+    ImageNavigationComponent imageNavigationComponent;
 
     JMenuBar menuBar;
     JMenu fileMenu;
@@ -37,7 +42,7 @@ public class MainContainerFrame extends JFrame {
 
     JMenuItem exitMenuItem;
 
-    public MainContainerFrame(ClientCommunicator clientCommunicator, User user) {
+    public MainContainerFrame(User user) {
         this.batchState = loadBatchState(user);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.addWindowListener(new WindowCloseAdapter());
@@ -68,8 +73,14 @@ public class MainContainerFrame extends JFrame {
         JTabbedPane entryTabbedPane = new JTabbedPane();
         tableEntryPanel = new TableEntryPanel(batchState);
         formEntryPanel = new FormEntryPanel(batchState);
-        entryTabbedPane.addTab("Table Entry", tableEntryPanel);
-        entryTabbedPane.addTab("Form Entry", formEntryPanel);
+        entryTabbedPane.addTab("Table Entry", new JScrollPane(tableEntryPanel));
+        entryTabbedPane.addTab("Form Entry", new JScrollPane(formEntryPanel));
+
+        JTabbedPane helpTabbedPane = new JTabbedPane();
+        fieldHelpPanel = new FieldHelpPanel(batchState);
+        imageNavigationComponent = new ImageNavigationComponent(batchState);
+        helpTabbedPane.addTab("Field Help", fieldHelpPanel);
+        helpTabbedPane.addTab("Image Navigation", imageNavigationComponent);
 
         JSplitPane verticalSplit = new JSplitPane();
         verticalSplit.setOrientation(JSplitPane.VERTICAL_SPLIT);
@@ -79,9 +90,14 @@ public class MainContainerFrame extends JFrame {
         horizontalSplit.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
         horizontalSplit.setResizeWeight(.5d);
         horizontalSplit.setLeftComponent(entryTabbedPane);
-        horizontalSplit.setRightComponent(new JPanel());
+        horizontalSplit.setRightComponent(helpTabbedPane);
 
-        verticalSplit.setTopComponent(new JPanel());
+        JPanel batchPanel = new JPanel();
+        batchPanel.setLayout(new BorderLayout());
+        batchComponent = new BatchComponent(batchState);
+        batchPanel.add(batchComponent, BorderLayout.CENTER);
+
+        verticalSplit.setTopComponent(batchPanel);
         verticalSplit.setBottomComponent(horizontalSplit);
 
         mainPanel.add(verticalSplit);
@@ -89,7 +105,11 @@ public class MainContainerFrame extends JFrame {
         buttonsPanel = new ButtonsPanel(batchState);
 
         batchState.addListener(buttonsPanel);
+        batchState.addListener(batchComponent);
+        batchState.addListener(tableEntryPanel);
         batchState.addListener(formEntryPanel);
+        batchState.addListener(fieldHelpPanel);
+        batchState.addListener(imageNavigationComponent);
 
         this.add(buttonsPanel, BorderLayout.NORTH);
         this.add(mainPanel, BorderLayout.CENTER);
@@ -141,7 +161,7 @@ public class MainContainerFrame extends JFrame {
     }
 
     private BatchState loadBatchState(User user) {
-        return new BatchState(new ClientCommunicator(), user);
+        return new BatchState(user);
     }
     /*
         When logging out:

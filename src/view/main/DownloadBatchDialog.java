@@ -42,7 +42,6 @@ public class DownloadBatchDialog extends JDialog {
         this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         this.setTitle("Download Batch");
         this.setLayout(new GridBagLayout());
-//        this.setModal(true);
 
         GridBagConstraints c = new GridBagConstraints();
         c.gridx = 0;
@@ -90,6 +89,8 @@ public class DownloadBatchDialog extends JDialog {
                 c.anchor = GridBagConstraints.WEST;
                 this.add(buttonsPanel, c);
 
+                Project project = projects.get(projectsComboBox.getSelectedIndex());
+                batchState.setCurrentProject(project);
             } else {
                 throw new Exception("There appears to be a problem with the server");
             }
@@ -149,9 +150,7 @@ public class DownloadBatchDialog extends JDialog {
                     throw new Exception("Failed to download batch");
                 }
 
-                batchState.setCurrentProject(project);
-                batchState.setCurrentFields(fields);
-                batchState.setCurrentBatch(batch);
+                batchState.downloadBatch(project, batch, fields);
             } catch (Exception e) {
 
             }
@@ -160,3 +159,5 @@ public class DownloadBatchDialog extends JDialog {
         }
     }
 }
+
+// TODO: If a user has already checked out a batch or the batch is checked out to someone else, show a message saying what happened

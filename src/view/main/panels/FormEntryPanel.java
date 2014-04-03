@@ -1,6 +1,7 @@
 package view.main.panels;
 
 import shared.model.Field;
+import shared.model.Project;
 import view.BatchState;
 import view.BatchState.BatchStateListener;
 
@@ -23,12 +24,18 @@ import java.util.List;
 public class FormEntryPanel extends JPanel implements BatchStateListener {
 
     BatchState batchState;
+    int numRecords;
+    Project currentProject;
     List<Field> fields;
+    Field selectedField;
+    int selectedRecord;
+    String[][] recordValues;
 
     List<JTextField> inputTextFields;
+    Vector<String> v;
 
-    JList fieldsListBox;
-    DefaultListModel fieldsListModel;
+    JList<String> fieldsListBox;
+    ListSelectionModel fieldsListModel;
     JPanel inputPanel;
 
     public FormEntryPanel(BatchState batchState) {
@@ -37,32 +44,35 @@ public class FormEntryPanel extends JPanel implements BatchStateListener {
 
         this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 
-        fieldsListModel = new DefaultListModel();
-        fieldsListBox = new JList(fieldsListModel);
+        v = new Vector<String>();
+
+        fieldsListBox = new JList(v);
+        fieldsListModel = fieldsListBox.getSelectionModel();
         fieldsListBox.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         fieldsListBox.setVisibleRowCount(-1);
+        fieldsListModel.addListSelectionListener(new RecordsListListener());
 
         inputPanel = new JPanel();
         inputPanel.setLayout(new GridBagLayout());
         inputTextFields = new ArrayList<JTextField>();
 
-        if (batchState.getCurrentProject() != null) {
+        if (currentProject != null) {
             populateView();
         }
 
         this.add(new JScrollPane(fieldsListBox));
         this.add(new JScrollPane(inputPanel));
-
     }
 
     private void populateView() {
-        int numRecords = batchState.getCurrentProject().getRecordsPerImage();
+        // Populate the JList with the record numbers
         for (int i = 0; i < numRecords; i++) {
-            fieldsListModel.addElement(i);
+            v.add(Integer.toString(i + 1));
         }
+        fieldsListBox.setListData(v);
+        fieldsListBox.setSelectedIndex(selectedRecord);
 
-        fields = batchState.getCurrentFields();
-
+        // Populate the Form with JLabels and JTextFields
         GridBagConstraints c = new GridBagConstraints();
         c.gridy = 0;
         c.anchor = GridBagConstraints.NORTHWEST;
@@ -86,17 +96,41 @@ public class FormEntryPanel extends JPanel implements BatchStateListener {
 
     @Override
     public void batchDownloaded() {
+        currentProject = batchState.getCurrentProject();
+        numRecords = currentProject.getRecordsPerImage();
+        fields = batchState.getCurrentFields();
+        selectedField = batchState.getSelectedField();
+        selectedRecord = batchState.getSelectedRecord();
+
+        recordValues = new String[numRecords][fields.size()];
+        for (int i = 0; i < numRecords; i++) {
+            for (int j = 0; j < fields.size(); j++) {
+                recordValues[i][j] = "";
+            }
+        }
+
         populateView();
     }
 
     @Override
-    public void fieldSelected() {
+    public void cellSelected() {
+        selectedField = batchState.getSelectedField();
+        selectedRecord = batchState.getSelectedRecord();
+
+        int oldRecordIndex = fieldsListBox.getSelectedIndex();
+        fieldsListBox.setSelectedIndex(selectedRecord);
+
+        updateTextFields(oldRecordIndex, selectedRecord);
+    }
+
+    @Override
+    public void imageZoomed() {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public void recordSelected() {
-        //To change body of implemented methods use File | Settings | File Templates.
+    public void cellUpdated(String value, int row, int col) {
+
     }
 
     @Override
@@ -104,12 +138,39 @@ public class FormEntryPanel extends JPanel implements BatchStateListener {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    private void updateTextFields(int oldIndex, int newIndex) {
+        // Save the form data
+        int j = 0;
+        for (int i = 0; i < inputTextFields.size(); i++) {
+            String text = inputTextFields.get(i).getText();
+            recordValues[oldIndex][i] = text;
+        }
+
+        j = 0;
+        // Clear the form data or repopulate old data
+        for (int i = 0; i < inputTextFields.size(); i++) {
+            String text = recordValues[newIndex][i];
+            inputTextFields.get(i).setText(text);
+        }
+    }
+
     class RecordsListListener implements ListSelectionListener {
 
         @Override
         public void valueChanged(ListSelectionEvent e) {
+            BatchState batchState = FormEntryPanel.this.batchState;
 
-            System.out.println();
+            boolean isAdjusting = e.getValueIsAdjusting();
+            if (isAdjusting) {
+                ListSelectionModel lsm = (ListSelectionModel)e.getSource();
+
+                int newIndex = lsm.getLeadSelectionIndex();
+                int oldIndex = (newIndex == e.getFirstIndex() ? e.getLastIndex() : e.getFirstIndex());
+
+                updateTextFields(oldIndex, newIndex);
+
+                batchState.setSelectedRecord(newIndex);
+            }
         }
     }
 

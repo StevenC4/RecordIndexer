@@ -47,7 +47,7 @@ public class ViewSamplePanel extends JDialog {
 
             Image image = new ImageIcon(imageResult.getBytes()).getImage();
             // Scale image to 50% of original size
-            image = getScaledImage(image, 50);
+            image = getScaledImage(image, 0.5f);
 
             JLabel imageLabel = new JLabel(new ImageIcon(image));
 
@@ -75,14 +75,15 @@ public class ViewSamplePanel extends JDialog {
         }
     }
 
-    private Image getScaledImage(Image srcImg, int percentage){
-        float percent = (float)percentage / 100;
-
+    private Image getScaledImage(Image srcImg, float percentage){
         BufferedImage bufferedImage = new BufferedImage(srcImg.getWidth(null), srcImg.getHeight(null), BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2 = (Graphics2D)bufferedImage.getGraphics();
         g2.drawImage(srcImg, 0, 0, null);
         g2.dispose();
 
-        return bufferedImage.getScaledInstance((Integer)Math.round(srcImg.getWidth(null) * percent), (Integer)Math.round(srcImg.getHeight(null) * percent), Image.SCALE_SMOOTH);
+        int newWidth = Math.round(srcImg.getWidth(null) * percentage);
+        int newHeight = Math.round(srcImg.getHeight(null) * percentage);
+
+        return bufferedImage.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
     }
 }

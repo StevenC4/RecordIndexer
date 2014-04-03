@@ -38,8 +38,7 @@ public class Frames {
                 user.setIndexedRecords(0);
                 user.setFirstName("Test");
                 user.setLastName("One");
-                BatchState batchState = new BatchState(user);
-                MainContainerFrame mainContainerFrame = new MainContainerFrame(batchState.getClientCommunicator(), batchState.getUser());
+                MainContainerFrame mainContainerFrame = new MainContainerFrame(user);
                 mainContainerFrame.setLocationRelativeTo(null);
                 mainContainerFrame.setVisible(true);
             }

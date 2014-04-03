@@ -5,6 +5,8 @@ import view.BatchState.BatchStateListener;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * Created with IntelliJ IDEA.
@@ -30,7 +32,9 @@ public class ButtonsPanel extends JPanel implements BatchStateListener {
         this.batchState = batchState;
 
         ZoomInButton = new JButton("Zoom In");
+        ZoomInButton.addActionListener(new ZoomInButtonListener());
         ZoomOutButton = new JButton("Zoom Out");
+        ZoomOutButton.addActionListener(new ZoomOutListener());
         InvertImageButton = new JButton("Invert Image");
         ToggleHighlightsButton = new JButton("Toggle Highlights");
         SaveButton = new JButton("Save");
@@ -72,17 +76,34 @@ public class ButtonsPanel extends JPanel implements BatchStateListener {
     }
 
     @Override
-    public void fieldSelected() {
+    public void cellSelected() {}
+
+    @Override
+    public void imageZoomed() {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public void recordSelected() {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
+    public void cellUpdated(String value, int row, int col) {}
 
     @Override
     public void batchSubmitted() {
         //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    class ZoomInButtonListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            batchState.incrementZoom();
+        }
+    }
+
+    class ZoomOutListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            batchState.decrementZoom();
+        }
     }
 }

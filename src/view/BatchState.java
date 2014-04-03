@@ -6,6 +6,7 @@ import shared.model.Field;
 import shared.model.Project;
 import shared.model.User;
 
+import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,25 +28,23 @@ public class BatchState implements Serializable {
     Batch currentBatch;      //TODO Constructor
     private List<Field> fields;           //TODO Constructor
     private Field selectedField;          //TODO Constructor
+    private int selectedRecord;
 
+    private Point2D coordinates;
+    private float zoomScale;
+
+    String[][] recordValues;
     List<BatchStateListener> listeners;
-
-    public BatchState() {
-        clientCommunicator = new ClientCommunicator();
-        user = null;
-        listeners = new ArrayList<BatchStateListener>();
-    }
 
     public BatchState(User user) {
         clientCommunicator = new ClientCommunicator();
         this.user = user;
         listeners = new ArrayList<BatchStateListener>();
-    }
 
-    public BatchState(ClientCommunicator clientCommunicator, User user) {
-        this.clientCommunicator = clientCommunicator;
-        this.user = user;
-        listeners = new ArrayList<BatchStateListener>();
+        if (coordinates == null) {
+            coordinates = new Point2D.Double(0, 0);
+            zoomScale = 1;
+        }
     }
 
     public void addListener(BatchStateListener batchStateListener) {
@@ -60,6 +59,23 @@ public class BatchState implements Serializable {
         return clientCommunicator;
     }
 
+    public void downloadBatch(Project project, Batch batch, List<Field> fields) {
+        currentProject = project;
+        currentBatch = batch;
+        this.fields = fields;
+        selectedField = fields.get(0);
+        selectedRecord = 0;
+        recordValues = new String[project.getRecordsPerImage()][fields.size()];
+
+        for (int i = 0; i < currentProject.getRecordsPerImage(); i++) {
+            for (int j = 0; j < fields.size(); j++) {
+                recordValues[i][j] = "";
+            }
+        }
+
+        notifyBatchDownloaded();
+    }
+
     public void setCurrentProject(Project project) {
         currentProject = project;
     }
@@ -68,17 +84,8 @@ public class BatchState implements Serializable {
         return currentProject;
     }
 
-    public void setCurrentBatch(Batch batch) {
-        this.currentBatch = batch;
-        notifyBatchDownloaded();
-    }
-
     public Batch getCurrentBatch() {
         return currentBatch;
-    }
-
-    public void setCurrentFields(List<Field> fields) {
-        this.fields = fields;
     }
 
     public List<Field> getCurrentFields() {
@@ -87,35 +94,94 @@ public class BatchState implements Serializable {
 
     public void setSelectedField(Field field) {
         this.selectedField = field;
-        notifyFieldSelected();
+        notifyCellSelected();
     }
 
     public Field getSelectedField() {
         return selectedField;
     }
 
-    public void notifyBatchDownloaded() {
+    public void setSelectedRecord(int record) {
+        this.selectedRecord = record;
+        notifyCellSelected();
+    }
+
+    public int getSelectedRecord() {
+        return selectedRecord;
+    }
+
+    public void setSelectedCell(Field field, int record) {
+        this.selectedField = field;
+        this.selectedRecord = record;
+        notifyCellSelected();
+    }
+
+    public void setCoordinates(Point2D coordinates) {
+        this.coordinates = coordinates;
+    }
+
+    public Point2D getCoordinates() {
+        return coordinates;
+    }
+
+    public void updateCell(String value, int row, int col) {
+        recordValues[row][col] = value;
+        notifyCellUpdated(value, row, col);
+    }
+
+    public String getCellContents(int row, int col) {
+        return recordValues[row][col];
+    }
+
+    public float getZoomScale() {
+        return zoomScale;
+    }
+
+    public void incrementZoom() {
+        zoomScale /= .75;
+        notifyZoomed();
+    }
+
+    public void decrementZoom() {
+        zoomScale  *= .75;
+        notifyZoomed();
+    }
+
+    private void notifyBatchDownloaded() {
         for (BatchStateListener listener : listeners) {
             listener.batchDownloaded();
         }
     }
 
-    public void notifyFieldSelected() {
+    private void notifyCellSelected() {
         for (BatchStateListener listener : listeners) {
-            listener.fieldSelected();
+            listener.cellSelected();
         }
     }
 
-    public void notifyRecordSelected() {
+    private void notifyZoomed() {
         for (BatchStateListener listener : listeners) {
-            listener.recordSelected();
+            listener.imageZoomed();
+        }
+    }
+
+    private void notifyCellUpdated(String value, int row, int col) {
+        for (BatchStateListener listener : listeners) {
+            listener.cellUpdated(value, row, col);
+        }
+    }
+
+    private void notifyBatchSubmitted() {
+        for (BatchStateListener listener : listeners) {
+            listener.batchSubmitted();
         }
     }
 
     public interface BatchStateListener {
         void batchDownloaded();
-        void fieldSelected();
-        void recordSelected();
+        void cellSelected();
+        void imageZoomed();
+        void cellUpdated(String value, int row, int col);
         void batchSubmitted();
     }
 }

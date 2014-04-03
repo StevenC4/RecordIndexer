@@ -1,0 +1,2 @@
+UPDATE users SET current_batch = -1 WHERE user_id = 1;
+UPDATE batches SET status  = "new" WHERE batch_id = 1;

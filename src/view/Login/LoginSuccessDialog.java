@@ -68,7 +68,7 @@ public class LoginSuccessDialog extends JDialog {
         public void actionPerformed(ActionEvent e) {
             LoginSuccessDialog.this.setVisible(false);
             LoginSuccessDialog.this.dispose();
-            MainContainerFrame mainContainerFrame = new MainContainerFrame(clientCommunicator, user);
+            MainContainerFrame mainContainerFrame = new MainContainerFrame(user);
             mainContainerFrame.setLocationRelativeTo(null);
             mainContainerFrame.setVisible(true);
         }
