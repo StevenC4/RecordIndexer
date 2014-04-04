@@ -1,20 +1,20 @@
 package view.main.components;
 
-import shared.communication.DownloadBatch_Result;
 import shared.communication.DownloadFile_Results;
 import shared.model.Batch;
 import shared.model.Field;
 import shared.model.Project;
 import view.BatchState;
 
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
-import java.util.List;
-import javax.swing.*;
-import java.awt.*;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.*;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -49,6 +49,8 @@ public class BatchComponent extends JPanel implements BatchState.BatchStateListe
     Image image;
     BatchImage batchImage;
     FieldRect fieldRect;
+    private boolean isInverted;
+    private boolean showHighlight;
 
     public BatchComponent(BatchState batchState) {
         this.batchState = batchState;
@@ -82,6 +84,24 @@ public class BatchComponent extends JPanel implements BatchState.BatchStateListe
         g2.fillRect(0,  0, getWidth(), getHeight());
     }
 
+    private void invertImage() {
+        BufferedImage bufferedImage = new BufferedImage(batchImage.image.getWidth(null), batchImage.image.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2 = bufferedImage.createGraphics();
+        g2.drawImage(batchImage.image, 0, 0, null);
+        g2.dispose();
+
+        byte reverse[] = new byte[256];
+        for (int i = 0; i < 256; i++) {
+            reverse[i] = (byte) (255 - i);
+        }
+        LookupTable lookupTable = new ByteLookupTable(0, reverse);
+
+        LookupOp lop = new LookupOp(lookupTable, null);
+        lop.filter(bufferedImage, bufferedImage);
+
+        batchImage.image = bufferedImage;
+    }
+
     @Override
     public void batchDownloaded() {
         project = batchState.getCurrentProject();
@@ -89,6 +109,8 @@ public class BatchComponent extends JPanel implements BatchState.BatchStateListe
         fields = batchState.getCurrentFields();
         selectedField = batchState.getSelectedField();
         selectedRecord = batchState.getSelectedRecord();
+        isInverted = batchState.getIsInverted();
+        showHighlight = batchState.getShowHighlight();
 
         w_originX = 0;
         w_originY = 0;
@@ -103,8 +125,6 @@ public class BatchComponent extends JPanel implements BatchState.BatchStateListe
             int imageWidth = image.getWidth(null);
             int imageHeight = image.getHeight(null);
 
-//            imageOriginX = (getWidth() - image.getWidth(null)) / 2;
-//            imageOriginY = (getHeight() - image.getHeight(null)) / 2;
             imageOriginX = -imageWidth / 2;
             imageOriginY = -imageHeight / 2;
 
@@ -159,6 +179,20 @@ public class BatchComponent extends JPanel implements BatchState.BatchStateListe
     }
 
     @Override
+    public void isInvertedToggled() {
+        isInverted = !isInverted;
+        invertImage();
+        repaint();
+        // TODO: Use rasterop to invert image
+    }
+
+    @Override
+    public void showHighlightToggled() {
+        showHighlight = batchState.getShowHighlight();
+        repaint();
+    }
+
+    @Override
     public void cellUpdated(String value, int row, int col) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -197,11 +231,13 @@ public class BatchComponent extends JPanel implements BatchState.BatchStateListe
         }
 
         public void draw(Graphics2D g2) {
-            Color c = new Color(0, 0, 1, .2f);
+            if (showHighlight) {
+                Color c = new Color(0, 0, 1, .3f);
 
-            g2.setColor(c);
-            g2.fill(rect);
-            g2.drawRect((int)rect.getMinX(), (int)rect.getMinY(), (int)rect.getWidth(), (int)rect.getHeight());
+                g2.setColor(c);
+                g2.fill(rect);
+                g2.drawRect((int)rect.getMinX(), (int)rect.getMinY(), (int)rect.getWidth(), (int)rect.getHeight());
+            }
         }
     }
 
@@ -351,13 +387,6 @@ public class BatchComponent extends JPanel implements BatchState.BatchStateListe
 
         @Override
         public void mouseWheelMoved(MouseWheelEvent e) {
-            int scrollAmount;
-            if (e.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL) {
-                scrollAmount = e.getUnitsToScroll();
-            } else {
-                scrollAmount = e.getWheelRotation();
-            }
-
             if (e.getWheelRotation() > 0) {
                 batchState.decrementZoom();
             }
@@ -393,3 +422,5 @@ public class BatchComponent extends JPanel implements BatchState.BatchStateListe
         }
     };
 }
+
+// TODO: Use LookupOp to invert colors

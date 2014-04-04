@@ -6,7 +6,6 @@ import shared.model.Field;
 import shared.model.Project;
 import shared.model.User;
 
-import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,33 +29,80 @@ public class BatchState implements Serializable {
     private Field selectedField;          //TODO Constructor
     private int selectedRecord;
 
-    private Point2D coordinates;
     private float zoomScale;
+    boolean isInverted;
+    boolean showHighlight;
 
     String[][] recordValues;
     List<BatchStateListener> listeners;
+
+    /***********************Constructors**************************/
 
     public BatchState(User user) {
         clientCommunicator = new ClientCommunicator();
         this.user = user;
         listeners = new ArrayList<BatchStateListener>();
 
-        if (coordinates == null) {
-            coordinates = new Point2D.Double(0, 0);
-            zoomScale = 1;
-        }
+        zoomScale = 1;
+        isInverted = false;
+        showHighlight = true;
+
     }
 
     public void addListener(BatchStateListener batchStateListener) {
         listeners.add(batchStateListener);
     }
 
+    /************************Getters**************************/
+
+    public ClientCommunicator getClientCommunicator() {
+        return clientCommunicator;
+    }
+
     public User getUser() {
         return user;
     }
 
-    public ClientCommunicator getClientCommunicator() {
-        return clientCommunicator;
+    public Project getCurrentProject() {
+        return currentProject;
+    }
+
+    public Batch getCurrentBatch() {
+        return currentBatch;
+    }
+
+    public List<Field> getCurrentFields() {
+        return fields;
+    }
+
+    public Field getSelectedField() {
+        return selectedField;
+    }
+
+    public int getSelectedRecord() {
+        return selectedRecord;
+    }
+
+    public String getCellContents(int row, int col) {
+        return recordValues[row][col];
+    }
+
+    public boolean getIsInverted() {
+        return isInverted;
+    }
+
+    public boolean getShowHighlight() {
+        return showHighlight;
+    }
+
+    public float getZoomScale() {
+        return zoomScale;
+    }
+
+    /*********************************Modifiers************************************/
+
+    public void setCurrentProject(Project project) {
+        currentProject = project;
     }
 
     public void downloadBatch(Project project, Batch batch, List<Field> fields) {
@@ -76,65 +122,15 @@ public class BatchState implements Serializable {
         notifyBatchDownloaded();
     }
 
-    public void setCurrentProject(Project project) {
-        currentProject = project;
-    }
-
-    public Project getCurrentProject() {
-        return currentProject;
-    }
-
-    public Batch getCurrentBatch() {
-        return currentBatch;
-    }
-
-    public List<Field> getCurrentFields() {
-        return fields;
-    }
-
-    public void setSelectedField(Field field) {
-        this.selectedField = field;
-        notifyCellSelected();
-    }
-
-    public Field getSelectedField() {
-        return selectedField;
-    }
-
-    public void setSelectedRecord(int record) {
-        this.selectedRecord = record;
-        notifyCellSelected();
-    }
-
-    public int getSelectedRecord() {
-        return selectedRecord;
-    }
-
     public void setSelectedCell(Field field, int record) {
         this.selectedField = field;
         this.selectedRecord = record;
         notifyCellSelected();
     }
 
-    public void setCoordinates(Point2D coordinates) {
-        this.coordinates = coordinates;
-    }
-
-    public Point2D getCoordinates() {
-        return coordinates;
-    }
-
     public void updateCell(String value, int row, int col) {
         recordValues[row][col] = value;
         notifyCellUpdated(value, row, col);
-    }
-
-    public String getCellContents(int row, int col) {
-        return recordValues[row][col];
-    }
-
-    public float getZoomScale() {
-        return zoomScale;
     }
 
     public void incrementZoom() {
@@ -145,6 +141,16 @@ public class BatchState implements Serializable {
     public void decrementZoom() {
         zoomScale  *= .75;
         notifyZoomed();
+    }
+
+    public void toggleIsInverted() {
+        isInverted = !isInverted;
+        notifyToggleInverted();
+    }
+
+    public void toggleShowHighlight(){
+        showHighlight = !showHighlight;
+        notifyToggleHighlight();
     }
 
     private void notifyBatchDownloaded() {
@@ -165,6 +171,18 @@ public class BatchState implements Serializable {
         }
     }
 
+    private void notifyToggleInverted() {
+        for (BatchStateListener listener : listeners) {
+            listener.isInvertedToggled();
+        }
+    }
+
+    private void notifyToggleHighlight() {
+        for (BatchStateListener listener : listeners) {
+            listener.showHighlightToggled();
+        }
+    }
+
     private void notifyCellUpdated(String value, int row, int col) {
         for (BatchStateListener listener : listeners) {
             listener.cellUpdated(value, row, col);
@@ -179,8 +197,11 @@ public class BatchState implements Serializable {
 
     public interface BatchStateListener {
         void batchDownloaded();
+
         void cellSelected();
         void imageZoomed();
+        void isInvertedToggled();
+        void showHighlightToggled();
         void cellUpdated(String value, int row, int col);
         void batchSubmitted();
     }

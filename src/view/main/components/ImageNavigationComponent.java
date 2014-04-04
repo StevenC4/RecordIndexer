@@ -46,9 +46,7 @@ public class ImageNavigationComponent extends JComponent implements BatchStateLi
     }
 
     @Override
-    public void cellSelected() {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
+    public void cellSelected() {}
 
     @Override
     public void imageZoomed() {
@@ -56,9 +54,13 @@ public class ImageNavigationComponent extends JComponent implements BatchStateLi
     }
 
     @Override
-    public void cellUpdated(String value, int row, int col) {
+    public void isInvertedToggled() {}
 
-    }
+    @Override
+    public void showHighlightToggled() {}
+
+    @Override
+    public void cellUpdated(String value, int row, int col) {}
 
     @Override
     public void batchSubmitted() {

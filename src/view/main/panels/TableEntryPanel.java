@@ -3,17 +3,14 @@ package view.main.panels;
 import shared.model.Batch;
 import shared.model.Field;
 import shared.model.Project;
-
 import view.BatchState;
 import view.BatchState.BatchStateListener;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
 import javax.swing.table.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
 
 /**
@@ -33,12 +30,22 @@ public class TableEntryPanel extends JPanel implements BatchStateListener {
     Batch currentBatch;
     List<Field> fields;
     Field selectedField;
+    int selectedRecord;
+
+    String[][] recordValues;
+
+    Field previousField;
+    int previousRecord;
+
+    boolean indexColumnSelected;
 
     public TableEntryPanel(BatchState batchState) {
         this.batchState = batchState;
         currentProject = batchState.getCurrentProject();
 
         this.setLayout(new GridBagLayout());
+
+        indexColumnSelected = false;
 
         if (currentProject != null) {
             setUpTable();
@@ -54,7 +61,7 @@ public class TableEntryPanel extends JPanel implements BatchStateListener {
             columnNames[i + 1] = fields.get(i).getTitle();
         }
 
-        String[][] recordValues = new String[numRecords][columnNames.length];
+        recordValues = new String[numRecords][columnNames.length];
 
         for (int i = 0; i < numRecords; i++) {
             for (int j = 0; j < columnNames.length; j++) {
@@ -67,13 +74,18 @@ public class TableEntryPanel extends JPanel implements BatchStateListener {
         }
 
         tableModel = new FieldTableModel(columnNames, recordValues);
-        tableModel.addTableModelListener(new FieldTableListener());
         table = new JTable();
+        table.addMouseListener(new MouseFieldListener());
         table.setModel(tableModel);
         table.setSurrendersFocusOnKeystroke(true);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         table.setCellSelectionEnabled(true);
         table.getTableHeader().setReorderingAllowed(false);
+
+        int row = selectedRecord;
+        int col = selectedField.getPosition();
+        table.setRowSelectionInterval(row, row);
+        table.setColumnSelectionInterval(col, col);
 
         DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
         rightRenderer.setHorizontalAlignment(JLabel.RIGHT);
@@ -104,24 +116,44 @@ public class TableEntryPanel extends JPanel implements BatchStateListener {
         currentBatch = batchState.getCurrentBatch();
         fields = batchState.getCurrentFields();
         selectedField = batchState.getSelectedField();
+        selectedRecord = batchState.getSelectedRecord();
+
+        previousField = selectedField;
+        previousRecord = selectedRecord;
 
         setUpTable();
     }
 
     @Override
     public void cellSelected() {
-        int row = batchState.getSelectedRecord();
-        int col = batchState.getSelectedField().getPosition();
+        selectedField = batchState.getSelectedField();
+        selectedRecord = batchState.getSelectedRecord();
+
+        int row = selectedRecord;
+        int col = selectedField.getPosition();
+
+        if (!indexColumnSelected) {
+            table.setRowSelectionInterval(row, row);
+            table.setColumnSelectionInterval(col, col);
+        } else {
+            indexColumnSelected = false;
+        }
     }
 
     @Override
-    public void imageZoomed() {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
+    public void imageZoomed() {}
+
+    @Override
+    public void isInvertedToggled() {}
+
+    @Override
+    public void showHighlightToggled() {}
 
     @Override
     public void cellUpdated(String value, int row, int col) {
-        tableModel.setValueAt(value, row, col + 1);
+        if (!recordValues[row][col].equals(value)) {
+            tableModel.setValueAt(value, row, col + 1);
+        }
     }
 
     @Override
@@ -139,26 +171,32 @@ public class TableEntryPanel extends JPanel implements BatchStateListener {
             this.recordValues = recordValues;
         }
 
+        @Override
         public int getColumnCount() {
             return columnNames.length;
         }
 
+        @Override
         public int getRowCount() {
             return recordValues.length;
         }
 
+        @Override
         public String getColumnName(int col) {
             return columnNames[col];
         }
 
+        @Override
         public Object getValueAt(int row, int col) {
             return recordValues[row][col];
         }
 
+        @Override
         public Class getColumnClass(int c) {
             return getValueAt(0, c).getClass();
         }
 
+        @Override
         public boolean isCellEditable(int row, int col) {
             if (col < 1) {
                 return false;
@@ -167,23 +205,14 @@ public class TableEntryPanel extends JPanel implements BatchStateListener {
             }
         }
 
+        @Override
         public void setValueAt(Object value, int row, int col) {
-            recordValues[row][col] = (String) value;
-            fireTableCellUpdated(row, col);
-        }
-    }
+            if (!recordValues[row][col].equals(value)) {
+                recordValues[row][col] = (String) value;
+                fireTableCellUpdated(row, col);
 
-    class FieldTableListener implements TableModelListener {
-
-        @Override
-        public void tableChanged(TableModelEvent e) {
-        }
-    }
-
-    class FieldCellSelectionListener implements ListSelectionListener {
-
-        @Override
-        public void valueChanged(ListSelectionEvent e) {
+                batchState.updateCell((String) value, row, col - 1);
+            }
         }
     }
 
@@ -214,8 +243,28 @@ public class TableEntryPanel extends JPanel implements BatchStateListener {
             return null;  //To change body of implemented methods use File | Settings | File Templates.
         }
     }
+
+    class MouseFieldListener extends MouseAdapter {
+
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            int row = table.rowAtPoint(e.getPoint());
+            int col = table.columnAtPoint(e.getPoint());
+
+            if (col == 0) {
+                indexColumnSelected = true;
+                col = 1;
+            }
+
+            Field newSelectedField = fields.get(col - 1);
+            int newSelectedRecord = row;
+
+            if (newSelectedField != selectedField || newSelectedRecord != selectedRecord)
+            {
+                batchState.setSelectedCell(newSelectedField, newSelectedRecord);
+            }
+        }
+    }
 }
 
-//User MouseAdapter
-// int selectedColumn = table.columnAtPoint(e.getPoint());
-// int selectedRow = table.rowAtPoint(e.getPoint());
+// TODO: Use cell renderer as a listener - when it iterates through the cells and finds one that is selected, do one thing or another

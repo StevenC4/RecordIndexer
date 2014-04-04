@@ -33,11 +33,18 @@ public class ButtonsPanel extends JPanel implements BatchStateListener {
 
         ZoomInButton = new JButton("Zoom In");
         ZoomInButton.addActionListener(new ZoomInButtonListener());
+
         ZoomOutButton = new JButton("Zoom Out");
         ZoomOutButton.addActionListener(new ZoomOutListener());
+
         InvertImageButton = new JButton("Invert Image");
+        InvertImageButton.addActionListener(new ToggleInvertListener());
+
         ToggleHighlightsButton = new JButton("Toggle Highlights");
+        ToggleHighlightsButton.addActionListener(new ToggleHighlighListener());
+
         SaveButton = new JButton("Save");
+
         SubmitButton = new JButton("Submit");
 
         if (batchState.getCurrentBatch() == null) {
@@ -79,9 +86,13 @@ public class ButtonsPanel extends JPanel implements BatchStateListener {
     public void cellSelected() {}
 
     @Override
-    public void imageZoomed() {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
+    public void imageZoomed() {}
+
+    @Override
+    public void showHighlightToggled() {}
+
+    @Override
+    public void isInvertedToggled() {}
 
     @Override
     public void cellUpdated(String value, int row, int col) {}
@@ -104,6 +115,22 @@ public class ButtonsPanel extends JPanel implements BatchStateListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             batchState.decrementZoom();
+        }
+    }
+
+    class ToggleHighlighListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            batchState.toggleShowHighlight();
+        }
+    }
+
+    class ToggleInvertListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            batchState.toggleIsInverted();
         }
     }
 }

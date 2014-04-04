@@ -64,6 +64,12 @@ public class FieldHelpPanel extends JPanel implements BatchStateListener {
     public void imageZoomed() {}
 
     @Override
+    public void isInvertedToggled() {}
+
+    @Override
+    public void showHighlightToggled() {}
+
+    @Override
     public void cellUpdated(String value, int row, int col) {}
 
     @Override

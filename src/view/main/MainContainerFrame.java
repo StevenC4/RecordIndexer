@@ -49,11 +49,16 @@ public class MainContainerFrame extends JFrame {
         this.setPreferredSize(new Dimension(890, 575));
         this.setLayout(new BorderLayout());
 
-        JPanel mainPanel = new JPanel();
-        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-
         menuBar = new JMenuBar();
         fileMenu = new JMenu("File");
+
+        JSplitPane verticalSplit = new JSplitPane();
+        verticalSplit.setOrientation(JSplitPane.VERTICAL_SPLIT);
+        verticalSplit.setResizeWeight(.5d);
+
+        JSplitPane horizontalSplit = new JSplitPane();
+        horizontalSplit.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
+        horizontalSplit.setResizeWeight(.5d);
 
         downloadBatchMenuItem = new JMenuItem("Download Batch");
         downloadBatchMenuItem.addActionListener(new DownloadBatchMenuItemListener());
@@ -82,13 +87,7 @@ public class MainContainerFrame extends JFrame {
         helpTabbedPane.addTab("Field Help", fieldHelpPanel);
         helpTabbedPane.addTab("Image Navigation", imageNavigationComponent);
 
-        JSplitPane verticalSplit = new JSplitPane();
-        verticalSplit.setOrientation(JSplitPane.VERTICAL_SPLIT);
-        verticalSplit.setResizeWeight(.5d);
 
-        JSplitPane horizontalSplit = new JSplitPane();
-        horizontalSplit.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
-        horizontalSplit.setResizeWeight(.5d);
         horizontalSplit.setLeftComponent(entryTabbedPane);
         horizontalSplit.setRightComponent(helpTabbedPane);
 
@@ -100,8 +99,6 @@ public class MainContainerFrame extends JFrame {
         verticalSplit.setTopComponent(batchPanel);
         verticalSplit.setBottomComponent(horizontalSplit);
 
-        mainPanel.add(verticalSplit);
-
         buttonsPanel = new ButtonsPanel(batchState);
 
         batchState.addListener(buttonsPanel);
@@ -112,9 +109,11 @@ public class MainContainerFrame extends JFrame {
         batchState.addListener(imageNavigationComponent);
 
         this.add(buttonsPanel, BorderLayout.NORTH);
-        this.add(mainPanel, BorderLayout.CENTER);
+        this.add(verticalSplit, BorderLayout.CENTER);
 
         this.pack();
+
+        horizontalSplit.setDividerLocation(getWidth() / 2);
     }
 
     class WindowCloseAdapter extends WindowAdapter {

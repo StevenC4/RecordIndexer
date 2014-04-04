@@ -46,7 +46,7 @@ public class FormEntryPanel extends JPanel implements BatchStateListener {
 
         v = new Vector<String>();
 
-        fieldsListBox = new JList(v);
+        fieldsListBox = new JList<String>(v);
         fieldsListModel = fieldsListBox.getSelectionModel();
         fieldsListBox.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         fieldsListBox.setVisibleRowCount(-1);
@@ -124,13 +124,21 @@ public class FormEntryPanel extends JPanel implements BatchStateListener {
     }
 
     @Override
-    public void imageZoomed() {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
+    public void imageZoomed() {}
+
+    @Override
+    public void isInvertedToggled() {}
+
+    @Override
+    public void showHighlightToggled() {}
 
     @Override
     public void cellUpdated(String value, int row, int col) {
-
+        if (!recordValues[row][col].equals(value)) {
+            recordValues[row][col] = value;
+            JTextField textField = inputTextFields.get(col);
+            textField.setText(value);
+        }
     }
 
     @Override
@@ -138,18 +146,16 @@ public class FormEntryPanel extends JPanel implements BatchStateListener {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    private void updateTextFields(int oldIndex, int newIndex) {
+    private void updateTextFields(int oldRecord, int newRecord) {
         // Save the form data
-        int j = 0;
         for (int i = 0; i < inputTextFields.size(); i++) {
             String text = inputTextFields.get(i).getText();
-            recordValues[oldIndex][i] = text;
+            recordValues[oldRecord][i] = text;
         }
 
-        j = 0;
         // Clear the form data or repopulate old data
         for (int i = 0; i < inputTextFields.size(); i++) {
-            String text = recordValues[newIndex][i];
+            String text = recordValues[newRecord][i];
             inputTextFields.get(i).setText(text);
         }
     }
@@ -164,12 +170,17 @@ public class FormEntryPanel extends JPanel implements BatchStateListener {
             if (isAdjusting) {
                 ListSelectionModel lsm = (ListSelectionModel)e.getSource();
 
-                int newIndex = lsm.getLeadSelectionIndex();
-                int oldIndex = (newIndex == e.getFirstIndex() ? e.getLastIndex() : e.getFirstIndex());
+                int newRow = lsm.getLeadSelectionIndex();
+                int oldRow = (newRow == e.getFirstIndex() ? e.getLastIndex() : e.getFirstIndex());
 
-                updateTextFields(oldIndex, newIndex);
+                int col = selectedField.getPosition() - 1;
+                JTextField textField = inputTextFields.get(col);
+                String newValue = textField.getText();
+                batchState.updateCell(newValue, oldRow, col);
 
-                batchState.setSelectedRecord(newIndex);
+                updateTextFields(oldRow, newRow);
+
+                batchState.setSelectedCell(selectedField, newRow);
             }
         }
     }
@@ -187,11 +198,24 @@ public class FormEntryPanel extends JPanel implements BatchStateListener {
             }
             if (sourceIndex != -1) {
                 Field field = fields.get(sourceIndex);
-                batchState.setSelectedField(field);
+                batchState.setSelectedCell(field, selectedRecord);
             }
         }
 
         @Override
-        public void focusLost(FocusEvent e) {}
+        public void focusLost(FocusEvent e) {
+            int col = -1;
+            for (int i = 0; i < inputTextFields.size(); i++) {
+                if (e.getSource() == inputTextFields.get(i)) {
+                    col = i;
+                    break;
+                }
+            }
+            if (col != -1) {
+                JTextField fieldLeft = inputTextFields.get(col);
+                String newValue = fieldLeft.getText();
+                batchState.updateCell(newValue, selectedRecord, col);
+            }
+        }
     }
 }
