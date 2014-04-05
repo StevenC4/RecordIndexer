@@ -187,6 +187,11 @@ public class BatchComponent extends JPanel implements BatchState.BatchStateListe
     }
 
     @Override
+    public void originMoved() {
+
+    }
+
+    @Override
     public void showHighlightToggled() {
         showHighlight = batchState.getShowHighlight();
         repaint();

@@ -9,8 +9,8 @@ import shared.model.User;
 import view.spell.SpellCorrector;
 import view.spell.SpellCorrectorImpl;
 
+import java.awt.geom.Point2D;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.Serializable;
 import java.util.*;
@@ -34,6 +34,7 @@ public class BatchState implements Serializable {           // TODO: Write code 
     private Field selectedField;          //TODO Constructor
     private int selectedRecord;
 
+    Point2D origin;
     private float zoomScale;
     boolean isInverted;
     boolean showHighlight;
@@ -249,6 +250,12 @@ public class BatchState implements Serializable {           // TODO: Write code 
         }
     }
 
+    private void notifyOriginMoved() {
+        for (BatchStateListener listener : listeners) {
+            listener.originMoved();
+        }
+    }
+
     private void notifyToggleHighlight() {
         for (BatchStateListener listener : listeners) {
             listener.showHighlightToggled();
@@ -273,6 +280,7 @@ public class BatchState implements Serializable {           // TODO: Write code 
         void cellSelected();
         void imageZoomed();
         void isInvertedToggled();
+        void originMoved();
         void showHighlightToggled();
         void cellUpdated(String value, int row, int col);
         void batchSubmitted();
