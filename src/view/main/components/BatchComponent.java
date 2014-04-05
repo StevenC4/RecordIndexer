@@ -33,18 +33,14 @@ public class BatchComponent extends JPanel implements BatchState.BatchStateListe
     Field selectedField;
     int selectedRecord;
 
-    int imageOriginX;
-    int imageOriginY;
+    Point2D imageOrigin;
 
-    private double w_originX;
-    private double w_originY;
+    private Point2D w_origin;
     private double scale;
 
     private boolean dragging;
-    private double w_dragStartX;
-    private double w_dragStartY;
-    private double w_dragStartOriginX;
-    private double w_dragStartOriginY;
+    private Point2D w_dragStart;
+    private Point2D w_dragStartOrigin;
 
     Image image;
     BatchImage batchImage;
@@ -72,7 +68,7 @@ public class BatchComponent extends JPanel implements BatchState.BatchStateListe
         if (batchImage != null) {
             g2.translate(getWidth() / 2, getHeight() / 2);
             g2.scale(scale, scale);
-            g2.translate(-w_originX, -w_originY);
+            g2.translate(-w_origin.getX(), -w_origin.getY());
 
             batchImage.draw(g2);
             fieldRect.draw(g2);
@@ -112,8 +108,7 @@ public class BatchComponent extends JPanel implements BatchState.BatchStateListe
         isInverted = batchState.getIsInverted();
         showHighlight = batchState.getShowHighlight();
 
-        w_originX = 0;
-        w_originY = 0;
+        w_origin = new Point2D.Double(0, 0);
         scale = 1;
 
         try {
@@ -125,10 +120,11 @@ public class BatchComponent extends JPanel implements BatchState.BatchStateListe
             int imageWidth = image.getWidth(null);
             int imageHeight = image.getHeight(null);
 
-            imageOriginX = -imageWidth / 2;
-            imageOriginY = -imageHeight / 2;
+            double imageOriginX = -imageWidth / 2;
+            double imageOriginY = -imageHeight / 2;
+            imageOrigin = new Point2D.Double(imageOriginX, imageOriginY);
 
-            Rectangle2D rect = new Rectangle2D.Double(imageOriginX, imageOriginY, imageWidth, imageHeight);
+            Rectangle2D rect = new Rectangle2D.Double(imageOrigin.getX(), imageOrigin.getY(), imageWidth, imageHeight);
             batchImage = new BatchImage(image, rect);
 
             // DRAW THE SELECTED CELL
@@ -137,8 +133,8 @@ public class BatchComponent extends JPanel implements BatchState.BatchStateListe
 
             int firstX = selectedField.getxCoord();
             int firstY = project.getFirstYCoord();
-            int cellX = imageOriginX + firstX;
-            int cellY = imageOriginY + firstY + (selectedRecord * recordHeight);
+            double cellX = imageOrigin.getX() + firstX;
+            double cellY = imageOrigin.getY() + firstY + (selectedRecord * recordHeight);
             int cellWidth = selectedField.getWidth();
             int cellHeight = recordHeight;
 
@@ -161,8 +157,8 @@ public class BatchComponent extends JPanel implements BatchState.BatchStateListe
 
         int firstX = selectedField.getxCoord();
         int firstY = project.getFirstYCoord();
-        int cellX = imageOriginX + firstX;
-        int cellY = imageOriginY + firstY + (selectedRecord * recordHeight);
+        double cellX = imageOrigin.getX() + firstX;
+        double cellY = imageOrigin.getY() + firstY + (selectedRecord * recordHeight);
         int cellWidth = selectedField.getWidth();
         int cellHeight = recordHeight;
 
@@ -243,10 +239,8 @@ public class BatchComponent extends JPanel implements BatchState.BatchStateListe
 
     private void initDrag() {
         dragging = false;
-        w_dragStartX = 0;
-        w_dragStartY = 0;
-        w_dragStartOriginX = 0;
-        w_dragStartOriginY = 0;
+        w_dragStart = new Point2D.Double(0, 0);
+        w_dragStartOrigin = new Point2D.Double(0, 0);
     }
 
     private MouseAdapter mouseAdapter = new MouseAdapter() {
@@ -259,7 +253,7 @@ public class BatchComponent extends JPanel implements BatchState.BatchStateListe
             AffineTransform transform = new AffineTransform();
             transform.translate(getWidth() / 2, getHeight() / 2);
             transform.scale(scale, scale);
-            transform.translate(-w_originX, -w_originY);
+            transform.translate(-w_origin.getX(), -w_origin.getY());
 
             Point2D d_Pt = new Point2D.Double(d_X, d_Y);
             Point2D w_Pt = new Point2D.Double();
@@ -281,10 +275,10 @@ public class BatchComponent extends JPanel implements BatchState.BatchStateListe
 
             if (hitShape) {
                 dragging = true;
-                w_dragStartX = w_X;
-                w_dragStartY = w_Y;
-                w_dragStartOriginX = w_originX;
-                w_dragStartOriginY = w_originY;
+                w_dragStart = new Point2D.Double(w_X, w_Y);
+                double w_dragStartOriginX = w_origin.getX();
+                double w_dragStartOriginY = w_origin.getY();
+                w_dragStartOrigin = new Point2D.Double(w_dragStartOriginX, w_dragStartOriginY);
             }
         }
 
@@ -297,7 +291,7 @@ public class BatchComponent extends JPanel implements BatchState.BatchStateListe
                 AffineTransform transform = new AffineTransform();
                 transform.translate(getWidth() / 2, getHeight() / 2);
                 transform.scale(scale, scale);
-                transform.translate(-w_dragStartOriginX, -w_dragStartOriginY);
+                transform.translate(-w_dragStartOrigin.getX(), -w_dragStartOrigin.getY());
 
                 Point2D d_Pt = new Point2D.Double(d_X, d_Y);
                 Point2D w_Pt = new Point2D.Double();
@@ -311,11 +305,12 @@ public class BatchComponent extends JPanel implements BatchState.BatchStateListe
                 double w_X = w_Pt.getX();
                 double w_Y = w_Pt.getY();
 
-                double w_deltaX = w_X - w_dragStartX;
-                double w_deltaY = w_Y - w_dragStartY;
+                double w_deltaX = w_X - w_dragStart.getX();
+                double w_deltaY = w_Y - w_dragStart.getY();
 
-                w_originX = w_dragStartOriginX - w_deltaX;
-                w_originY = w_dragStartOriginY - w_deltaY;
+                double w_originX = w_dragStartOrigin.getX() - w_deltaX;
+                double w_originY = w_dragStartOrigin.getY() - w_deltaY;
+                w_origin = new Point2D.Double(w_originX, w_originY);
 
 //                notifyOriginChanged(w_originX, w_originY);
 
@@ -337,7 +332,7 @@ public class BatchComponent extends JPanel implements BatchState.BatchStateListe
                 AffineTransform transform = new AffineTransform();
                 transform.translate(getWidth() / 2, getHeight() / 2);
                 transform.scale(scale, scale);
-                transform.translate(-w_originX, -w_originY);
+                transform.translate(-w_origin.getX(), -w_origin.getY());
 
                 Point2D d_Pt = new Point2D.Double(d_X, d_Y);
                 Point2D w_Pt = new Point2D.Double();
@@ -361,8 +356,8 @@ public class BatchComponent extends JPanel implements BatchState.BatchStateListe
                     int firstX = field.getxCoord();
                     int cellWidth = field.getWidth();
 
-                    int leftX = imageOriginX + firstX;
-                    int rightX = leftX + cellWidth;
+                    double leftX = imageOrigin.getX() + firstX;
+                    double rightX = leftX + cellWidth;
 
                     if (w_X >= leftX && w_X <= rightX) {
                         newSelectedField = field;
@@ -371,8 +366,8 @@ public class BatchComponent extends JPanel implements BatchState.BatchStateListe
                 }
 
                 for (int i = 0; i < project.getRecordsPerImage(); i++) {
-                    int upperY = imageOriginY + firstY + (i * recordHeight);
-                    int lowerY = upperY + recordHeight;
+                    double upperY = imageOrigin.getY() + firstY + (i * recordHeight);
+                    double lowerY = upperY + recordHeight;
                     if (w_Y >= upperY && w_Y <= lowerY) {
                         newSelectedRecord = i;
                         break;
