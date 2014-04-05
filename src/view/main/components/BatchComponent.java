@@ -4,7 +4,7 @@ import shared.communication.DownloadFile_Results;
 import shared.model.Batch;
 import shared.model.Field;
 import shared.model.Project;
-import view.BatchState;
+import view.state.BatchState;
 
 import javax.swing.*;
 import java.awt.*;

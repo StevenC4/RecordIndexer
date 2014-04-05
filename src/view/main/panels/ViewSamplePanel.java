@@ -4,7 +4,7 @@ import shared.communication.DownloadFile_Results;
 import shared.communication.GetSampleImage_Params;
 import shared.communication.GetSampleImage_Result;
 import shared.model.Batch;
-import view.BatchState;
+import view.state.BatchState;
 
 import javax.swing.*;
 import java.awt.*;

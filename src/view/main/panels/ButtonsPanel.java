@@ -1,7 +1,7 @@
 package view.main.panels;
 
-import view.BatchState;
-import view.BatchState.BatchStateListener;
+import view.state.BatchState;
+import view.state.BatchState.BatchStateListener;
 
 import javax.swing.*;
 import java.awt.*;

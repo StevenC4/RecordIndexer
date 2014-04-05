@@ -2,8 +2,8 @@ package view.main.panels;
 
 import shared.communication.DownloadFile_Results;
 import shared.model.Field;
-import view.BatchState;
-import view.BatchState.BatchStateListener;
+import view.state.BatchState;
+import view.state.BatchState.BatchStateListener;
 
 import javax.swing.*;
 import java.util.List;

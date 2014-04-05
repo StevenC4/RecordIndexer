@@ -1,14 +1,19 @@
-package view;
+package view.state;
 
 import client.communication.ClientCommunicator;
+import shared.communication.DownloadFile_Results;
 import shared.model.Batch;
 import shared.model.Field;
 import shared.model.Project;
 import shared.model.User;
+import view.spell.SpellCorrector;
+import view.spell.SpellCorrectorImpl;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -17,7 +22,7 @@ import java.util.List;
  * Time: 12:29 PM
  * To change this template use File | Settings | File Templates.
  */
-public class BatchState implements Serializable {
+public class BatchState implements Serializable {           // TODO: Write code that updates the valueValue field and suggestedWord field
 
     transient ClientCommunicator clientCommunicator;
 
@@ -34,6 +39,9 @@ public class BatchState implements Serializable {
     boolean showHighlight;
 
     String[][] recordValues;
+    Set<String>[][] suggestedWordCells;
+    SpellCorrector spellCorrector;
+
     List<BatchStateListener> listeners;
 
     /***********************Constructors**************************/
@@ -42,10 +50,10 @@ public class BatchState implements Serializable {
         clientCommunicator = new ClientCommunicator();
         this.user = user;
         listeners = new ArrayList<BatchStateListener>();
-
         zoomScale = 1;
         isInverted = false;
         showHighlight = true;
+        spellCorrector = new SpellCorrectorImpl();
 
     }
 
@@ -87,6 +95,10 @@ public class BatchState implements Serializable {
         return recordValues[row][col];
     }
 
+    public Set<String> getSuggestedWordsCell(int row, int col) {
+        return suggestedWordCells[row][col];
+    }
+
     public boolean getIsInverted() {
         return isInverted;
     }
@@ -97,6 +109,29 @@ public class BatchState implements Serializable {
 
     public float getZoomScale() {
         return zoomScale;
+    }
+
+    public Set<String> getSuggestedWords(String word) {
+        Set<String> suggestedWords;
+        try {
+            suggestedWords = spellCorrector.suggestSimilarWord(word);
+        } catch (Exception e) {
+            suggestedWords = new TreeSet<String>();
+        }
+        return suggestedWords;
+    }
+
+    public Set<String> getSuggestedWords(String word, int col) {
+
+        updateDictionary(col);
+
+        Set<String> suggestedWords;
+        try {
+            suggestedWords = spellCorrector.suggestSimilarWord(word);
+        } catch (Exception e) {
+            suggestedWords = new TreeSet<String>();
+        }
+        return suggestedWords;
     }
 
     /*********************************Modifiers************************************/
@@ -111,13 +146,19 @@ public class BatchState implements Serializable {
         this.fields = fields;
         selectedField = fields.get(0);
         selectedRecord = 0;
-        recordValues = new String[project.getRecordsPerImage()][fields.size()];
 
+        recordValues = new String[project.getRecordsPerImage()][fields.size()];
+        suggestedWordCells = new TreeSet[project.getRecordsPerImage()][fields.size()];
         for (int i = 0; i < currentProject.getRecordsPerImage(); i++) {
             for (int j = 0; j < fields.size(); j++) {
                 recordValues[i][j] = "";
+                Set<String> set = new TreeSet<String>();
+                set.add("");
+                suggestedWordCells[i][j] = set;
             }
         }
+
+        updateDictionary(selectedField.getPosition() - 1);
 
         notifyBatchDownloaded();
     }
@@ -126,10 +167,12 @@ public class BatchState implements Serializable {
         this.selectedField = field;
         this.selectedRecord = record;
         notifyCellSelected();
+        updateDictionary(field.getPosition() - 1);
     }
 
     public void updateCell(String value, int row, int col) {
         recordValues[row][col] = value;
+        suggestedWordCells[row][col] = getSuggestedWords(value, col);
         notifyCellUpdated(value, row, col);
     }
 
@@ -152,6 +195,35 @@ public class BatchState implements Serializable {
         showHighlight = !showHighlight;
         notifyToggleHighlight();
     }
+
+    public void updateDictionary(int col) {
+
+        try {
+            String url = fields.get(col).getKnownData();
+            DownloadFile_Results results = clientCommunicator.DownloadFile(url);
+
+            byte[] bytes = results.getBytes();
+
+            String fileName = "resources" + File.separator + "knowndata" + File.separator + selectedField.getTitle() + "_" + currentProject.getTitle() + ".txt";
+            File resources = new File("resources");
+            if (!resources.exists()) {
+                resources.mkdir();
+            }
+            File knowndata = new File("resources" + File.separator + "knowndata");
+            if (!knowndata.exists()) {
+                knowndata.mkdir();
+            }
+
+            FileOutputStream fos = new FileOutputStream(fileName);
+            fos.write(bytes);
+            fos.close();
+
+            File dictionaryFile = new File(fileName);
+            spellCorrector.useDictionary(dictionaryFile);
+        } catch (Exception e) {}
+    }
+
+    /************************Notifiers************************/
 
     private void notifyBatchDownloaded() {
         for (BatchStateListener listener : listeners) {

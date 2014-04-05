@@ -1,7 +1,7 @@
 package view.main;
 
 import shared.model.User;
-import view.BatchState;
+import view.state.BatchState;
 import view.login.LoginFrame;
 import view.main.components.BatchComponent;
 import view.main.components.ImageNavigationComponent;
@@ -11,6 +11,8 @@ import view.main.panels.FormEntryPanel;
 import view.main.panels.TableEntryPanel;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -35,6 +37,8 @@ public class MainContainerFrame extends JFrame {
     FieldHelpPanel fieldHelpPanel;
     ImageNavigationComponent imageNavigationComponent;
 
+
+    JTabbedPane entryTabbedPane;
     JMenuBar menuBar;
     JMenu fileMenu;
     JMenuItem downloadBatchMenuItem;
@@ -75,11 +79,12 @@ public class MainContainerFrame extends JFrame {
 
         this.setJMenuBar(menuBar);
 
-        JTabbedPane entryTabbedPane = new JTabbedPane();
+        entryTabbedPane = new JTabbedPane();
         tableEntryPanel = new TableEntryPanel(batchState);
         formEntryPanel = new FormEntryPanel(batchState);
         entryTabbedPane.addTab("Table Entry", new JScrollPane(tableEntryPanel));
         entryTabbedPane.addTab("Form Entry", new JScrollPane(formEntryPanel));
+        entryTabbedPane.addChangeListener(new EntryPaneTabListener());
 
         JTabbedPane helpTabbedPane = new JTabbedPane();
         fieldHelpPanel = new FieldHelpPanel(batchState);
@@ -156,6 +161,20 @@ public class MainContainerFrame extends JFrame {
         public void actionPerformed(ActionEvent e) {
             // Serialize batch
             MainContainerFrame.this.dispose();
+        }
+    }
+
+    class EntryPaneTabListener implements ChangeListener {
+
+        @Override
+        public void stateChanged(ChangeEvent e) {
+            if (entryTabbedPane.getSelectedIndex() == 0) {
+                formEntryPanel.deselectTab();
+                tableEntryPanel.selectTab();
+            } else {
+                tableEntryPanel.deselectTab();
+                formEntryPanel.selectTab();
+            }
         }
     }
 

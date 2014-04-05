@@ -6,6 +6,7 @@ javadocs/
 build/
 Sample/
 database/
+resources/knowndata/
 log.txt
 P1_Record_Indexer.iml
 RecordIndexer.tgz

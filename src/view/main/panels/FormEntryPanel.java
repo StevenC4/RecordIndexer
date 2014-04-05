@@ -2,15 +2,16 @@ package view.main.panels;
 
 import shared.model.Field;
 import shared.model.Project;
-import view.BatchState;
-import view.BatchState.BatchStateListener;
+import view.main.dialog.SuggestedWordDialog;
+import view.state.BatchState;
+import view.state.BatchState.BatchStateListener;
+import view.state.SuggestedWordState;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
+import java.awt.event.*;
 import java.util.*;
 import java.util.List;
 
@@ -30,26 +31,38 @@ public class FormEntryPanel extends JPanel implements BatchStateListener {
     Field selectedField;
     int selectedRecord;
     String[][] recordValues;
+    private Set<String>[][] suggestedWordCells;
 
     List<JTextField> inputTextFields;
-    Vector<String> v;
 
+    JPopupMenu popupMenu;
+    int popupRow;
+    int popupCol;
+
+    Vector<String> v;
     JList<String> fieldsListBox;
     ListSelectionModel fieldsListModel;
     JPanel inputPanel;
 
+    boolean tabSelected;
+
     public FormEntryPanel(BatchState batchState) {
-
         this.batchState = batchState;
-
         this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 
-        v = new Vector<String>();
+        tabSelected = false;
 
+        popupMenu = new JPopupMenu();
+        JMenuItem item = new JMenuItem("See Suggestions");
+        item.addActionListener(new SuggestionMenuListener());
+        popupMenu.add(item);
+
+        v = new Vector<String>();
         fieldsListBox = new JList<String>(v);
         fieldsListModel = fieldsListBox.getSelectionModel();
         fieldsListBox.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         fieldsListBox.setVisibleRowCount(-1);
+        fieldsListBox.addMouseListener(new RecordListMouseListener());
         fieldsListModel.addListSelectionListener(new RecordsListListener());
 
         inputPanel = new JPanel();
@@ -83,6 +96,8 @@ public class FormEntryPanel extends JPanel implements BatchStateListener {
             JLabel label = new JLabel(field.getTitle());
             JTextField textField = new JTextField(9);
             textField.addFocusListener(new TextPanesFocusListener());
+            textField.addKeyListener(new TextFieldKeyAdapter());
+            textField.addMouseListener(new TextFieldMouseAdapter());
 
             c.gridx = 0;
             inputPanel.add(label, c);
@@ -92,6 +107,19 @@ public class FormEntryPanel extends JPanel implements BatchStateListener {
 
             inputTextFields.add(textField);
         }
+
+        if (tabSelected) {
+            inputTextFields.get(selectedField.getPosition() - 1).requestFocus();
+        }
+    }
+
+    public void selectTab() {
+        tabSelected = true;
+        inputTextFields.get(selectedField.getPosition() - 1).requestFocus();
+    }
+
+    public void deselectTab() {
+        tabSelected = false;
     }
 
     @Override
@@ -103,9 +131,11 @@ public class FormEntryPanel extends JPanel implements BatchStateListener {
         selectedRecord = batchState.getSelectedRecord();
 
         recordValues = new String[numRecords][fields.size()];
+        suggestedWordCells = new TreeSet[numRecords][fields.size()];
         for (int i = 0; i < numRecords; i++) {
             for (int j = 0; j < fields.size(); j++) {
-                recordValues[i][j] = "";
+                recordValues[i][j] = batchState.getCellContents(i, j);
+                suggestedWordCells[i][j] = batchState.getSuggestedWordsCell(i, j);
             }
         }
 
@@ -114,13 +144,19 @@ public class FormEntryPanel extends JPanel implements BatchStateListener {
 
     @Override
     public void cellSelected() {
-        selectedField = batchState.getSelectedField();
-        selectedRecord = batchState.getSelectedRecord();
+        if (selectedRecord != batchState.getSelectedRecord() || selectedField != batchState.getSelectedField()) {
+            selectedField = batchState.getSelectedField();
+            selectedRecord = batchState.getSelectedRecord();
 
-        int oldRecordIndex = fieldsListBox.getSelectedIndex();
-        fieldsListBox.setSelectedIndex(selectedRecord);
+            int oldRecordIndex = fieldsListBox.getSelectedIndex();
+            fieldsListBox.setSelectedIndex(selectedRecord);
 
-        updateTextFields(oldRecordIndex, selectedRecord);
+            updateTextFields(oldRecordIndex, selectedRecord);
+
+            if (tabSelected) {
+                inputTextFields.get(selectedField.getPosition() - 1).requestFocus();
+            }
+        }
     }
 
     @Override
@@ -135,15 +171,38 @@ public class FormEntryPanel extends JPanel implements BatchStateListener {
     @Override
     public void cellUpdated(String value, int row, int col) {
         if (!recordValues[row][col].equals(value)) {
+            Set<String> suggestedWords = batchState.getSuggestedWordsCell(row, col);
+
             recordValues[row][col] = value;
-            JTextField textField = inputTextFields.get(col);
-            textField.setText(value);
+            suggestedWordCells[row][col] = suggestedWords;
+            if (row == selectedRecord) {
+                JTextField textField = inputTextFields.get(col);
+                textField.setText(value);
+
+                boolean contains = contains(suggestedWords, value);
+                if (suggestedWordCells[row][col].size() == 1 && contains) {
+                    textField.setBackground(Color.WHITE);
+                } else {
+                    textField.setBackground(Color.RED);
+                }
+            }
         }
     }
 
     @Override
     public void batchSubmitted() {
         //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    private boolean contains(Set<String> suggestedWords, String value) {
+        boolean contains = false;
+        for (String word : suggestedWords) {
+            if (value.compareToIgnoreCase(word) == 0) {
+                contains = true;
+                break;
+            }
+        }
+        return contains;
     }
 
     private void updateTextFields(int oldRecord, int newRecord) {
@@ -155,8 +214,17 @@ public class FormEntryPanel extends JPanel implements BatchStateListener {
 
         // Clear the form data or repopulate old data
         for (int i = 0; i < inputTextFields.size(); i++) {
+            JTextField textField = inputTextFields.get(i);
             String text = recordValues[newRecord][i];
-            inputTextFields.get(i).setText(text);
+            textField.setText(text);
+
+            Set<String> suggestedWords = suggestedWordCells[newRecord][i];
+            boolean contains = contains(suggestedWords, text);
+            if (suggestedWords.size() == 1 && contains) {
+                textField.setBackground(Color.WHITE);
+            } else {
+                textField.setBackground(Color.RED);
+            }
         }
     }
 
@@ -168,7 +236,7 @@ public class FormEntryPanel extends JPanel implements BatchStateListener {
 
             boolean isAdjusting = e.getValueIsAdjusting();
             if (isAdjusting) {
-                ListSelectionModel lsm = (ListSelectionModel)e.getSource();
+                ListSelectionModel lsm = (ListSelectionModel) e.getSource();
 
                 int newRow = lsm.getLeadSelectionIndex();
                 int oldRow = (newRow == e.getFirstIndex() ? e.getLastIndex() : e.getFirstIndex());
@@ -181,6 +249,17 @@ public class FormEntryPanel extends JPanel implements BatchStateListener {
                 updateTextFields(oldRow, newRow);
 
                 batchState.setSelectedCell(selectedField, newRow);
+            }
+        }
+    }
+
+    class RecordListMouseListener extends MouseAdapter {
+
+        @Override
+        public void mousePressed(MouseEvent e) {
+            int recordIndex = fieldsListBox.locationToIndex(e.getPoint());
+            if (recordIndex == selectedRecord) {
+                inputTextFields.get(selectedField.getPosition() - 1).requestFocus();
             }
         }
     }
@@ -216,6 +295,75 @@ public class FormEntryPanel extends JPanel implements BatchStateListener {
                 String newValue = fieldLeft.getText();
                 batchState.updateCell(newValue, selectedRecord, col);
             }
+        }
+    }
+
+    class TextFieldMouseAdapter extends MouseAdapter {
+
+        @Override
+        public void mousePressed(MouseEvent e) {
+            if (e.getModifiers() == MouseEvent.BUTTON3_MASK) {
+                int col = -1;
+                for (int i = 0; i < inputTextFields.size(); i++) {
+                    if (e.getSource() == inputTextFields.get(i)) {
+                        col = i;
+                        break;
+                    }
+                }
+
+                if (col != -1) {
+                    popupRow = selectedRecord;
+                    popupCol = col;
+
+                    Set<String> suggestedWords = suggestedWordCells[popupRow][popupCol];
+                    boolean contains = contains(suggestedWords, recordValues[popupRow][popupCol]);
+
+                    if (suggestedWords.size() != 1 || !contains) {
+                        popupMenu.show(inputTextFields.get(col), e.getX(), e.getY());
+                    }
+                }
+            }
+        }
+    }
+
+    class TextFieldKeyAdapter extends KeyAdapter {
+        @Override
+        public void keyPressed(KeyEvent e) {
+            if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                int col = -1;
+                for (int i = 0; i < inputTextFields.size(); i++) {
+                    if (e.getSource() == inputTextFields.get(i)) {
+                        col = i;
+                        break;
+                    }
+                }
+                if (col != -1) {
+                    JTextField fieldLeft = inputTextFields.get(col);
+                    String newValue = fieldLeft.getText();
+                    batchState.updateCell(newValue, selectedRecord, col);
+                }
+            }
+        }
+    }
+
+    class SuggestionMenuListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            Set<String> suggestedWords = suggestedWordCells[popupRow][popupCol];
+            SuggestedWordState suggestedWordState = new SuggestedWordState(suggestedWords, recordValues[popupRow][popupCol]);
+            SuggestedWordDialog suggestedWordDialog = new SuggestedWordDialog(suggestedWordState);
+            suggestedWordDialog.setModal(true);
+            suggestedWordDialog.setLocationRelativeTo(null);
+            suggestedWordDialog.setVisible(true);
+
+            String selectedWord = suggestedWordState.getSelectedWord();
+            if (!selectedWord.equals("")) {
+                batchState.updateCell(selectedWord, popupRow, popupCol);
+            }
+
+            popupRow = -1;
+            popupCol = -1;
         }
     }
 }
