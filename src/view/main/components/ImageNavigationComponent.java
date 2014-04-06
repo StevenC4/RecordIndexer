@@ -57,10 +57,18 @@ public class ImageNavigationComponent extends JComponent implements BatchStateLi
     public void isInvertedToggled() {}
 
     @Override
+    public void originMoved() {
+
+    }
+
+    @Override
     public void showHighlightToggled() {}
 
     @Override
     public void cellUpdated(String value, int row, int col) {}
+
+    @Override
+    public void batchSaved() {}
 
     @Override
     public void batchSubmitted() {

@@ -1,5 +1,7 @@
 package view.main.panels;
 
+import shared.communication.SubmitBatch_Params;
+import view.main.MainContainerFrame;
 import view.state.BatchState;
 import view.state.BatchState.BatchStateListener;
 
@@ -44,8 +46,10 @@ public class ButtonsPanel extends JPanel implements BatchStateListener {
         ToggleHighlightsButton.addActionListener(new ToggleHighlighListener());
 
         SaveButton = new JButton("Save");
+        SaveButton.addActionListener(new SaveButtonListener());
 
         SubmitButton = new JButton("Submit");
+        SubmitButton.addActionListener(new SubmitButtonListener());
 
         if (batchState.getCurrentBatch() == null) {
             disableButtons();
@@ -77,6 +81,10 @@ public class ButtonsPanel extends JPanel implements BatchStateListener {
         SubmitButton.setEnabled(true);
     }
 
+    public void saveState() {
+        batchState.saveBatch();
+    }
+
     @Override
     public void batchDownloaded() {
         enableButtons();
@@ -95,11 +103,17 @@ public class ButtonsPanel extends JPanel implements BatchStateListener {
     public void isInvertedToggled() {}
 
     @Override
+    public void originMoved() {}
+
+    @Override
     public void cellUpdated(String value, int row, int col) {}
 
     @Override
+    public void batchSaved() {}
+
+    @Override
     public void batchSubmitted() {
-        //To change body of implemented methods use File | Settings | File Templates.
+        disableButtons();
     }
 
     class ZoomInButtonListener implements ActionListener {
@@ -131,6 +145,22 @@ public class ButtonsPanel extends JPanel implements BatchStateListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             batchState.toggleIsInverted();
+        }
+    }
+
+    class SaveButtonListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            saveState();
+        }
+    }
+
+    class SubmitButtonListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            batchState.submitBatch();
         }
     }
 }

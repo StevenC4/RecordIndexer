@@ -1,7 +1,10 @@
 package view.state;
 
 import client.communication.ClientCommunicator;
+import com.thoughtworks.xstream.annotations.XStreamOmitField;
 import shared.communication.DownloadFile_Results;
+import shared.communication.SubmitBatch_Params;
+import shared.communication.SubmitBatch_Result;
 import shared.model.Batch;
 import shared.model.Field;
 import shared.model.Project;
@@ -22,9 +25,9 @@ import java.util.*;
  * Time: 12:29 PM
  * To change this template use File | Settings | File Templates.
  */
-public class BatchState implements Serializable {           // TODO: Write code that updates the valueValue field and suggestedWord field
+public class BatchState {           // TODO: Write code that updates the valueValue field and suggestedWord field
 
-    transient ClientCommunicator clientCommunicator;
+    ClientCommunicator clientCommunicator;
 
     User user;
 
@@ -34,7 +37,7 @@ public class BatchState implements Serializable {           // TODO: Write code 
     private Field selectedField;          //TODO Constructor
     private int selectedRecord;
 
-    Point2D origin;
+    Point2D w_origin;
     private float zoomScale;
     boolean isInverted;
     boolean showHighlight;
@@ -43,6 +46,7 @@ public class BatchState implements Serializable {           // TODO: Write code 
     Set<String>[][] suggestedWordCells;
     SpellCorrector spellCorrector;
 
+    @XStreamOmitField
     List<BatchStateListener> listeners;
 
     /***********************Constructors**************************/
@@ -54,6 +58,7 @@ public class BatchState implements Serializable {           // TODO: Write code 
         zoomScale = 1;
         isInverted = false;
         showHighlight = true;
+        w_origin = new Point2D.Double(0, 0);
         spellCorrector = new SpellCorrectorImpl();
 
     }
@@ -100,26 +105,20 @@ public class BatchState implements Serializable {           // TODO: Write code 
         return suggestedWordCells[row][col];
     }
 
-    public boolean getIsInverted() {
-        return isInverted;
-    }
-
-    public boolean getShowHighlight() {
-        return showHighlight;
-    }
-
     public float getZoomScale() {
         return zoomScale;
     }
 
-    public Set<String> getSuggestedWords(String word) {
-        Set<String> suggestedWords;
-        try {
-            suggestedWords = spellCorrector.suggestSimilarWord(word);
-        } catch (Exception e) {
-            suggestedWords = new TreeSet<String>();
-        }
-        return suggestedWords;
+    public boolean getIsInverted() {
+        return isInverted;
+    }
+
+    public Point2D getW_Origin() {
+        return w_origin;
+    }
+
+    public boolean getShowHighlight() {
+        return showHighlight;
     }
 
     public Set<String> getSuggestedWords(String word, int col) {
@@ -136,6 +135,14 @@ public class BatchState implements Serializable {           // TODO: Write code 
     }
 
     /*********************************Modifiers************************************/
+
+    public void initializeClientCommunicator() {
+        clientCommunicator = new ClientCommunicator();
+    }
+
+    public void initializeListeners() {
+        listeners = new ArrayList<BatchStateListener>();
+    }
 
     public void setCurrentProject(Project project) {
         currentProject = project;
@@ -164,6 +171,11 @@ public class BatchState implements Serializable {           // TODO: Write code 
         notifyBatchDownloaded();
     }
 
+    public void updateW_Origin(Point2D newOrigin) {
+        w_origin = newOrigin;
+        notifyOriginMoved();
+    }
+
     public void setSelectedCell(Field field, int record) {
         this.selectedField = field;
         this.selectedRecord = record;
@@ -178,13 +190,17 @@ public class BatchState implements Serializable {           // TODO: Write code 
     }
 
     public void incrementZoom() {
-        zoomScale /= .75;
-        notifyZoomed();
+        if (zoomScale <= 2.4) {
+            zoomScale /= .75;
+            notifyZoomed();
+        }
     }
 
     public void decrementZoom() {
-        zoomScale  *= .75;
-        notifyZoomed();
+        if (zoomScale >= 0.4) {
+            zoomScale  *= .75;
+            notifyZoomed();
+        }
     }
 
     public void toggleIsInverted() {
@@ -222,6 +238,62 @@ public class BatchState implements Serializable {           // TODO: Write code 
             File dictionaryFile = new File(fileName);
             spellCorrector.useDictionary(dictionaryFile);
         } catch (Exception e) {}
+    }
+
+    public void saveBatch() {
+        notifyBatchSaved();
+    }
+
+    public void submitBatch() {
+        SubmitBatch_Params params = new SubmitBatch_Params();
+        String values = "";
+
+        for (int i = 0; i < currentProject.getRecordsPerImage(); i++) {
+            for (int j = 0; j < fields.size(); j++) {
+                values += recordValues[i][j];
+                if (j < fields.size() - 1) {
+                    values += ",";
+                }
+            }
+            if (i < currentProject.getRecordsPerImage() - 1) {
+                values += ";";
+            }
+        }
+
+        params.setUser(user);
+        params.setBatchId(currentBatch.getBatchId());
+        params.setFieldValues(values);
+
+        try {
+            SubmitBatch_Result result = clientCommunicator.SubmitBatch(params);
+            if (!result.getFailed()) {
+
+            } else {
+
+            }
+        } catch (Exception e) {
+
+        }
+
+        currentProject = null;
+        currentBatch = null;
+        this.fields = null;
+        selectedField = null;
+        selectedRecord = -1;
+        recordValues = null;
+        suggestedWordCells = null;
+        spellCorrector = new SpellCorrectorImpl();
+
+        notifyBatchSubmitted();
+    }
+
+    /*********************Setter for save*********************/
+
+    public void prepareNullBatchSave() {
+        isInverted = false;
+        showHighlight = true;
+        w_origin = new Point2D.Double(0, 0);
+        zoomScale = 1;
     }
 
     /************************Notifiers************************/
@@ -268,6 +340,12 @@ public class BatchState implements Serializable {           // TODO: Write code 
         }
     }
 
+    private void notifyBatchSaved() {
+        for (BatchStateListener listener : listeners) {
+            listener.batchSaved();
+        }
+    }
+
     private void notifyBatchSubmitted() {
         for (BatchStateListener listener : listeners) {
             listener.batchSubmitted();
@@ -283,6 +361,7 @@ public class BatchState implements Serializable {           // TODO: Write code 
         void originMoved();
         void showHighlightToggled();
         void cellUpdated(String value, int row, int col);
+        void batchSaved();
         void batchSubmitted();
     }
 }

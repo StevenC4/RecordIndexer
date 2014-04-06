@@ -50,12 +50,17 @@ public class BatchComponent extends JPanel implements BatchState.BatchStateListe
 
     public BatchComponent(BatchState batchState) {
         this.batchState = batchState;
+        currentBatch = batchState.getCurrentBatch();
         setBackground(Color.GRAY);
 
         this.addMouseListener(mouseAdapter);
         this.addMouseMotionListener(mouseAdapter);
         this.addMouseWheelListener(mouseAdapter);
         this.addComponentListener(componentAdapter);
+
+        if (currentBatch != null) {
+            batchDownloaded();
+        }
     }
 
     @Override
@@ -107,9 +112,8 @@ public class BatchComponent extends JPanel implements BatchState.BatchStateListe
         selectedRecord = batchState.getSelectedRecord();
         isInverted = batchState.getIsInverted();
         showHighlight = batchState.getShowHighlight();
-
-        w_origin = new Point2D.Double(0, 0);
-        scale = 1;
+        w_origin = batchState.getW_Origin();
+        scale = batchState.getZoomScale();
 
         try {
             // DRAW THE IMAGE
@@ -127,6 +131,9 @@ public class BatchComponent extends JPanel implements BatchState.BatchStateListe
             Rectangle2D rect = new Rectangle2D.Double(imageOrigin.getX(), imageOrigin.getY(), imageWidth, imageHeight);
             batchImage = new BatchImage(image, rect);
 
+            if (isInverted) {
+                invertImage();
+            }
             // DRAW THE SELECTED CELL
 
             int recordHeight = project.getRecordHeight();
@@ -170,27 +177,34 @@ public class BatchComponent extends JPanel implements BatchState.BatchStateListe
 
     @Override
     public void imageZoomed() {
-        scale = batchState.getZoomScale();
-        repaint();
+        if (batchImage != null) {
+            scale = batchState.getZoomScale();
+            repaint();
+        }
     }
 
     @Override
     public void isInvertedToggled() {
-        isInverted = !isInverted;
-        invertImage();
-        repaint();
-        // TODO: Use rasterop to invert image
+        if (batchImage != null) {
+            isInverted = !isInverted;
+            invertImage();
+            repaint();
+        }
     }
 
     @Override
     public void originMoved() {
-
+        if (batchImage != null) {
+            w_origin = batchState.getW_Origin();
+        }
     }
 
     @Override
     public void showHighlightToggled() {
-        showHighlight = batchState.getShowHighlight();
-        repaint();
+        if (batchImage != null) {
+            showHighlight = batchState.getShowHighlight();
+            repaint();
+        }
     }
 
     @Override
@@ -199,8 +213,21 @@ public class BatchComponent extends JPanel implements BatchState.BatchStateListe
     }
 
     @Override
+    public void batchSaved() {}
+
+    @Override
     public void batchSubmitted() {
-        //To change body of implemented methods use File | Settings | File Templates.
+        project = batchState.getCurrentProject();
+        currentBatch = batchState.getCurrentBatch();
+        fields = batchState.getCurrentFields();
+        selectedField = batchState.getSelectedField();
+        selectedRecord = batchState.getSelectedRecord();
+
+        image = null;
+        batchImage = null;
+        fieldRect = null;
+
+        repaint();
     }
 
     class BatchImage {
@@ -252,47 +279,49 @@ public class BatchComponent extends JPanel implements BatchState.BatchStateListe
 
         @Override
         public void mousePressed(MouseEvent e) {
-            double d_X = e.getX();
-            double d_Y = e.getY();
+            if (currentBatch != null) {
+                double d_X = e.getX();
+                double d_Y = e.getY();
 
-            AffineTransform transform = new AffineTransform();
-            transform.translate(getWidth() / 2, getHeight() / 2);
-            transform.scale(scale, scale);
-            transform.translate(-w_origin.getX(), -w_origin.getY());
+                AffineTransform transform = new AffineTransform();
+                transform.translate(getWidth() / 2, getHeight() / 2);
+                transform.scale(scale, scale);
+                transform.translate(-w_origin.getX(), -w_origin.getY());
 
-            Point2D d_Pt = new Point2D.Double(d_X, d_Y);
-            Point2D w_Pt = new Point2D.Double();
-            try
-            {
-                transform.inverseTransform(d_Pt, w_Pt);
-            }
-            catch (NoninvertibleTransformException ex) {
-                return;
-            }
-            double w_X = w_Pt.getX();
-            double w_Y = w_Pt.getY();
+                Point2D d_Pt = new Point2D.Double(d_X, d_Y);
+                Point2D w_Pt = new Point2D.Double();
+                try
+                {
+                    transform.inverseTransform(d_Pt, w_Pt);
+                }
+                catch (NoninvertibleTransformException ex) {
+                    return;
+                }
+                double w_X = w_Pt.getX();
+                double w_Y = w_Pt.getY();
 
-            boolean hitShape = false;
+                boolean hitShape = false;
 
-            if (batchImage.contains(w_X, w_Y)) {
-                hitShape = true;
-            }
+                if (batchImage.contains(w_X, w_Y)) {
+                    hitShape = true;
+                }
 
-            if (hitShape) {
-                dragging = true;
-                w_dragStart = new Point2D.Double(w_X, w_Y);
-                double w_dragStartOriginX = w_origin.getX();
-                double w_dragStartOriginY = w_origin.getY();
-                w_dragStartOrigin = new Point2D.Double(w_dragStartOriginX, w_dragStartOriginY);
+                if (hitShape) {
+                    dragging = true;
+                    w_dragStart = new Point2D.Double(w_X, w_Y);
+                    double w_dragStartOriginX = w_origin.getX();
+                    double w_dragStartOriginY = w_origin.getY();
+                    w_dragStartOrigin = new Point2D.Double(w_dragStartOriginX, w_dragStartOriginY);
+                }
             }
         }
 
         @Override
         public void mouseDragged(MouseEvent e) {
-            if (dragging) {
-                double d_X = e.getX();
-                double d_Y = e.getY();
+            double d_X = e.getX();
+            double d_Y = e.getY();
 
+            if (dragging) {
                 AffineTransform transform = new AffineTransform();
                 transform.translate(getWidth() / 2, getHeight() / 2);
                 transform.scale(scale, scale);
@@ -315,9 +344,19 @@ public class BatchComponent extends JPanel implements BatchState.BatchStateListe
 
                 double w_originX = w_dragStartOrigin.getX() - w_deltaX;
                 double w_originY = w_dragStartOrigin.getY() - w_deltaY;
-                w_origin = new Point2D.Double(w_originX, w_originY);
 
-//                notifyOriginChanged(w_originX, w_originY);
+                if (w_originX > 450) {
+                    w_originX = 450;
+                } else if (w_originX < -450) {
+                    w_originX = -450;
+                }
+                if (w_originY > 350) {
+                    w_originY = 350;
+                } else if (w_originY < -350) {
+                    w_originY = -350;
+                }
+
+                batchState.updateW_Origin(new Point2D.Double(w_originX, w_originY));
 
                 repaint();
             }
@@ -325,7 +364,9 @@ public class BatchComponent extends JPanel implements BatchState.BatchStateListe
 
         @Override
         public void mouseReleased(MouseEvent e) {
-            initDrag();
+            if (dragging) {
+                initDrag();
+            }
         }
 
         @Override
@@ -344,8 +385,7 @@ public class BatchComponent extends JPanel implements BatchState.BatchStateListe
                 try
                 {
                     transform.inverseTransform(d_Pt, w_Pt);
-                }
-                catch (NoninvertibleTransformException ex) {
+                } catch (NoninvertibleTransformException ex) {
                     return;
                 }
                 double w_X = w_Pt.getX();

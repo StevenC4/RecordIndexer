@@ -62,7 +62,7 @@ public class TableEntryPanel extends JPanel implements BatchStateListener {
         indexColumnSelected = false;
 
         if (currentProject != null) {
-            setUpTable();
+            batchDownloaded();
         }
     }
 
@@ -151,7 +151,7 @@ public class TableEntryPanel extends JPanel implements BatchStateListener {
     public void deselectTab() {
         tabSelected = false;
 
-        if (table.isEditing()) {
+        if (currentBatch != null && table.isEditing()) {
             table.getCellEditor().stopCellEditing();
         }
     }
@@ -204,6 +204,9 @@ public class TableEntryPanel extends JPanel implements BatchStateListener {
     public void isInvertedToggled() {}
 
     @Override
+    public void originMoved() {}
+
+    @Override
     public void showHighlightToggled() {}
 
     @Override
@@ -215,8 +218,12 @@ public class TableEntryPanel extends JPanel implements BatchStateListener {
     }
 
     @Override
+    public void batchSaved() {}
+
+    @Override
     public void batchSubmitted() {
-        //To change body of implemented methods use File | Settings | File Templates.
+        this.removeAll();
+        this.repaint();
     }
 
     class FieldTableModel extends AbstractTableModel {
@@ -394,5 +401,3 @@ public class TableEntryPanel extends JPanel implements BatchStateListener {
         }
     }
 }
-
-// TODO: Use cell renderer as a listener - when it iterates through the cells and finds one that is selected, do one thing or another

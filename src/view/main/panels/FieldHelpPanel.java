@@ -34,6 +34,10 @@ public class FieldHelpPanel extends JPanel implements BatchStateListener {
         htmlPane.setEditable(false);
 
         this.add(htmlPane, BorderLayout.CENTER);
+
+        if (batchState.getCurrentBatch() != null) {
+            batchDownloaded();
+        }
     }
 
     private void displayHTML(String url) {
@@ -67,13 +71,19 @@ public class FieldHelpPanel extends JPanel implements BatchStateListener {
     public void isInvertedToggled() {}
 
     @Override
+    public void originMoved() {}
+
+    @Override
     public void showHighlightToggled() {}
 
     @Override
     public void cellUpdated(String value, int row, int col) {}
 
     @Override
+    public void batchSaved() {}
+
+    @Override
     public void batchSubmitted() {
-        //To change body of implemented methods use File | Settings | File Templates.
+        htmlPane.setText("");
     }
 }

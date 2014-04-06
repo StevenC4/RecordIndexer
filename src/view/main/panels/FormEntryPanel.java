@@ -1,5 +1,6 @@
 package view.main.panels;
 
+import shared.model.Batch;
 import shared.model.Field;
 import shared.model.Project;
 import view.main.dialog.SuggestedWordDialog;
@@ -27,6 +28,7 @@ public class FormEntryPanel extends JPanel implements BatchStateListener {
     BatchState batchState;
     int numRecords;
     Project currentProject;
+    Batch currentBatch;
     List<Field> fields;
     Field selectedField;
     int selectedRecord;
@@ -69,8 +71,8 @@ public class FormEntryPanel extends JPanel implements BatchStateListener {
         inputPanel.setLayout(new GridBagLayout());
         inputTextFields = new ArrayList<JTextField>();
 
-        if (currentProject != null) {
-            populateView();
+        if (batchState.getCurrentBatch() != null) {
+            batchDownloaded();
         }
 
         this.add(new JScrollPane(fieldsListBox));
@@ -115,7 +117,9 @@ public class FormEntryPanel extends JPanel implements BatchStateListener {
 
     public void selectTab() {
         tabSelected = true;
-        inputTextFields.get(selectedField.getPosition() - 1).requestFocus();
+        if (currentBatch != null) {
+            inputTextFields.get(selectedField.getPosition() - 1).requestFocus();
+        }
     }
 
     public void deselectTab() {
@@ -125,6 +129,7 @@ public class FormEntryPanel extends JPanel implements BatchStateListener {
     @Override
     public void batchDownloaded() {
         currentProject = batchState.getCurrentProject();
+        currentBatch = batchState.getCurrentBatch();
         numRecords = currentProject.getRecordsPerImage();
         fields = batchState.getCurrentFields();
         selectedField = batchState.getSelectedField();
@@ -166,6 +171,11 @@ public class FormEntryPanel extends JPanel implements BatchStateListener {
     public void isInvertedToggled() {}
 
     @Override
+    public void originMoved() {
+
+    }
+
+    @Override
     public void showHighlightToggled() {}
 
     @Override
@@ -190,8 +200,21 @@ public class FormEntryPanel extends JPanel implements BatchStateListener {
     }
 
     @Override
+    public void batchSaved() {}
+
+    @Override
     public void batchSubmitted() {
-        //To change body of implemented methods use File | Settings | File Templates.
+        v.clear();
+        fieldsListBox.setListData(v);
+        inputTextFields.clear();
+
+        inputPanel.removeAll();
+
+        currentProject = batchState.getCurrentProject();
+        numRecords = -1;
+        fields = batchState.getCurrentFields();
+        selectedField = batchState.getSelectedField();
+        selectedRecord = batchState.getSelectedRecord();
     }
 
     private boolean contains(Set<String> suggestedWords, String value) {
@@ -257,9 +280,11 @@ public class FormEntryPanel extends JPanel implements BatchStateListener {
 
         @Override
         public void mousePressed(MouseEvent e) {
-            int recordIndex = fieldsListBox.locationToIndex(e.getPoint());
-            if (recordIndex == selectedRecord) {
-                inputTextFields.get(selectedField.getPosition() - 1).requestFocus();
+            if (batchState.getCurrentBatch() != null) {
+                int recordIndex = fieldsListBox.locationToIndex(e.getPoint());
+                if (recordIndex == selectedRecord) {
+                    inputTextFields.get(selectedField.getPosition() - 1).requestFocus();
+                }
             }
         }
     }

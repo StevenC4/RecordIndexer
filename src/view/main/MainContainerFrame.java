@@ -1,5 +1,7 @@
 package view.main;
 
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.xml.DomDriver;
 import shared.model.User;
 import view.state.BatchState;
 import view.login.LoginFrame;
@@ -18,6 +20,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 
 /**
  * Created with IntelliJ IDEA.
@@ -26,7 +31,10 @@ import java.awt.event.WindowEvent;
  * Time: 10:29 AM
  * To change this template use File | Settings | File Templates.
  */
-public class MainContainerFrame extends JFrame {
+public class MainContainerFrame extends JFrame implements BatchState.BatchStateListener {
+
+    final String SAVE_PATH = "resources/user_data/";
+    final String XML_EXTENSION = ".xml";
 
     BatchState batchState;
 
@@ -106,6 +114,7 @@ public class MainContainerFrame extends JFrame {
 
         buttonsPanel = new ButtonsPanel(batchState);
 
+        batchState.addListener(this);
         batchState.addListener(buttonsPanel);
         batchState.addListener(batchComponent);
         batchState.addListener(tableEntryPanel);
@@ -121,13 +130,44 @@ public class MainContainerFrame extends JFrame {
         horizontalSplit.setDividerLocation(getWidth() / 2);
     }
 
+    @Override
+    public void batchDownloaded() {
+        downloadBatchMenuItem.setEnabled(false);
+    }
+
+    @Override
+    public void cellSelected() {}
+
+    @Override
+    public void imageZoomed() {}
+
+    @Override
+    public void isInvertedToggled() {}
+
+    @Override
+    public void originMoved() {}
+
+    @Override
+    public void showHighlightToggled() {}
+
+    @Override
+    public void cellUpdated(String value, int row, int col) {}
+
+    @Override
+    public void batchSaved() {
+        saveBatchState();
+    }
+
+    @Override
+    public void batchSubmitted() {
+        downloadBatchMenuItem.setEnabled(true);
+    }
+
     class WindowCloseAdapter extends WindowAdapter {
 
         @Override
         public void windowClosing(WindowEvent e) {
-            /*
-             * Serialize BatchState and save to a file
-             */
+            saveBatchState();
         }
     }
 
@@ -146,7 +186,9 @@ public class MainContainerFrame extends JFrame {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            // Serialize batch
+
+            saveBatchState();
+
             MainContainerFrame.this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             LoginFrame loginFrame = new LoginFrame();
             loginFrame.setVisible(true);
@@ -159,7 +201,9 @@ public class MainContainerFrame extends JFrame {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            // Serialize batch
+
+            saveBatchState();
+
             MainContainerFrame.this.dispose();
         }
     }
@@ -179,7 +223,51 @@ public class MainContainerFrame extends JFrame {
     }
 
     private BatchState loadBatchState(User user) {
-        return new BatchState(user);
+        BatchState batchStateTemp;
+
+        File file = new File(SAVE_PATH + user.getUsername() + XML_EXTENSION);
+        if (file.exists()) {
+            try {
+                XStream stream = new XStream();
+                FileInputStream fis = new FileInputStream(file);
+                batchStateTemp = (BatchState) stream.fromXML(fis);
+                batchStateTemp.initializeClientCommunicator();
+                batchStateTemp.initializeListeners();
+            } catch (Exception e) {
+                batchStateTemp = new BatchState(user);
+            }
+        } else {
+            batchStateTemp = new BatchState(user);
+        }
+
+        return batchStateTemp;
+    }
+
+    private void saveBatchState() {
+        XStream stream = new XStream();
+        stream.processAnnotations(BatchState.class);
+
+        FileOutputStream fos;
+        File file;
+
+        if (batchState.getCurrentBatch() == null) {
+            batchState.prepareNullBatchSave();
+        }
+
+        User user = batchState.getUser();
+        try {
+            file = new File(SAVE_PATH + user.getUsername() + XML_EXTENSION);
+            if (!file.getParentFile().getParentFile().exists()) {
+                file.getParentFile().getParentFile().mkdir();
+            }
+            if (!file.getParentFile().exists()) {
+                file.getParentFile().mkdir();
+            }
+            fos = new FileOutputStream(file);
+            stream.toXML(batchState, fos);
+        } catch (Exception e) {
+
+        }
     }
     /*
         When logging out:
