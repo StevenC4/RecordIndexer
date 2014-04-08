@@ -171,9 +171,7 @@ public class FormEntryPanel extends JPanel implements BatchStateListener {
     public void isInvertedToggled() {}
 
     @Override
-    public void originMoved() {
-
-    }
+    public void originMoved() {}
 
     @Override
     public void showHighlightToggled() {}

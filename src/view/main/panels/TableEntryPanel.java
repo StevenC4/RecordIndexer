@@ -131,23 +131,13 @@ public class TableEntryPanel extends JPanel implements BatchStateListener {
         }
 
         JPanel tablePanel = new JPanel();
-//        tablePanel.setLayout(new BorderLayout());
 
         tablePanel.add(table.getTableHeader());
         tablePanel.add(table);
 
-        GridBagConstraints c = new GridBagConstraints();
-        c.anchor = GridBagConstraints.NORTHWEST;
-        c.gridx = 0;
-        c.gridy = 0;
-        c.weighty = 1;
-        c.weightx = 1;
         JScrollPane scrollPane = new JScrollPane();
-//        scrollPane.setSize(300, 300);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         scrollPane.getViewport().add(table);
-//        this.add(scrollPane, c);
-//        this.add(scrollPane, BorderLayout.CENTER);
         this.add(scrollPane);
 
         table.requestFocus();
