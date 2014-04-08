@@ -51,8 +51,8 @@ public class BatchState {           // TODO: Write code that updates the valueVa
 
     /***********************Constructors**************************/
 
-    public BatchState(User user) {
-        clientCommunicator = new ClientCommunicator();
+    public BatchState(String host, int port, User user) {
+        clientCommunicator = new ClientCommunicator(host, port);
         this.user = user;
         listeners = new ArrayList<BatchStateListener>();
         zoomScale = 1;
@@ -136,8 +136,8 @@ public class BatchState {           // TODO: Write code that updates the valueVa
 
     /*********************************Modifiers************************************/
 
-    public void initializeClientCommunicator() {
-        clientCommunicator = new ClientCommunicator();
+    public void initializeClientCommunicator(String host, int port) {
+        clientCommunicator = new ClientCommunicator(host, port);
     }
 
     public void initializeListeners() {

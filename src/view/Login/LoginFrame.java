@@ -27,8 +27,14 @@ public class LoginFrame extends JFrame {
     JButton loginButton;
     JButton exitButton;
 
-    public LoginFrame() {
-        clientCommunicator = new ClientCommunicator("localhost", 8081);
+    String host;
+    int port;
+
+    public LoginFrame(String host, int port) {
+        this.host = host;
+        this.port = port;
+
+        clientCommunicator = new ClientCommunicator(host, port);
         this.setTitle("Login to Indexer");
         this.setPreferredSize(new Dimension(375, 133));
         this.setResizable(false);
@@ -85,12 +91,12 @@ public class LoginFrame extends JFrame {
             try {
                 ValidateUser_Result result = clientCommunicator.ValidateUser(new ValidateUser_Params(new User(username, password)));
                 if (result.isValidated()) {
-                    LoginSuccessDialog successDialog = new LoginSuccessDialog(clientCommunicator, result.getUser());
+                    LoginSuccessDialog successDialog = new LoginSuccessDialog(host, port, result.getUser());
                     successDialog.setLocationRelativeTo(null);
                     successDialog.setVisible(true);
                     successDialog.setModal(true);
-                    LoginFrame.this.setVisible(false);
                     LoginFrame.this.dispose();
+                    LoginFrame.this.setVisible(false);
                 } else {
                     LoginFailedDialog failedDialog = new LoginFailedDialog();
                     failedDialog.setLocationRelativeTo(null);

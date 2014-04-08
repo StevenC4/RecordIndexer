@@ -33,7 +33,7 @@ public class FieldHelpPanel extends JPanel implements BatchStateListener {
         htmlPane.setContentType("text/html");
         htmlPane.setEditable(false);
 
-        this.add(htmlPane, BorderLayout.CENTER);
+        this.add(new JScrollPane(htmlPane), BorderLayout.CENTER);
 
         if (batchState.getCurrentBatch() != null) {
             batchDownloaded();

@@ -1,6 +1,7 @@
 package view;
 
 import shared.model.User;
+import view.login.LoginFrame;
 import view.main.MainContainerFrame;
 
 import java.awt.*;
@@ -14,33 +15,29 @@ import java.awt.*;
  */
 public class Frames {
     public static void main(String[] args) {
-        /*EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                LoginFrame frame = new LoginFrame();
-                frame.setLocationRelativeTo(null);
-                frame.setVisible(true);
+
+        String host = "localhost";
+        int port = 8081;
+
+        if (args.length == 2) {
+            host = args[0];
+            port = Integer.parseInt(args[1]);
+        } else if (args.length == 1) {
+            try {
+                port = Integer.parseInt(args[0]);
+            } catch (Exception e) {
+                host = args[0];
             }
-        });*/
-        /*EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                User user = new User("test1", "test1");
-                user.setIndexedRecords(0);
-                user.setFirstName("Test");
-                user.setLastName("One");
-                LoginSuccessDialog frame = new LoginSuccessDialog(new ClientCommunicator(), user);
-                frame.setLocationRelativeTo(null);
-                frame.setVisible(true);
-            }
-        });*/
+        }
+
+        final String finalHost = host;
+        final int finalPort = port;
+
         EventQueue.invokeLater(new Runnable() {
             public void run() {
-                User user = new User("test1", "test1");
-                user.setIndexedRecords(0);
-                user.setFirstName("Test");
-                user.setLastName("One");
-                MainContainerFrame mainContainerFrame = new MainContainerFrame(user);
-                mainContainerFrame.setLocationRelativeTo(null);
-                mainContainerFrame.setVisible(true);
+                LoginFrame frame = new LoginFrame(finalHost, finalPort);
+                frame.setLocationRelativeTo(null);
+                frame.setVisible(true);
             }
         });
     }

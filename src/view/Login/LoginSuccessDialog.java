@@ -19,13 +19,17 @@ import java.awt.event.ActionListener;
 public class LoginSuccessDialog extends JDialog {
 
     User user;
-    ClientCommunicator clientCommunicator;
 
     JButton okButton;
 
-    public LoginSuccessDialog(ClientCommunicator clientCommunicator, User user) {
-        this.clientCommunicator = clientCommunicator;
+    String host;
+    int port;
+
+    public LoginSuccessDialog(String host, int port, User user) {
         this.user = user;
+
+        this.host = host;
+        this.port = port;
 
         this.setTitle("Welcome to Indexer");
         this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -68,8 +72,8 @@ public class LoginSuccessDialog extends JDialog {
         public void actionPerformed(ActionEvent e) {
             LoginSuccessDialog.this.setVisible(false);
             LoginSuccessDialog.this.dispose();
-            MainContainerFrame mainContainerFrame = new MainContainerFrame(user);
-            mainContainerFrame.setLocationRelativeTo(null);
+            MainContainerFrame mainContainerFrame = new MainContainerFrame(host, port, user);
+//            mainContainerFrame.setLocationRelativeTo(null);
             mainContainerFrame.setVisible(true);
         }
     }

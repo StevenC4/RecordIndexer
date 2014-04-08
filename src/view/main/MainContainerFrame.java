@@ -1,7 +1,6 @@
 package view.main;
 
 import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.io.xml.DomDriver;
 import shared.model.User;
 import view.state.BatchState;
 import view.login.LoginFrame;
@@ -11,6 +10,7 @@ import view.main.panels.ButtonsPanel;
 import view.main.panels.FieldHelpPanel;
 import view.main.panels.FormEntryPanel;
 import view.main.panels.TableEntryPanel;
+import view.state.WindowState;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -20,6 +20,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.geom.Point2D;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -34,10 +35,15 @@ import java.io.FileOutputStream;
 public class MainContainerFrame extends JFrame implements BatchState.BatchStateListener {
 
     final String SAVE_PATH = "resources/user_data/";
+    final String BATCH_FILE = "_batchState";
+    final String WINDOW_FILE = "_windowState";
     final String XML_EXTENSION = ".xml";
 
     BatchState batchState;
+    WindowState windowState;
 
+    JSplitPane horizontalSplitter;
+    JSplitPane verticalSplitter;
     ButtonsPanel buttonsPanel;
     BatchComponent batchComponent;
     FormEntryPanel formEntryPanel;
@@ -54,26 +60,45 @@ public class MainContainerFrame extends JFrame implements BatchState.BatchStateL
 
     JMenuItem exitMenuItem;
 
-    public MainContainerFrame(User user) {
+    String host;
+    int port;
+
+    public MainContainerFrame(String host, int port, User user) {
+        this.host = host;
+        this.port = port;
+
         this.batchState = loadBatchState(user);
+        this.windowState = loadWindowState(user);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.addWindowListener(new WindowCloseAdapter());
-        this.setPreferredSize(new Dimension(890, 575));
         this.setLayout(new BorderLayout());
+
+        int windowPositionX = windowState.getWindowPositionX();
+        int windowPositionY = windowState.getWindowPositionY();
+        int windowWidth = windowState.getWindowWidth();
+        int windowHeight = windowState.getWindowHeight();
+        int horizontalBarPosition = windowState.getHorizontalBarPosition();
+        int verticalBarPosition = windowState.getVerticalBarPosition();
+
+        this.setLocation(windowPositionX, windowPositionY);
+        this.setPreferredSize(new Dimension(windowWidth, windowHeight));
 
         menuBar = new JMenuBar();
         fileMenu = new JMenu("File");
 
-        JSplitPane verticalSplit = new JSplitPane();
-        verticalSplit.setOrientation(JSplitPane.VERTICAL_SPLIT);
-        verticalSplit.setResizeWeight(.5d);
+        horizontalSplitter = new JSplitPane();
+        horizontalSplitter.setOrientation(JSplitPane.VERTICAL_SPLIT);
+//        horizontalSplitter.setResizeWeight(.5d);
 
-        JSplitPane horizontalSplit = new JSplitPane();
-        horizontalSplit.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
-        horizontalSplit.setResizeWeight(.5d);
+        verticalSplitter = new JSplitPane();
+        verticalSplitter.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
+//        verticalSplitter.setResizeWeight(.5d);
 
         downloadBatchMenuItem = new JMenuItem("Download Batch");
         downloadBatchMenuItem.addActionListener(new DownloadBatchMenuItemListener());
+        if (batchState.getCurrentBatch() != null) {
+            downloadBatchMenuItem.setEnabled(false);
+        }
         logoutMenuItem = new JMenuItem("Logout");
         logoutMenuItem.addActionListener(new LogoutMenuItemListener());
         exitMenuItem = new JMenuItem("Exit");
@@ -90,7 +115,7 @@ public class MainContainerFrame extends JFrame implements BatchState.BatchStateL
         entryTabbedPane = new JTabbedPane();
         tableEntryPanel = new TableEntryPanel(batchState);
         formEntryPanel = new FormEntryPanel(batchState);
-        entryTabbedPane.addTab("Table Entry", new JScrollPane(tableEntryPanel));
+        entryTabbedPane.addTab("Table Entry", tableEntryPanel);
         entryTabbedPane.addTab("Form Entry", new JScrollPane(formEntryPanel));
         entryTabbedPane.addChangeListener(new EntryPaneTabListener());
 
@@ -101,16 +126,16 @@ public class MainContainerFrame extends JFrame implements BatchState.BatchStateL
         helpTabbedPane.addTab("Image Navigation", imageNavigationComponent);
 
 
-        horizontalSplit.setLeftComponent(entryTabbedPane);
-        horizontalSplit.setRightComponent(helpTabbedPane);
+        verticalSplitter.setLeftComponent(entryTabbedPane);
+        verticalSplitter.setRightComponent(helpTabbedPane);
 
         JPanel batchPanel = new JPanel();
         batchPanel.setLayout(new BorderLayout());
         batchComponent = new BatchComponent(batchState);
         batchPanel.add(batchComponent, BorderLayout.CENTER);
 
-        verticalSplit.setTopComponent(batchPanel);
-        verticalSplit.setBottomComponent(horizontalSplit);
+        horizontalSplitter.setTopComponent(batchPanel);
+        horizontalSplitter.setBottomComponent(verticalSplitter);
 
         buttonsPanel = new ButtonsPanel(batchState);
 
@@ -123,11 +148,15 @@ public class MainContainerFrame extends JFrame implements BatchState.BatchStateL
         batchState.addListener(imageNavigationComponent);
 
         this.add(buttonsPanel, BorderLayout.NORTH);
-        this.add(verticalSplit, BorderLayout.CENTER);
+        this.add(horizontalSplitter, BorderLayout.CENTER);
+
+        horizontalSplitter.setResizeWeight(horizontalBarPosition / windowHeight);
+        verticalSplitter.setResizeWeight(verticalBarPosition / windowWidth);
 
         this.pack();
 
-        horizontalSplit.setDividerLocation(getWidth() / 2);
+        horizontalSplitter.setDividerLocation(horizontalBarPosition);
+        verticalSplitter.setDividerLocation(verticalBarPosition);
     }
 
     @Override
@@ -156,6 +185,7 @@ public class MainContainerFrame extends JFrame implements BatchState.BatchStateL
     @Override
     public void batchSaved() {
         saveBatchState();
+        saveWindowState();
     }
 
     @Override
@@ -168,6 +198,7 @@ public class MainContainerFrame extends JFrame implements BatchState.BatchStateL
         @Override
         public void windowClosing(WindowEvent e) {
             saveBatchState();
+            saveWindowState();
         }
     }
 
@@ -188,9 +219,10 @@ public class MainContainerFrame extends JFrame implements BatchState.BatchStateL
         public void actionPerformed(ActionEvent e) {
 
             saveBatchState();
+            saveWindowState();
 
             MainContainerFrame.this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            LoginFrame loginFrame = new LoginFrame();
+            LoginFrame loginFrame = new LoginFrame(host, port);
             loginFrame.setVisible(true);
             loginFrame.setLocationRelativeTo(null);
             MainContainerFrame.this.dispose();
@@ -203,6 +235,7 @@ public class MainContainerFrame extends JFrame implements BatchState.BatchStateL
         public void actionPerformed(ActionEvent e) {
 
             saveBatchState();
+            saveWindowState();
 
             MainContainerFrame.this.dispose();
         }
@@ -225,22 +258,41 @@ public class MainContainerFrame extends JFrame implements BatchState.BatchStateL
     private BatchState loadBatchState(User user) {
         BatchState batchStateTemp;
 
-        File file = new File(SAVE_PATH + user.getUsername() + XML_EXTENSION);
+        File file = new File(SAVE_PATH + user.getUsername() + BATCH_FILE + XML_EXTENSION);
         if (file.exists()) {
             try {
                 XStream stream = new XStream();
                 FileInputStream fis = new FileInputStream(file);
                 batchStateTemp = (BatchState) stream.fromXML(fis);
-                batchStateTemp.initializeClientCommunicator();
+                batchStateTemp.initializeClientCommunicator(host, port);
                 batchStateTemp.initializeListeners();
             } catch (Exception e) {
-                batchStateTemp = new BatchState(user);
+                batchStateTemp = new BatchState(host, port, user);
             }
         } else {
-            batchStateTemp = new BatchState(user);
+            batchStateTemp = new BatchState(host, port, user);
         }
 
         return batchStateTemp;
+    }
+
+    private WindowState loadWindowState(User user) {
+        WindowState windowStateTemp;
+
+        File file = new File(SAVE_PATH + user.getUsername() + WINDOW_FILE + XML_EXTENSION);
+        if (file.exists()) {
+            try {
+                XStream stream = new XStream();
+                FileInputStream fis = new FileInputStream(file);
+                windowStateTemp = (WindowState) stream.fromXML(fis);
+            } catch (Exception e) {
+                windowStateTemp = new WindowState();
+            }
+        } else {
+            windowStateTemp = new WindowState();
+        }
+
+        return windowStateTemp;
     }
 
     private void saveBatchState() {
@@ -256,7 +308,7 @@ public class MainContainerFrame extends JFrame implements BatchState.BatchStateL
 
         User user = batchState.getUser();
         try {
-            file = new File(SAVE_PATH + user.getUsername() + XML_EXTENSION);
+            file = new File(SAVE_PATH + user.getUsername() + BATCH_FILE + XML_EXTENSION);
             if (!file.getParentFile().getParentFile().exists()) {
                 file.getParentFile().getParentFile().mkdir();
             }
@@ -269,10 +321,36 @@ public class MainContainerFrame extends JFrame implements BatchState.BatchStateL
 
         }
     }
-    /*
-        When logging out:
-            LoginFrame loginFrame = new LoginFrame();
-            loginFrame.setLocationRelativeTo(null);
-            loginFrame.setVisible(true);
-     */
+
+    private void saveWindowState() {
+        Point2D location = getLocation();
+        int verticalBarPosition = verticalSplitter.getDividerLocation();
+        int horizontalBarPosition = horizontalSplitter.getDividerLocation();
+
+        windowState.setWindowPositionX((int)location.getX());
+        windowState.setWindowPositionY((int) location.getY());
+        windowState.setWindowWidth(getWidth());
+        windowState.setWindowHeight(getHeight());
+        windowState.setVerticalBarPosition(verticalBarPosition);
+        windowState.setHorizontalBarPosition(horizontalBarPosition);
+
+        XStream stream = new XStream();
+        FileOutputStream fos;
+        File file;
+
+        User user = batchState.getUser();
+        try {
+            file = new File(SAVE_PATH + user.getUsername() + WINDOW_FILE + XML_EXTENSION);
+            if (!file.getParentFile().getParentFile().exists()) {
+                file.getParentFile().getParentFile().mkdir();
+            }
+            if (!file.getParentFile().exists()) {
+                file.getParentFile().mkdir();
+            }
+            fos = new FileOutputStream(file);
+            stream.toXML(windowState, fos);
+        } catch (Exception e) {
+
+        }
+    }
 }

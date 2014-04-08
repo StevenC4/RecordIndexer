@@ -111,7 +111,7 @@
 		</java>
 	</target>
 
-	<target name="server-gui" depends="compile" description="run the server test gui">
+	<target name="server-gui" depends="compile" description="run the server gui">
 		<java classname="servertester.GuiTester" fork="yes">
 			<classpath>
 				<path refid="all-classpath"/>
@@ -156,7 +156,7 @@
 	<!-- If host and/or port number are omitted, default values are used. -->
 	<!-- EXAMPLE: ant client -->
 	<target name="client" depends="compile" description="run client using server on specified host and port">
-				<java classname="THE NAME OF YOUR CLIENT CLASS GOES HERE" fork="yes">
+				<java classname="view.Frames" fork="yes">
 			<classpath>
 				<path refid="all-classpath"/>
 			</classpath>
